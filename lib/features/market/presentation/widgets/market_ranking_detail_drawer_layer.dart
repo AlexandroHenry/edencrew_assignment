@@ -14,13 +14,14 @@ class MarketRankingDetailDrawerLayer extends StatelessWidget {
   final MarketRankingDetailItem item;
   final VoidCallback onDismiss;
 
+  static const _drawerWidthRatio = 0.68;
+
   @override
   Widget build(BuildContext context) {
     final media = MediaQuery.of(context);
     final topChrome = MarketAppLayout.appBarChromeHeight(context);
     final bottomChrome = MarketAppLayout.bottomChromeHeight(context);
-    final contentHeight = media.size.height - topChrome - bottomChrome;
-    final panelWidth = media.size.width * 0.86;
+    final panelWidth = media.size.width * _drawerWidthRatio;
 
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: 1, end: 0),
@@ -62,11 +63,10 @@ class MarketRankingDetailDrawerLayer extends StatelessWidget {
         color: Colors.transparent,
         shadowColor: Colors.black.withValues(alpha: 0.45),
         child: Container(
-          height: contentHeight,
           width: panelWidth,
           decoration: const BoxDecoration(
             color: Color(0xFF121212),
-            borderRadius: BorderRadius.horizontal(left: Radius.circular(20)),
+            borderRadius: BorderRadius.only(topLeft: Radius.circular(20)),
             boxShadow: [
               BoxShadow(
                 color: Color(0x66000000),

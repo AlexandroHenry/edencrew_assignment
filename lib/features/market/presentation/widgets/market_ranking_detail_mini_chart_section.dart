@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:sample/features/market/presentation/widgets/market_ranking_detail_mini_candle.dart';
+import 'package:sample/features/market/presentation/data/market_ranking_detail_candle_sample_data.dart';
+import 'package:sample/features/market/presentation/widgets/market_ranking_detail_mini_chart_painter.dart';
 import 'package:sample/theme/app_theme.dart';
 
 class MarketRankingDetailMiniChartSection extends StatelessWidget {
@@ -11,25 +12,13 @@ class MarketRankingDetailMiniChartSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const SizedBox(
-          height: 88,
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              MarketRankingDetailMiniCandle(isUp: true, height: 36),
-              SizedBox(width: 6),
-              MarketRankingDetailMiniCandle(isUp: false, height: 28),
-              SizedBox(width: 6),
-              MarketRankingDetailMiniCandle(isUp: true, height: 52),
-              SizedBox(width: 6),
-              MarketRankingDetailMiniCandle(isUp: true, height: 44),
-              SizedBox(width: 6),
-              MarketRankingDetailMiniCandle(isUp: false, height: 32),
-              SizedBox(width: 6),
-              MarketRankingDetailMiniCandle(isUp: true, height: 60),
-              SizedBox(width: 6),
-              MarketRankingDetailMiniCandle(isUp: false, height: 40),
-            ],
+        SizedBox(
+          height: 104,
+          width: double.infinity,
+          child: CustomPaint(
+            painter: MarketRankingDetailMiniChartPainter(
+              candles: marketRankingDetailMiniCandleSampleData,
+            ),
           ),
         ),
         const SizedBox(height: 12),
