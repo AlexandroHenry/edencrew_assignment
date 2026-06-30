@@ -5,6 +5,7 @@ import 'package:sample/features/market/presentation/widgets/appbar_button.dart';
 import 'package:sample/features/market/presentation/widgets/indice_cards.dart';
 import 'package:sample/features/market/presentation/widgets/market_header.dart';
 import 'package:sample/features/market/presentation/widgets/market_stock_ranking_section.dart';
+import 'package:sample/features/market/presentation/widgets/market_theme_section.dart';
 import 'package:sample/features/market/presentation/widgets/market_types.dart';
 import 'package:sample/theme/app_assets.dart';
 import 'package:sample/theme/app_theme.dart';
@@ -56,6 +57,8 @@ class MarketScreen extends StatelessWidget {
                 IndiceCards(),
                 const SizedBox(height: 38),
                 const MarketStockRankingSection(),
+                const SizedBox(height: 38),
+                const MarketThemeSection(),
               ],
             ),
           ),
