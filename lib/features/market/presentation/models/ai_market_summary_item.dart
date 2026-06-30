@@ -6,6 +6,11 @@ class AiMarketSummaryItem {
     required this.body,
     required this.popupTitle,
     required this.popupBody,
+    required this.detailHeadline,
+    required this.detailParagraphs,
+    required this.summaryKeywords,
+    required this.newsSource,
+    required this.summaryTimeRange,
   });
 
   final String id;
@@ -14,4 +19,9 @@ class AiMarketSummaryItem {
   final String body;
   final String popupTitle;
   final String popupBody;
+  final String detailHeadline;
+  final List<String> detailParagraphs;
+  final String summaryKeywords;
+  final String newsSource;
+  final String summaryTimeRange;
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sample/features/market/presentation/models/ai_market_summary_item.dart';
+import 'package:sample/features/market/presentation/screens/ai_market_detail_screen.dart';
 import 'package:sample/theme/app_theme.dart';
 
 class AiMarketSummaryPopup extends StatelessWidget {
@@ -75,7 +76,15 @@ class AiMarketSummaryPopup extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             GestureDetector(
-              onTap: () => Navigator.of(context).pop(),
+              onTap: () {
+                Navigator.of(context)
+                  ..pop()
+                  ..push(
+                    MaterialPageRoute<void>(
+                      builder: (context) => AiMarketDetailScreen(item: item),
+                    ),
+                  );
+              },
               behavior: HitTestBehavior.opaque,
               child: Container(
                 width: double.infinity,
