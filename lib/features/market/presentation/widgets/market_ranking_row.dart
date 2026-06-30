@@ -13,6 +13,7 @@ class MarketRankingRow extends StatelessWidget {
     required this.isFavorite,
     required this.onHeartTap,
     this.subtitle,
+    this.onTap,
     super.key,
   });
 
@@ -23,12 +24,16 @@ class MarketRankingRow extends StatelessWidget {
   final int price;
   final bool isFavorite;
   final VoidCallback onHeartTap;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     final metricColor = MarketMetricUtils.metricColor(changePercent);
 
-    return Padding(
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: SizedBox(
         height: 64,
@@ -66,6 +71,7 @@ class MarketRankingRow extends StatelessWidget {
           ],
         ),
       ),
+    ),
     );
   }
 }

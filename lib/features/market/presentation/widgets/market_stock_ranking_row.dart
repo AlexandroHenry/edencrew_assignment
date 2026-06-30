@@ -8,12 +8,14 @@ class MarketStockRankingRow extends StatelessWidget {
     required this.item,
     required this.isFavorite,
     required this.onHeartTap,
+    this.onTap,
     super.key,
   });
 
   final MarketStockRankingItem item;
   final bool isFavorite;
   final VoidCallback onHeartTap;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +29,7 @@ class MarketStockRankingRow extends StatelessWidget {
       price: item.price,
       isFavorite: isFavorite,
       onHeartTap: onHeartTap,
+      onTap: onTap,
     );
   }
 }
