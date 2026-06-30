@@ -4,12 +4,20 @@ import 'package:sample/theme/app_assets.dart';
 import 'package:sample/theme/app_theme.dart';
 
 class IndexCard extends StatelessWidget {
-  const IndexCard({super.key});
+  const IndexCard({
+    super.key,
+    required this.flagAssetPath,
+    required this.marketName,
+  });
+
+  final String flagAssetPath;
+  final String marketName;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
       decoration: BoxDecoration(
         color: AppColors.bg.bg_2_212121,
         borderRadius: BorderRadius.circular(8),
@@ -17,12 +25,13 @@ class IndexCard extends StatelessWidget {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
           Row(
             children: [
-              Image.asset(AppAssets.flagKr, width: 20, height: 20),
+              Image.asset(flagAssetPath, width: 20, height: 20),
               const SizedBox(width: 8),
-              Text('코스피', style: AppTypography.subtitle),
+              Text(marketName, style: AppTypography.subtitle),
             ],
           ),
           const SizedBox(height: 10),
@@ -45,53 +54,61 @@ class IndexCard extends StatelessWidget {
           const SizedBox(height: 16),
           Row(
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    '외국인',
-                    textAlign: TextAlign.right,
-                    style: AppTypography.xs,
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    '+272,794',
-                    textAlign: TextAlign.right,
-                    style: AppTypography.xs,
-                  ),
-                ],
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      '외국인',
+                      textAlign: TextAlign.right,
+                      style: AppTypography.xs,
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      '+272,794',
+                      textAlign: TextAlign.right,
+                      style: AppTypography.xs,
+                    ),
+                  ],
+                ),
               ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    '외국인',
-                    textAlign: TextAlign.right,
-                    style: AppTypography.xs,
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    '+272,794',
-                    textAlign: TextAlign.right,
-                    style: AppTypography.xs,
-                  ),
-                ],
+              const SizedBox(width: 4),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      '외국인',
+                      textAlign: TextAlign.right,
+                      style: AppTypography.xs,
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      '+272,794',
+                      textAlign: TextAlign.right,
+                      style: AppTypography.xs,
+                    ),
+                  ],
+                ),
               ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    '외국인',
-                    textAlign: TextAlign.right,
-                    style: AppTypography.xs,
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    '+272,794',
-                    textAlign: TextAlign.right,
-                    style: AppTypography.xs,
-                  ),
-                ],
+              const SizedBox(width: 2),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      '외국인',
+                      textAlign: TextAlign.right,
+                      style: AppTypography.xs,
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      '+272,794',
+                      textAlign: TextAlign.right,
+                      style: AppTypography.xs,
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
