@@ -7,6 +7,9 @@ const aiMarketSummarySampleItems = <AiMarketSummaryItem>[
     title: '미국의 낮은 CPI 발표, AI 메모리 수요 급증, 일본 은행 금리...',
     body:
         '미국의 11월 소비자물가지수(CPI)가 시장 예상보다 낮게 발표되면서 월가에서는 수개월 동안 오류가 지속될 수 있다는 분석이 나오고 있어요. 특히, 주택 소유자의 임대료 환산치인 자가주거비(OER) 산정 방식의 오류 가능성이 제...',
+    popupTitle: '원전 검토론 재점화, AI 혜택 불균형 우려, 인도 루피화 급락',
+    popupBody:
+        '인텔, 트럼프 대통령이 회사와 CEO 호크 탄을 칭찬하고 미국 정부의 수십억 달러 투자에 주목한 이후, 반도체 기업들의 주가가 인텔과 동조하여 상승하고 있다....',
   ),
   AiMarketSummaryItem(
     id: 'summary-2',
@@ -14,6 +17,9 @@ const aiMarketSummarySampleItems = <AiMarketSummaryItem>[
     title: '미국의 낮은 CPI 발표, AI 메모리 수요 급증, 일본 은행 금리...',
     body:
         '미국의 11월 소비자물가지수(CPI)가 시장 예상보다 낮게 발표되면서 월가에서는 수개월 동안 오류가 지속될 수 있다는 분석이 나오고 있어요. 특히, 주택 소유자의 임대료 환산치인 자가주거비(OER) 산정 방식의 오류 가능성이 제...',
+    popupTitle: '미국의 낮은 CPI 발표, AI 메모리 수요 급증, 일본 은행 금리',
+    popupBody:
+        '미국의 11월 소비자물가지수(CPI)가 시장 예상보다 낮게 발표되면서 월가에서는 수개월 동안 오류가 지속될 수 있다는 분석이 나오고 있어요....',
   ),
   AiMarketSummaryItem(
     id: 'summary-3',
@@ -21,5 +27,8 @@ const aiMarketSummarySampleItems = <AiMarketSummaryItem>[
     title: '미국의 낮은 CPI 발표, AI 메모리 수요 급증, 일본 은행 금리...',
     body:
         '미국의 11월 소비자물가지수(CPI)가 시장 예상보다 낮게 발표되면서 월가에서는 수개월 동안 오류가 지속될 수 있다는 분석이 나오고 있어요. 특히, 주택 소유자의 임대료 환산치인 자가주거비(OER) 산정 방식의 오류 가능성이 제...',
+    popupTitle: '미국의 낮은 CPI 발표, AI 메모리 수요 급증, 일본 은행 금리',
+    popupBody:
+        '미국의 11월 소비자물가지수(CPI)가 시장 예상보다 낮게 발표되면서 월가에서는 수개월 동안 오류가 지속될 수 있다는 분석이 나오고 있어요....',
   ),
 ];

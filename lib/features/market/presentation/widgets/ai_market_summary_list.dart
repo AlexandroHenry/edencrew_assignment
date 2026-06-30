@@ -4,9 +4,14 @@ import 'package:sample/features/market/presentation/widgets/ai_market_summary_ro
 import 'package:sample/theme/app_theme.dart';
 
 class AiMarketSummaryList extends StatelessWidget {
-  const AiMarketSummaryList({required this.items, super.key});
+  const AiMarketSummaryList({
+    required this.items,
+    required this.onItemTap,
+    super.key,
+  });
 
   final List<AiMarketSummaryItem> items;
+  final ValueChanged<AiMarketSummaryItem> onItemTap;
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +27,11 @@ class AiMarketSummaryList extends StatelessWidget {
         ),
       ),
       itemBuilder: (context, index) {
-        return AiMarketSummaryRow(item: items[index]);
+        final item = items[index];
+        return AiMarketSummaryRow(
+          item: item,
+          onTap: () => onItemTap(item),
+        );
       },
     );
   }

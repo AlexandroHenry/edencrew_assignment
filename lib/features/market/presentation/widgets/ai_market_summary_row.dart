@@ -4,35 +4,44 @@ import 'package:sample/features/market/presentation/widgets/ai_market_summary_ti
 import 'package:sample/theme/app_theme.dart';
 
 class AiMarketSummaryRow extends StatelessWidget {
-  const AiMarketSummaryRow({required this.item, super.key});
+  const AiMarketSummaryRow({
+    required this.item,
+    required this.onTap,
+    super.key,
+  });
 
   final AiMarketSummaryItem item;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        AiMarketSummaryTimeCapsule(relativeTime: item.relativeTime),
-        const SizedBox(height: 8),
-        Text(
-          item.title,
-          style: AppTypography.subtitle.copyWith(
-            color: AppColors.text.text_fafafa,
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          AiMarketSummaryTimeCapsule(relativeTime: item.relativeTime),
+          const SizedBox(height: 8),
+          Text(
+            item.title,
+            style: AppTypography.subtitle.copyWith(
+              color: AppColors.text.text_fafafa,
+            ),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
           ),
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-        ),
-        const SizedBox(height: 8),
-        Text(
-          item.body,
-          style: AppTypography.caption1.copyWith(
-            color: AppColors.text.text_2_bdbdbd,
+          const SizedBox(height: 8),
+          Text(
+            item.body,
+            style: AppTypography.caption1.copyWith(
+              color: AppColors.text.text_2_bdbdbd,
+            ),
+            maxLines: 4,
+            overflow: TextOverflow.ellipsis,
           ),
-          maxLines: 4,
-          overflow: TextOverflow.ellipsis,
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sample/features/market/presentation/providers/ai_market_controller.dart';
 import 'package:sample/features/market/presentation/widgets/ai_market_info_banner.dart';
 import 'package:sample/features/market/presentation/widgets/ai_market_summary_list.dart';
+import 'package:sample/features/market/presentation/widgets/ai_market_summary_popup.dart';
 import 'package:sample/theme/app_theme.dart';
 
 class AiMarketScreen extends ConsumerWidget {
@@ -39,7 +40,12 @@ class AiMarketScreen extends ConsumerWidget {
                 padding: EdgeInsets.fromLTRB(16, 8, 16, 16),
                 child: AiMarketInfoBanner(),
               ),
-              Expanded(child: AiMarketSummaryList(items: summaries)),
+              Expanded(
+                child: AiMarketSummaryList(
+                  items: summaries,
+                  onItemTap: (item) => AiMarketSummaryPopup.show(context, item),
+                ),
+              ),
             ],
           ),
         ),
