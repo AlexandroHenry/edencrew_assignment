@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 class AppColors {
   static const bg = _AppColorsBg();
+  static const background = _AppColorsBackground();
   static const border = _AppColorsBorder();
   static const text = _AppColorsText();
   static const mainAndAccent = _AppColorsMainAndAccent();
@@ -35,6 +36,12 @@ class _AppColorsBg {
   final Color bg_121212 = const Color(0xFF121212); // BG/BG_121212
   final Color bg_2_212121 = const Color(0xFF212121); // BG/BG 2_212121
   final Color bg_4_333333 = const Color(0xFF333333); // BG/BG 4_333333
+}
+
+class _AppColorsBackground {
+  const _AppColorsBackground();
+
+  final Color level6 = const Color(0xFF393C42); // background-level6
 }
 
 class _AppColorsBorder {
@@ -124,6 +131,17 @@ class AppTypography {
     color: AppColors.text.text_fafafa,
   );
 
+  static const _heading2FontSize = 20.0;
+
+  static final heading2 = TextStyle(
+    fontFamily: AppFonts.pretendard,
+    fontSize: _heading2FontSize,
+    fontWeight: FontWeight.w600,
+    height: 1.25,
+    letterSpacing: _heading2FontSize * -0.02,
+    color: AppColors.text.text_fafafa,
+  );
+
   static const _subtitleFontSize = 14.0;
 
   static final subtitle = TextStyle(
@@ -144,6 +162,17 @@ class AppTypography {
     height: 1.4,
     letterSpacing: _caption1FontSize * -0.02,
     color: AppColors.text.text_3_9e9e9e,
+  );
+
+  static const _caption2FontSize = 11.0;
+
+  static final caption2 = TextStyle(
+    fontFamily: AppFonts.pretendard,
+    fontSize: _caption2FontSize,
+    fontWeight: FontWeight.w400,
+    height: 1.4,
+    letterSpacing: _caption2FontSize * -0.02,
+    color: AppColors.text.text_5_e0e0e0,
   );
 
   static const _xsFontSize = 10.0;
