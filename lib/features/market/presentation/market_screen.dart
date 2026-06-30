@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:sample/features/market/presentation/widgets/ai_banner.dart';
 import 'package:sample/features/market/presentation/widgets/appbar_button.dart';
 import 'package:sample/features/market/presentation/widgets/indice_cards.dart';
+import 'package:sample/features/market/presentation/widgets/market_etf_ranking_section.dart';
 import 'package:sample/features/market/presentation/widgets/market_header.dart';
 import 'package:sample/features/market/presentation/widgets/market_stock_ranking_section.dart';
 import 'package:sample/features/market/presentation/widgets/market_theme_section.dart';
@@ -59,6 +60,8 @@ class MarketScreen extends StatelessWidget {
                 const MarketStockRankingSection(),
                 const SizedBox(height: 38),
                 const MarketThemeSection(),
+                const SizedBox(height: 38),
+                const MarketEtfRankingSection(),
               ],
             ),
           ),
