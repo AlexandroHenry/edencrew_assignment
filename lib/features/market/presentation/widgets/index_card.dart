@@ -8,16 +8,21 @@ class IndexCard extends StatelessWidget {
     super.key,
     required this.flagAssetPath,
     required this.marketName,
+    this.onTap,
   });
 
   final String flagAssetPath;
   final String marketName;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
       decoration: BoxDecoration(
         color: AppColors.bg.bg_2_212121,
         borderRadius: BorderRadius.circular(8),
@@ -113,6 +118,7 @@ class IndexCard extends StatelessWidget {
             ],
           ),
         ],
+      ),
       ),
     );
   }

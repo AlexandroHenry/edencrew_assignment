@@ -26,6 +26,8 @@ class AppDerivedColors {
   static const chipBackground = Color(0xFF1B1B1B);
   static const chartWick = Color(0xFF585858);
   static const openTag = Color(0xFF14A68C);
+  static const aiMarketPrimaryButton = Color(0xFF99D939);
+  static const aiMarketSecondaryButton = Color(0xFF4780FF);
   static const highTag = Color(0xFFE35065);
   static const lowTag = Color(0xFF5681F7);
 }
@@ -412,10 +414,7 @@ ThemeData buildNamuhXDarkTheme() {
     labelSmall: AppTypography.nav,
   );
 
-  const iconTheme = IconThemeData(
-    color: Color(0xFFFAFAFA),
-    size: 24,
-  );
+  const iconTheme = IconThemeData(color: Color(0xFFFAFAFA), size: 24);
 
   return ThemeData(
     useMaterial3: true,

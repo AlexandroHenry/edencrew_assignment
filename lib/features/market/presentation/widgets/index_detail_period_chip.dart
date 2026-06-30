@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:sample/theme/app_theme.dart';
 
-class MarketFilterChip extends StatelessWidget {
-  const MarketFilterChip({
+class IndexDetailPeriodChip extends StatelessWidget {
+  const IndexDetailPeriodChip({
+    super.key,
     required this.label,
     required this.isSelected,
     required this.onTap,
-    super.key,
   });
 
   final String label;
@@ -18,16 +18,13 @@ class MarketFilterChip extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        curve: Curves.easeOut,
+      child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.background.level6 : Colors.transparent,
+          color: isSelected
+              ? AppColors.mainAndAccent.up_f93f62.withValues(alpha: 0.2)
+              : AppColors.background.level6,
           borderRadius: BorderRadius.circular(8),
-          border: isSelected
-              ? null
-              : Border.all(color: AppColors.border.border_333333),
         ),
         child: Text(
           label,

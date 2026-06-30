@@ -3,14 +3,17 @@ import 'package:sample/theme/app_assets.dart';
 import 'package:sample/theme/app_theme.dart';
 
 class AiBanner extends StatelessWidget {
-  const AiBanner({super.key});
+  const AiBanner({this.onTap, super.key});
+
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: GestureDetector(
-        onTap: () {},
+        onTap: onTap,
+        behavior: HitTestBehavior.opaque,
         child: Container(
           width: double.infinity,
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),

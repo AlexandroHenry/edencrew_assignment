@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:sample/features/market/presentation/screens/ai_market_screen.dart';
 import 'package:sample/features/market/presentation/widgets/ai_banner.dart';
 import 'package:sample/features/market/presentation/widgets/appbar_button.dart';
 import 'package:sample/features/market/presentation/widgets/indice_cards.dart';
@@ -54,7 +55,15 @@ class MarketScreen extends StatelessWidget {
             child: Column(
               children: [
                 MarketHeader(),
-                AiBanner(),
+                AiBanner(
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (context) => const AiMarketScreen(),
+                      ),
+                    );
+                  },
+                ),
                 MarketTypes(),
                 IndiceCards(),
                 const SizedBox(height: 38),
