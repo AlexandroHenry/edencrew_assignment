@@ -8,12 +8,14 @@ class MarketEtfRankingList extends StatelessWidget {
     required this.items,
     required this.favoriteIds,
     required this.onHeartTap,
+    this.onItemTap,
     super.key,
   });
 
   final List<MarketEtfRankingItem> items;
   final Set<String> favoriteIds;
   final ValueChanged<String> onHeartTap;
+  final ValueChanged<MarketEtfRankingItem>? onItemTap;
 
   @override
   Widget build(BuildContext context) {
@@ -24,6 +26,7 @@ class MarketEtfRankingList extends StatelessWidget {
             item: item,
             isFavorite: favoriteIds.contains(item.id),
             onHeartTap: () => onHeartTap(item.id),
+            onTap: onItemTap == null ? null : () => onItemTap!(item),
           ),
       ],
     );
