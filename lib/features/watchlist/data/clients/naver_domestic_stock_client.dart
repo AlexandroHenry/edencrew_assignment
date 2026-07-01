@@ -178,7 +178,7 @@ class NaverDomesticStockClient implements NaverStockDataClient {
       ),
     );
 
-    // Naver 일별 시세 페이지는 EUC-KR(latin1 호환)로 인코딩됨
+    // Naver 일별 시세 페이지는 EUC-KR 인코딩이므로 latin1로 디코딩 후 파싱
     final html = latin1.decode(response.data!);
     final priceInfos = _parseDailyRows(html, symbol);
     final lastPage = _parseLastPage(html);
@@ -192,55 +192,73 @@ class NaverDomesticStockClient implements NaverStockDataClient {
   }
 
   /// HTML 테이블에서 OHLCV 행을 파싱한다.
-  /// 열 순서: 날짜 | 종가 | 전일비 | 시가 | 고가 | 저가 | 거래량
+  /// 열 순서: 날짜 | 종가 | 전일비(무시) | 시가 | 고가 | 저가 | 거래량
+  ///
+  /// Naver sise_day.naver는 각 <td> 안에 <span> 등 자식 태그를 포함하므로
+  /// 셀 전체를 추출한 뒤 태그를 제거해 텍스트만 남기는 방식으로 파싱한다.
   static List<NaverHistoricalPriceDto> _parseDailyRows(
     String html,
     String symbol,
   ) {
-    // <td class="num"> 또는 날짜 td에서 값 추출
-    final rowRegex = RegExp(
-      r'<tr[^>]*>\s*'
-      r'<td[^>]*>\s*(\d{4}\.\d{2}\.\d{2})\s*</td>\s*' // 날짜
-      r'<td[^>]*class="[^"]*num[^"]*"[^>]*>\s*([\d,]+)\s*</td>\s*' // 종가
-      r'<td[^>]*>.*?</td>\s*' // 전일비 (무시)
-      r'<td[^>]*class="[^"]*num[^"]*"[^>]*>\s*([\d,]+)\s*</td>\s*' // 시가
-      r'<td[^>]*class="[^"]*num[^"]*"[^>]*>\s*([\d,]+)\s*</td>\s*' // 고가
-      r'<td[^>]*class="[^"]*num[^"]*"[^>]*>\s*([\d,]+)\s*</td>\s*' // 저가
-      r'<td[^>]*class="[^"]*num[^"]*"[^>]*>\s*([\d,]+)\s*</td>',   // 거래량
-      dotAll: true,
-    );
+    final trRegex = RegExp(r'<tr[^>]*>(.*?)</tr>', dotAll: true);
+    final tdRegex = RegExp(r'<td[^>]*>(.*?)</td>', dotAll: true);
+    final tagRegex = RegExp(r'<[^>]+>');
+    final datePattern = RegExp(r'^\d{4}\.\d{2}\.\d{2}$');
 
     final result = <NaverHistoricalPriceDto>[];
-    for (final match in rowRegex.allMatches(html)) {
-      final rawDate = match.group(1)!.replaceAll('.', ''); // yyyyMMdd
-      result.add(
-        NaverHistoricalPriceDto.fromJson({
-          'localDate': rawDate,
-          'closePrice': match.group(2)!,
-          'openPrice': match.group(3)!,
-          'highPrice': match.group(4)!,
-          'lowPrice': match.group(5)!,
-          'accumulatedTradingVolume': match.group(6)!,
-        }),
-      );
+
+    for (final trMatch in trRegex.allMatches(html)) {
+      final cells = tdRegex
+          .allMatches(trMatch.group(1)!)
+          .map((m) => m.group(1)!.replaceAll(tagRegex, '').trim())
+          .where((t) => t.isNotEmpty)
+          .toList();
+
+      // 첫 번째 셀이 날짜(YYYY.MM.DD) 형식인 행만 처리
+      if (cells.isEmpty || !datePattern.hasMatch(cells[0])) continue;
+      // 날짜 | 종가 | 전일비 | 시가 | 고가 | 저가 | 거래량 = 최소 7개
+      if (cells.length < 7) continue;
+
+      try {
+        result.add(
+          NaverHistoricalPriceDto.fromJson({
+            'localDate': cells[0].replaceAll('.', ''), // yyyyMMdd
+            'closePrice': cells[1],
+            'openPrice': cells[3],
+            'highPrice': cells[4],
+            'lowPrice': cells[5],
+            'accumulatedTradingVolume': cells[6],
+          }),
+        );
+      } catch (_) {
+        // 파싱 실패한 행은 건너뜀
+        continue;
+      }
     }
     return result;
   }
 
   /// 페이지네이션 영역에서 마지막 페이지 번호를 추출한다.
+  ///
+  /// Naver HTML에서 class와 href 순서가 일정하지 않으므로
+  /// pgRR 클래스를 가진 <a> 태그를 먼저 찾고 그 안에서 page 파라미터를 추출한다.
   static int _parseLastPage(String html) {
-    // pgRR(맨 뒤) 링크의 page 파라미터가 lastPage
-    final lastPageRegex = RegExp(r'pgRR[^>]*href="[^"]*page=(\d+)"');
-    final match = lastPageRegex.firstMatch(html);
-    if (match != null) return int.parse(match.group(1)!);
+    // pgRR 클래스를 가진 <a> 태그 전체를 먼저 찾음 (href/class 순서 무관)
+    final pgRrTagRegex = RegExp(r'<a\b[^>]*\bpgRR\b[^>]*>', dotAll: true);
+    final pageParamRegex = RegExp(r'page=(\d+)');
 
-    // pgRR 없으면 현재 페이지가 마지막 — 현재 선택된 페이지 번호 추출
-    final currentPageRegex = RegExp(r'class="[^"]*pgnum[^"]*"[^>]*>(\d+)<');
-    final pages = currentPageRegex
+    final pgRrTag = pgRrTagRegex.firstMatch(html);
+    if (pgRrTag != null) {
+      final pageMatch = pageParamRegex.firstMatch(pgRrTag.group(0)!);
+      if (pageMatch != null) return int.parse(pageMatch.group(1)!);
+    }
+
+    // pgRR 없으면 현재 페이지가 마지막 — 숫자로만 이뤄진 페이지 링크 중 최댓값
+    final allPageNums = pageParamRegex
         .allMatches(html)
-        .map((m) => int.parse(m.group(1)!))
+        .map((m) => int.tryParse(m.group(1)!) ?? 0)
         .toList();
-    return pages.isEmpty ? 1 : pages.reduce((a, b) => a > b ? a : b);
+    return allPageNums.isEmpty ? 1 : allPageNums.reduce((a, b) => a > b ? a : b);
   }
 }
 
