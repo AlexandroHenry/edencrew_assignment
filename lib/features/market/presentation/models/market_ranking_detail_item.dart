@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:sample/features/market/presentation/data/market_ranking_detail_candle_sample_data.dart';
+import 'package:sample/features/market/presentation/models/market_ranking_detail_candle.dart';
 import 'package:sample/features/market/presentation/models/market_ranking_insight_item.dart';
 
 enum MarketRankingPriceStatType { open, high, low, close }
@@ -33,8 +35,10 @@ class MarketRankingDetailItem {
     required this.changeAmount,
     required this.volumeLabel,
     required this.logoColor,
+    this.logoUrl,
     required this.priceStats,
     required this.insights,
+    this.candles = marketRankingDetailMiniCandleSampleData,
   });
 
   final String id;
@@ -47,8 +51,10 @@ class MarketRankingDetailItem {
   final int changeAmount;
   final String volumeLabel;
   final Color logoColor;
+  final String? logoUrl;
   final List<MarketRankingPriceStat> priceStats;
   final List<MarketRankingInsightItem> insights;
+  final List<MarketRankingDetailMiniCandleData> candles;
 
   MarketRankingDetailItem copyWith({
     String? id,
@@ -61,8 +67,10 @@ class MarketRankingDetailItem {
     int? changeAmount,
     String? volumeLabel,
     Color? logoColor,
+    String? logoUrl,
     List<MarketRankingPriceStat>? priceStats,
     List<MarketRankingInsightItem>? insights,
+    List<MarketRankingDetailMiniCandleData>? candles,
   }) {
     return MarketRankingDetailItem(
       id: id ?? this.id,
@@ -75,8 +83,10 @@ class MarketRankingDetailItem {
       changeAmount: changeAmount ?? this.changeAmount,
       volumeLabel: volumeLabel ?? this.volumeLabel,
       logoColor: logoColor ?? this.logoColor,
+      logoUrl: logoUrl ?? this.logoUrl,
       priceStats: priceStats ?? this.priceStats,
       insights: insights ?? this.insights,
+      candles: candles ?? this.candles,
     );
   }
 }

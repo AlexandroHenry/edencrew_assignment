@@ -63,7 +63,11 @@ class MarketStockRankingSection extends ConsumerWidget {
             onItemTap: (item) {
               MarketRankingDetailDrawer.open(
                 ref,
-                marketRankingDetailForId(item.id, name: item.name),
+                marketRankingDetailForId(
+                  item.id,
+                  name: item.name,
+                  logoUrl: item.logoUrl,
+                ),
               );
             },
           ),

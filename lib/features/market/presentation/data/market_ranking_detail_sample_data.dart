@@ -173,11 +173,15 @@ final Map<String, MarketRankingDetailItem> marketRankingDetailById = {
   'tqqq': _aaplDetail.copyWith(id: 'tqqq', name: 'TQQQ'),
 };
 
-MarketRankingDetailItem marketRankingDetailForId(String id, {String? name}) {
+MarketRankingDetailItem marketRankingDetailForId(
+  String id, {
+  String? name,
+  String? logoUrl,
+}) {
   final detail = marketRankingDetailById[id] ?? _defaultKrDetail;
   final resolvedName = name ?? detail.name;
-  if (detail.id == id && detail.name == resolvedName) {
+  if (detail.id == id && detail.name == resolvedName && logoUrl == null) {
     return detail;
   }
-  return detail.copyWith(id: id, name: resolvedName);
+  return detail.copyWith(id: id, name: resolvedName, logoUrl: logoUrl);
 }

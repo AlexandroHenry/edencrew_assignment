@@ -23,6 +23,7 @@ class MarketRankingDetailHeader extends StatelessWidget {
       children: [
         MarketStockRankingStockLogo(
           name: item.name,
+          logoUrl: item.logoUrl,
           color: item.logoColor,
         ),
         const SizedBox(width: 12),

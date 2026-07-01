@@ -1,18 +1,4 @@
-class MarketRankingDetailMiniCandleData {
-  const MarketRankingDetailMiniCandleData({
-    required this.open,
-    required this.high,
-    required this.low,
-    required this.close,
-  });
-
-  final double open;
-  final double high;
-  final double low;
-  final double close;
-
-  bool get isUp => close >= open;
-}
+import 'package:sample/features/market/presentation/models/market_ranking_detail_candle.dart';
 
 const marketRankingDetailMiniCandleSampleData = <MarketRankingDetailMiniCandleData>[
   MarketRankingDetailMiniCandleData(open: 42, high: 45, low: 40, close: 44),
