@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:sample/features/watchlist/data/dtos/naver_stock_dtos.dart';
+import 'package:sample/shared/data/dtos/naver_stock_dtos.dart';
 
 void main() {
   test('parses domestic autocomplete results from Naver', () {

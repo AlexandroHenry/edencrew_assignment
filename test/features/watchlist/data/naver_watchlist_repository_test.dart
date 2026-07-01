@@ -1,10 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:sample/features/watchlist/data/clients/naver_domestic_stock_client.dart';
-import 'package:sample/features/watchlist/data/dtos/naver_stock_dtos.dart';
 import 'package:sample/features/watchlist/data/repositories/favorite_ids_local_store.dart';
 import 'package:sample/features/watchlist/data/repositories/naver_watchlist_repository.dart';
 import 'package:sample/features/watchlist/domain/models/watchlist_models.dart';
+import 'package:sample/shared/data/clients/naver_domestic_stock_client.dart';
+import 'package:sample/shared/data/dtos/naver_stock_dtos.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {

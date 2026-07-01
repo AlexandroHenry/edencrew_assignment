@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:sample/shared/data/clients/naver_domestic_stock_client.dart';
 
-import '../../data/clients/naver_domestic_stock_client.dart';
 import '../../domain/models/watchlist_models.dart';
 import '../../../../theme/app_theme.dart';
 
