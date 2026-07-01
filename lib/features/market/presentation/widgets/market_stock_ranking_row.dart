@@ -22,6 +22,7 @@ class MarketStockRankingRow extends StatelessWidget {
     return MarketRankingRow(
       leading: MarketStockRankingStockLogo(
         name: item.name,
+        logoUrl: item.logoUrl,
         color: item.logoColor,
       ),
       title: item.name,

@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sample/features/market/presentation/data/market_ranking_detail_sample_data.dart';
-import 'package:sample/features/market/presentation/data/market_stock_ranking_full_sample_data.dart';
+import 'package:sample/features/market/presentation/models/market_stock_ranking_filter.dart';
+import 'package:sample/features/market/presentation/models/market_stock_ranking_region.dart';
 import 'package:sample/features/market/presentation/providers/market_ranking_detail_drawer_controller.dart';
 import 'package:sample/features/market/presentation/providers/market_stock_ranking_controller.dart';
 import 'package:sample/features/market/presentation/widgets/market_ranking_detail_drawer.dart';
@@ -16,7 +17,8 @@ class MarketStockRankingScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final rankingState = ref.watch(marketStockRankingControllerProvider);
+    final rankingAsync = ref.watch(marketStockRankingControllerProvider);
+    final rankingState = rankingAsync.valueOrNull;
     final controller = ref.read(marketStockRankingControllerProvider.notifier);
     final favoriteIds =
         ref.watch(favoriteIdsControllerProvider).valueOrNull ?? const {};
@@ -47,34 +49,49 @@ class MarketStockRankingScreen extends ConsumerWidget {
           body: Column(
             children: [
               MarketStockRankingScreenFilters(
-                selectedFilter: rankingState.filter,
+                selectedFilter:
+                    rankingState?.filter ?? MarketStockRankingFilter.mostViewed,
                 onFilterChanged: controller.setFilter,
-                selectedRegion: rankingState.region,
+                selectedRegion:
+                    rankingState?.region ?? MarketStockRankingRegion.all,
                 onRegionChanged: controller.setRegion,
               ),
               Expanded(
-                child: ListView(
-                  children: [
-                    MarketStockRankingList(
-                      items: marketStockRankingFullSampleItems,
-                      favoriteIds: favoriteIds,
-                      onHeartTap: (id) {
-                        ref
-                            .read(favoriteIdsControllerProvider.notifier)
-                            .toggle(id);
-                      },
-                      onItemTap: (item) {
-                        MarketRankingDetailDrawer.open(
-                          ref,
-                          marketRankingDetailForId(
-                            item.id,
-                            name: item.name,
-                          ),
-                        );
-                      },
+                child: rankingAsync.when(
+                  loading: () => const Center(
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                  error: (e, _) => Center(
+                    child: Text(
+                      '데이터를 불러오지 못했습니다',
+                      style: AppTypography.caption1.copyWith(
+                        color: AppColors.text.text_3_9e9e9e,
+                      ),
                     ),
-                    const SizedBox(height: 24),
-                  ],
+                  ),
+                  data: (state) => ListView(
+                    children: [
+                      MarketStockRankingList(
+                        items: state.items,
+                        favoriteIds: favoriteIds,
+                        onHeartTap: (id) {
+                          ref
+                              .read(favoriteIdsControllerProvider.notifier)
+                              .toggle(id);
+                        },
+                        onItemTap: (item) {
+                          MarketRankingDetailDrawer.open(
+                            ref,
+                            marketRankingDetailForId(
+                              item.id,
+                              name: item.name,
+                            ),
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 24),
+                    ],
+                  ),
                 ),
               ),
             ],
