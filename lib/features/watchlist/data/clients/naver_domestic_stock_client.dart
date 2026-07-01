@@ -178,7 +178,7 @@ class NaverDomesticStockClient implements NaverStockDataClient {
       ),
     );
 
-    // Naver 일별 시세 페이지는 EUC-KR(latin1 호환)로 인코딩됨
+    // Naver 일별 시세 페이지는 EUC-KR 인코딩이므로 latin1로 디코딩 후 파싱
     final html = latin1.decode(response.data!);
     final priceInfos = _parseDailyRows(html, symbol);
     final lastPage = _parseLastPage(html);

@@ -96,13 +96,17 @@ class NaverWatchlistRepository implements WatchlistRepository {
     if (_availableDatesCache != null) return _availableDatesCache!;
 
     final favoriteIds = await loadFavoriteIds();
+    // [버그 수정] 기존: refSymbol == null이면 _availableDatesCache = []로 영구 캐시
+    // → 이후 정상 호출(favoriteIds가 채워진 뒤)도 캐시 히트로 []를 반환하는 문제 발생
+    // 수정: null이면 캐시하지 않고 즉시 반환, 폴백으로 기본 심볼 사용
+    // 기본 심볼 폴백: 즐겨찾기가 비어있어도 날짜 선택기에 거래일 목록을 제공하기 위함
     final refSymbol = favoriteIds
-        .map(domesticSymbolFromFavoriteId)
-        .whereType<String>()
-        .firstOrNull;
+            .map(domesticSymbolFromFavoriteId)
+            .whereType<String>()
+            .firstOrNull ??
+        defaultNaverDomesticFavoriteSymbols.firstOrNull;
     if (refSymbol == null) {
-      _availableDatesCache = [];
-      return _availableDatesCache!;
+      return [];
     }
 
     // page 1 먼저 로드해서 lastPage 확인 후 나머지 페이지를 배치로 가져옴
