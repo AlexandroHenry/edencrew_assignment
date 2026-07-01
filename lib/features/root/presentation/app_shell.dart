@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:sample/features/market/presentation/market_screen.dart';
 
 import '../../../theme/app_theme.dart';
 import '../../search/presentation/screens/search_screen.dart';
@@ -29,10 +28,11 @@ class _AppShellState extends State<AppShell> {
       ),
       child: Scaffold(
         backgroundColor: AppColors.bg.bg_121212,
+        // IndexedStack 순서 = AppTab enum 순서
+        // AppTab: watchlist(0), discussion(1), search(2), news(3), settings(4)
         body: IndexedStack(
           index: _currentTab.index,
           children: const [
-            MarketScreen(),
             WatchlistScreen(),
             _PlaceholderScreen(label: '종목토론'),
             SearchScreen(),
