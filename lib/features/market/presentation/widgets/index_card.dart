@@ -130,7 +130,7 @@ class _InvestorColumn extends StatelessWidget {
     final color = isPositive
         ? AppColors.mainAndAccent.up_f93f62
         : AppColors.mainAndAccent.down_4780ff;
-    final valueStr = '${isPositive ? '+' : ''}${_formatInt(value)}';
+    final valueStr = '${isPositive ? '+' : '-'}${_formatInt(value)}';
 
     return Expanded(
       child: Column(
