@@ -17,7 +17,7 @@ class WatchlistSortBottomSheet extends StatelessWidget {
       child: Container(
         key: const Key('watchlist-sort-sheet'),
         width: double.infinity,
-        padding: EdgeInsets.only(bottom: 36 + bottomInset),
+        padding: EdgeInsets.only(bottom: bottomInset + 16),
         decoration: BoxDecoration(
           color: AppColors.bg.bg_2_212121,
           borderRadius: BorderRadius.vertical(top: Radius.circular(16)),

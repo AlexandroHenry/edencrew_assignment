@@ -293,7 +293,7 @@ class _WatchlistDateBottomSheetState extends State<WatchlistDateBottomSheet> {
               ),
             ),
             // safe area 하단을 Container 배경으로 채움
-            SizedBox(height: 24 + bottomInset),
+            SizedBox(height: bottomInset + 16),
           ],
         ),
       ),
