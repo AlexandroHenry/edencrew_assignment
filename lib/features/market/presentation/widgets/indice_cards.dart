@@ -31,8 +31,7 @@ const _kosdaqData = MarketIndexCardData(
   sparklineValues: MarketSparklineChart.sampleValues,
 );
 
-// 피그마 기준 해외 지수 2열 배치
-// Frame 2147237458: 미국/유럽 주요 지수
+// 해외 지수 — 열당 2개씩 배치
 const _overseasGroup1 = <MarketIndexCardData>[
   MarketIndexCardData(
     flagAssetPath: AppAssets.flagUs,
@@ -48,6 +47,9 @@ const _overseasGroup1 = <MarketIndexCardData>[
     changeVal: 122.94,
     changePercent: 0.74,
   ),
+];
+
+const _overseasGroup2 = <MarketIndexCardData>[
   MarketIndexCardData(
     flagAssetPath: AppAssets.flagUs,
     marketName: '다우 존스',
@@ -64,8 +66,7 @@ const _overseasGroup1 = <MarketIndexCardData>[
   ),
 ];
 
-// Frame 2147237459: 유럽/아시아 지수
-const _overseasGroup2 = <MarketIndexCardData>[
+const _overseasGroup3 = <MarketIndexCardData>[
   MarketIndexCardData(
     flagAssetPath: AppAssets.flagUs,
     marketName: 'DAX',
@@ -80,6 +81,9 @@ const _overseasGroup2 = <MarketIndexCardData>[
     changeVal: -89.33,
     changePercent: -1.10,
   ),
+];
+
+const _overseasGroup4 = <MarketIndexCardData>[
   MarketIndexCardData(
     flagAssetPath: AppAssets.flagUs,
     marketName: 'Nikkei 225',
@@ -138,6 +142,16 @@ class IndiceCards extends StatelessWidget {
           const SizedBox(width: 12),
           _OverseasColumn(
             items: _overseasGroup2,
+            onTap: (name) => _openIndexDetail(context, name),
+          ),
+          const SizedBox(width: 12),
+          _OverseasColumn(
+            items: _overseasGroup3,
+            onTap: (name) => _openIndexDetail(context, name),
+          ),
+          const SizedBox(width: 12),
+          _OverseasColumn(
+            items: _overseasGroup4,
             onTap: (name) => _openIndexDetail(context, name),
           ),
         ],
