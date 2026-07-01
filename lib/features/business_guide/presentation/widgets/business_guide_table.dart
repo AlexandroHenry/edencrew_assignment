@@ -30,7 +30,7 @@ class BusinessGuideTable extends StatelessWidget {
                 indent: 16,
                 endIndent: 16,
               ),
-            _BusinessGuideTableRow(row: rows[i]),
+            _BusinessGuideTableRowWidget(row: rows[i]),
           ],
         ],
       ),
@@ -38,8 +38,8 @@ class BusinessGuideTable extends StatelessWidget {
   }
 }
 
-class _BusinessGuideTableRow extends StatelessWidget {
-  const _BusinessGuideTableRow({required this.row});
+class _BusinessGuideTableRowWidget extends StatelessWidget {
+  const _BusinessGuideTableRowWidget({required this.row});
 
   final BusinessGuideTableRow row;
 
@@ -51,7 +51,7 @@ class _BusinessGuideTableRow extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
-            width: 80,
+            width: 100,
             child: Text(
               row.label,
               style: AppTypography.subtitle.copyWith(
@@ -60,14 +60,43 @@ class _BusinessGuideTableRow extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 16),
-          Expanded(
-            child: Text(
-              row.description,
-              style: AppTypography.subtitle,
-            ),
-          ),
+          Expanded(child: _ColoredDescription(text: row.description)),
         ],
       ),
     );
+  }
+}
+
+/// 줄 단위로 색상을 적용:
+/// - `*`로 시작하는 줄: 빨간색 (중요 주의사항)
+/// - `※`로 시작하는 줄: 회색 (부가 안내)
+/// - 나머지: 기본 흰색
+class _ColoredDescription extends StatelessWidget {
+  const _ColoredDescription({required this.text});
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    final lines = text.split('\n');
+    final spans = <TextSpan>[];
+
+    for (int i = 0; i < lines.length; i++) {
+      final line = lines[i];
+      final Color color;
+      if (line.startsWith('*')) {
+        color = const Color(0xFFFF4D4D);
+      } else if (line.startsWith('※')) {
+        color = AppColors.text.text_2_bdbdbd;
+      } else {
+        color = AppColors.text.text_fafafa;
+      }
+      spans.add(TextSpan(
+        text: i < lines.length - 1 ? '$line\n' : line,
+        style: AppTypography.subtitle.copyWith(color: color),
+      ));
+    }
+
+    return Text.rich(TextSpan(children: spans));
   }
 }

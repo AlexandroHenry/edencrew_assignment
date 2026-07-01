@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sample/features/business_guide/presentation/widgets/business_guide_table.dart';
+import 'package:sample/features/business_guide/presentation/widgets/trading_guide_webview.dart';
 import 'package:sample/theme/app_theme.dart';
 
 class OverseasStockGuide extends StatefulWidget {
@@ -24,7 +25,7 @@ class _OverseasStockGuideState extends State<OverseasStockGuide> {
         Expanded(
           child: _subTabIndex == 0
               ? const _TradingHoursTab()
-              : const _TradingGuideTab(),
+              : const TradingGuideWebView(),
         ),
       ],
     );
@@ -32,10 +33,7 @@ class _OverseasStockGuideState extends State<OverseasStockGuide> {
 }
 
 class _OverseasSubTabBar extends StatelessWidget {
-  const _OverseasSubTabBar({
-    required this.selectedIndex,
-    required this.onTap,
-  });
+  const _OverseasSubTabBar({required this.selectedIndex, required this.onTap});
 
   final int selectedIndex;
   final ValueChanged<int> onTap;
@@ -119,43 +117,6 @@ class _TradingHoursTab extends StatelessWidget {
   }
 }
 
-class _TradingGuideTab extends StatelessWidget {
-  const _TradingGuideTab();
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                '미국',
-                style: AppTypography.subtitle.copyWith(
-                  color: AppColors.text.text_fafafa,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 8),
-              const BusinessGuideTable(rows: _usRows),
-            ],
-          ),
-        ),
-        const SizedBox(height: 20),
-        Expanded(
-          child: Container(
-            color: AppColors.bg.bg_2_212121.withValues(alpha: 0.5),
-            child: Center(
-              child: Text('웹뷰영역', style: AppTypography.heading2),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
 
 const _usRows = [
   BusinessGuideTableRow(label: '프리마켓', description: '- 18:00~23:29'),
