@@ -43,7 +43,7 @@ class IndexCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                Image.asset(data.flagAssetPath, width: 20, height: 20),
+                AppSvgIcon(assetPath: data.flagAssetPath, width: 20, height: 20),
                 const SizedBox(width: 8),
                 Text(data.marketName, style: AppTypography.subtitle),
               ],
