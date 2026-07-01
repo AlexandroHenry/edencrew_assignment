@@ -6,6 +6,9 @@ class MarketStockRankingItem {
     required this.name,
     required this.changePercent,
     required this.price,
+    this.symbol,
+    this.logoUrl,
+    this.isOverseas = false,
     this.logoColor,
   });
 
@@ -13,5 +16,8 @@ class MarketStockRankingItem {
   final String name;
   final double changePercent;
   final int price;
+  final String? symbol;
+  final String? logoUrl;
+  final bool isOverseas;
   final Color? logoColor;
 }
