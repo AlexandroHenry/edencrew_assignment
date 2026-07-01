@@ -3,15 +3,15 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../watchlist/domain/models/watchlist_models.dart';
 import '../../../../theme/app_theme.dart';
-import '../providers/search_controller.dart';
+import '../../../watchlist/domain/models/watchlist_models.dart';
+import '../../../watchlist/presentation/providers/watchlist_controller.dart';
 import '../layout/search_layout_spec.dart';
+import '../providers/search_controller.dart';
 import '../widgets/search_empty_state.dart';
 import '../widgets/search_header.dart';
 import '../widgets/search_result_row.dart';
 import '../widgets/search_toast.dart';
-import '../../../watchlist/presentation/providers/watchlist_controller.dart';
 
 class SearchScreen extends ConsumerStatefulWidget {
   const SearchScreen({super.key});
@@ -78,104 +78,106 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
       );
     }
 
-    return ColoredBox(
-      color: AppColors.bg.bg_121212,
-      child: SafeArea(
-        bottom: false,
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final layout = SearchLayoutSpec.fromWidth(constraints.maxWidth);
-            final results =
-                state.results.valueOrNull ?? const <StockSearchItem>[];
-            final hasQuery = state.query.trim().isNotEmpty;
-            final showEmpty =
-                hasQuery && state.results.hasValue && results.isEmpty;
-            final showError = hasQuery && state.results.hasError;
-            final bottomInset = MediaQuery.viewInsetsOf(context).bottom;
+    return Scaffold(
+      body: ColoredBox(
+        color: AppColors.bg.bg_121212,
+        child: SafeArea(
+          bottom: false,
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final layout = SearchLayoutSpec.fromWidth(constraints.maxWidth);
+              final results =
+                  state.results.valueOrNull ?? const <StockSearchItem>[];
+              final hasQuery = state.query.trim().isNotEmpty;
+              final showEmpty =
+                  hasQuery && state.results.hasValue && results.isEmpty;
+              final showError = hasQuery && state.results.hasError;
+              final bottomInset = MediaQuery.viewInsetsOf(context).bottom;
 
-            return Stack(
-              children: [
-                Column(
-                  key: const Key('search-screen'),
-                  children: [
-                    SearchHeader(
-                      controller: _textController,
-                      focusNode: _focusNode,
-                      layout: layout,
-                      showClearButton: state.query.isNotEmpty,
-                      onChanged: (value) {
-                        unawaited(controller.setQuery(value));
-                      },
-                      onClear: () {
-                        controller.clearQuery();
-                        _textController.clear();
-                        _focusNode.requestFocus();
-                      },
-                    ),
-                    Expanded(
-                      child: Builder(
-                        builder: (context) {
-                          if (showError) {
-                            return Center(
-                              child: Text(
-                                '검색 결과를 불러오지 못했습니다.',
-                                style: AppTypography.searchEmptyTitle,
-                              ),
-                            );
-                          }
-
-                          if (showEmpty) {
-                            return SearchEmptyState(layout: layout);
-                          }
-
-                          if (!hasQuery) {
-                            return const SizedBox.expand();
-                          }
-
-                          return ListView.builder(
-                            key: const Key('search-results-list'),
-                            physics: const BouncingScrollPhysics(),
-                            padding: EdgeInsets.only(
-                              bottom: bottomInset > 0 ? 24 : 96,
-                            ),
-                            itemCount: results.length,
-                            itemBuilder: (context, index) {
-                              final item = results[index];
-                              final isSelected =
-                                  state.selectedItemId == item.id;
-                              return SearchResultRow(
-                                item: item,
-                                query: state.query,
-                                isSelected: isSelected,
-                                layout: layout,
-                                onTap: () => controller.toggleSelection(item),
-                                onHeartTap: () {
-                                  unawaited(_handleHeartTap(item));
-                                },
-                                onActionTap: (action) =>
-                                    _handlePlaceholderAction(action, item),
-                              );
-                            },
-                          );
+              return Stack(
+                children: [
+                  Column(
+                    key: const Key('search-screen'),
+                    children: [
+                      SearchHeader(
+                        controller: _textController,
+                        focusNode: _focusNode,
+                        layout: layout,
+                        showClearButton: state.query.isNotEmpty,
+                        onChanged: (value) {
+                          unawaited(controller.setQuery(value));
+                        },
+                        onClear: () {
+                          controller.clearQuery();
+                          _textController.clear();
+                          _focusNode.requestFocus();
                         },
                       ),
-                    ),
-                  ],
-                ),
-                if (state.toast case final toast?)
-                  Positioned(
-                    left: layout.horizontalPadding,
-                    right: layout.horizontalPadding,
-                    bottom: 32,
-                    child: SearchToast(
-                      key: const Key('search-toast'),
-                      layout: layout,
-                      message: toast.message,
-                    ),
+                      Expanded(
+                        child: Builder(
+                          builder: (context) {
+                            if (showError) {
+                              return Center(
+                                child: Text(
+                                  '검색 결과를 불러오지 못했습니다.',
+                                  style: AppTypography.searchEmptyTitle,
+                                ),
+                              );
+                            }
+
+                            if (showEmpty) {
+                              return SearchEmptyState(layout: layout);
+                            }
+
+                            if (!hasQuery) {
+                              return const SizedBox.expand();
+                            }
+
+                            return ListView.builder(
+                              key: const Key('search-results-list'),
+                              physics: const BouncingScrollPhysics(),
+                              padding: EdgeInsets.only(
+                                bottom: bottomInset > 0 ? 24 : 96,
+                              ),
+                              itemCount: results.length,
+                              itemBuilder: (context, index) {
+                                final item = results[index];
+                                final isSelected =
+                                    state.selectedItemId == item.id;
+                                return SearchResultRow(
+                                  item: item,
+                                  query: state.query,
+                                  isSelected: isSelected,
+                                  layout: layout,
+                                  onTap: () => controller.toggleSelection(item),
+                                  onHeartTap: () {
+                                    unawaited(_handleHeartTap(item));
+                                  },
+                                  onActionTap: (action) =>
+                                      _handlePlaceholderAction(action, item),
+                                );
+                              },
+                            );
+                          },
+                        ),
+                      ),
+                    ],
                   ),
-              ],
-            );
-          },
+                  if (state.toast case final toast?)
+                    Positioned(
+                      left: layout.horizontalPadding,
+                      right: layout.horizontalPadding,
+                      bottom: 32,
+                      child: SearchToast(
+                        key: const Key('search-toast'),
+                        layout: layout,
+                        message: toast.message,
+                      ),
+                    ),
+                ],
+              );
+            },
+          ),
         ),
       ),
     );
