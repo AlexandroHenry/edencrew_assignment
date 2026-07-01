@@ -11,40 +11,38 @@ class WatchlistSortBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      top: false,
-      child: Align(
-        alignment: Alignment.bottomCenter,
-        child: Container(
-          key: const Key('watchlist-sort-sheet'),
-          width: double.infinity,
-          padding: const EdgeInsets.only(bottom: 36),
-          decoration: BoxDecoration(
-            color: AppColors.bg.bg_2_212121,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              SizedBox(
-                height: 56,
-                child: Padding(
-                  padding: EdgeInsets.only(left: 24),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text('정렬', style: AppTypography.sheetTitle),
-                  ),
+    final bottomInset = MediaQuery.paddingOf(context).bottom;
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: Container(
+        key: const Key('watchlist-sort-sheet'),
+        width: double.infinity,
+        padding: EdgeInsets.only(bottom: 36 + bottomInset),
+        decoration: BoxDecoration(
+          color: AppColors.bg.bg_2_212121,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            SizedBox(
+              height: 56,
+              child: Padding(
+                padding: EdgeInsets.only(left: 24),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text('정렬', style: AppTypography.sheetTitle),
                 ),
               ),
-              for (final mode in WatchlistSortMode.values)
-                _SortOptionRow(
-                  mode: mode,
-                  selected: mode == currentSortMode,
-                  onTap: () => Navigator.of(context).pop(mode),
-                ),
-            ],
-          ),
+            ),
+            for (final mode in WatchlistSortMode.values)
+              _SortOptionRow(
+                mode: mode,
+                selected: mode == currentSortMode,
+                onTap: () => Navigator.of(context).pop(mode),
+              ),
+          ],
         ),
       ),
     );

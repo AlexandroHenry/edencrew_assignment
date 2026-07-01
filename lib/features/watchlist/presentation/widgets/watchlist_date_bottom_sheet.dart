@@ -205,97 +205,96 @@ class _WatchlistDateBottomSheetState extends State<WatchlistDateBottomSheet> {
     // - year / month / day picker area
     // - selected state styling
     // - cancel / confirm CTA row
-    return SafeArea(
-      top: false,
-      child: Align(
-        alignment: Alignment.bottomCenter,
-        child: Container(
-          key: const Key('watchlist-date-sheet'),
-          decoration: BoxDecoration(
-            color: AppColors.bg.bg_2_212121,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SizedBox(
-                height: 56,
-                child: Padding(
-                  padding: EdgeInsets.only(left: 24),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text('날짜 선택', style: AppTypography.sheetTitle),
+    final bottomInset = MediaQuery.paddingOf(context).bottom;
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: Container(
+        key: const Key('watchlist-date-sheet'),
+        decoration: BoxDecoration(
+          color: AppColors.bg.bg_2_212121,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              height: 56,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 24),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text('날짜 선택', style: AppTypography.sheetTitle),
+                ),
+              ),
+            ),
+            SizedBox(
+              height: _pickerHeight,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: _DateWheelPicker(
+                      pickerKey: const Key('watchlist-date-picker-year'),
+                      itemKeyPrefix: 'watchlist-date-item-year',
+                      controller: _yearController,
+                      values: _years,
+                      selectedValue: _selectedYear,
+                      formatter: (v) => '$v년',
+                      onSelectedItemChanged: _selectYear,
+                    ),
                   ),
-                ),
+                  Expanded(
+                    child: _DateWheelPicker(
+                      pickerKey: const Key('watchlist-date-picker-month'),
+                      itemKeyPrefix: 'watchlist-date-item-month',
+                      controller: _monthController,
+                      values: _months,
+                      selectedValue: _selectedMonth,
+                      formatter: (v) => '$v월',
+                      onSelectedItemChanged: _selectMonth,
+                    ),
+                  ),
+                  Expanded(
+                    child: _DateWheelPicker(
+                      pickerKey: const Key('watchlist-date-picker-day'),
+                      itemKeyPrefix: 'watchlist-date-item-day',
+                      controller: _dayController,
+                      values: _days,
+                      selectedValue: _selectedDay,
+                      formatter: (v) => '$v일',
+                      onSelectedItemChanged: _selectDay,
+                    ),
+                  ),
+                ],
               ),
-              SizedBox(
-                height: _pickerHeight,
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: _DateWheelPicker(
-                        pickerKey: const Key('watchlist-date-picker-year'),
-                        itemKeyPrefix: 'watchlist-date-item-year',
-                        controller: _yearController,
-                        values: _years,
-                        selectedValue: _selectedYear,
-                        formatter: (v) => '$v년',
-                        onSelectedItemChanged: _selectYear,
-                      ),
+            ),
+            const SizedBox(height: 32),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: _SheetButton(
+                      buttonKey: const Key('watchlist-date-cancel'),
+                      label: '취소',
+                      backgroundColor: AppColors.bg.bg_4_333333,
+                      onTap: () => Navigator.of(context).pop(),
                     ),
-                    Expanded(
-                      child: _DateWheelPicker(
-                        pickerKey: const Key('watchlist-date-picker-month'),
-                        itemKeyPrefix: 'watchlist-date-item-month',
-                        controller: _monthController,
-                        values: _months,
-                        selectedValue: _selectedMonth,
-                        formatter: (v) => '$v월',
-                        onSelectedItemChanged: _selectMonth,
-                      ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: _SheetButton(
+                      buttonKey: const Key('watchlist-date-confirm'),
+                      label: '확인',
+                      backgroundColor: AppColors.mainAndAccent.primary_ff8a00,
+                      onTap: _confirm,
                     ),
-                    Expanded(
-                      child: _DateWheelPicker(
-                        pickerKey: const Key('watchlist-date-picker-day'),
-                        itemKeyPrefix: 'watchlist-date-item-day',
-                        controller: _dayController,
-                        values: _days,
-                        selectedValue: _selectedDay,
-                        formatter: (v) => '$v일',
-                        onSelectedItemChanged: _selectDay,
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 32),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: _SheetButton(
-                        buttonKey: const Key('watchlist-date-cancel'),
-                        label: '취소',
-                        backgroundColor: AppColors.bg.bg_4_333333,
-                        onTap: () => Navigator.of(context).pop(),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: _SheetButton(
-                        buttonKey: const Key('watchlist-date-confirm'),
-                        label: '확인',
-                        backgroundColor: AppColors.mainAndAccent.primary_ff8a00,
-                        onTap: _confirm,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 24),
-            ],
-          ),
+            ),
+            // safe area 하단을 Container 배경으로 채움
+            SizedBox(height: 24 + bottomInset),
+          ],
         ),
       ),
     );
