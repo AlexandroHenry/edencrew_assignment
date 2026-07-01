@@ -116,8 +116,9 @@ class IndiceCards extends StatelessWidget {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: IntrinsicHeight(
+        child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           SizedBox(
             width: 160,
@@ -156,6 +157,7 @@ class IndiceCards extends StatelessWidget {
           ),
         ],
       ),
+      ),
     );
   }
 }
@@ -171,12 +173,15 @@ class _OverseasColumn extends StatelessWidget {
     return SizedBox(
       width: 160,
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           for (var i = 0; i < items.length; i++) ...[
             if (i > 0) const SizedBox(height: 12),
-            IndexCard2(
-              data: items[i],
-              onTap: () => onTap(items[i].marketName),
+            Expanded(
+              child: IndexCard2(
+                data: items[i],
+                onTap: () => onTap(items[i].marketName),
+              ),
             ),
           ],
         ],

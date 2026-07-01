@@ -29,6 +29,8 @@ class IndexCard2 extends StatelessWidget {
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: Container(
+        width: double.infinity,
+        height: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
         decoration: BoxDecoration(
           color: AppColors.bg.bg_2_212121,
