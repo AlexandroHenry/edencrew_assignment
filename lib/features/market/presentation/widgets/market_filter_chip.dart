@@ -24,7 +24,7 @@ class MarketFilterChip extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
           color: isSelected ? AppColors.background.level6 : Colors.transparent,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(999),
           border: isSelected
               ? null
               : Border.all(color: AppColors.border.border_333333),
