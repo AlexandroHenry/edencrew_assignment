@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:sample/features/business_guide/presentation/widgets/business_guide_section_label.dart';
 import 'package:sample/features/business_guide/presentation/widgets/business_guide_table.dart';
-import 'package:sample/theme/app_theme.dart';
 
 class DomesticStockGuide extends StatelessWidget {
   const DomesticStockGuide({super.key});
@@ -8,41 +8,27 @@ class DomesticStockGuide extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('매매업무시간', style: AppTypography.heading2),
-          const SizedBox(height: 16),
-          _SectionLabel(label: 'KRX'),
+          const BusinessGuideSectionLabel(
+            label: '매매업무시간',
+            style: BusinessGuideSectionLabelStyle.pageTitle,
+          ),
+          const SizedBox(height: 12),
+          const BusinessGuideSectionLabel(label: 'KRX'),
           const SizedBox(height: 8),
           const BusinessGuideTable(rows: _krxRows),
           const SizedBox(height: 20),
-          _SectionLabel(label: 'NXT'),
+          const BusinessGuideSectionLabel(label: 'NXT'),
           const SizedBox(height: 8),
           const BusinessGuideTable(rows: _nxtRows),
           const SizedBox(height: 20),
-          _SectionLabel(label: '금융상품'),
+          const BusinessGuideSectionLabel(label: '금융상품'),
           const SizedBox(height: 8),
           const BusinessGuideTable(rows: _financialRows),
-          const SizedBox(height: 32),
         ],
-      ),
-    );
-  }
-}
-
-class _SectionLabel extends StatelessWidget {
-  const _SectionLabel({required this.label});
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      label,
-      style: AppTypography.subtitle.copyWith(
-        color: AppColors.text.text_fafafa,
-        fontWeight: FontWeight.w600,
       ),
     );
   }
@@ -89,7 +75,7 @@ const _nxtRows = [
     label: '메인마켓',
     description: '- 09:00:30~15:20\n(스마트주문 가능)',
   ),
-  BusinessGuideTableRow(label: '에프터마켓', description: '- 15:30~20:00'),
+  BusinessGuideTableRow(label: '애프터마켓', description: '- 15:30~20:00'),
   BusinessGuideTableRow(
     label: '예약주문',
     description:

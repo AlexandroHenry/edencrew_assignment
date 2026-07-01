@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sample/features/business_guide/presentation/widgets/business_guide_section_label.dart';
 import 'package:sample/features/business_guide/presentation/widgets/business_guide_table.dart';
 import 'package:sample/features/business_guide/presentation/widgets/trading_guide_webview.dart';
 import 'package:sample/theme/app_theme.dart';
@@ -20,7 +21,7 @@ class _OverseasStockGuideState extends State<OverseasStockGuide> {
       children: [
         _OverseasSubTabBar(
           selectedIndex: _subTabIndex,
-          onTap: (i) => setState(() => _subTabIndex = i),
+          onTap: (index) => setState(() => _subTabIndex = index),
         ),
         Expanded(
           child: _subTabIndex == 0
@@ -41,7 +42,7 @@ class _OverseasSubTabBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
       child: Row(
         children: [
           _SubTab(
@@ -49,9 +50,15 @@ class _OverseasSubTabBar extends StatelessWidget {
             isSelected: selectedIndex == 0,
             onTap: () => onTap(0),
           ),
-          const SizedBox(width: 4),
-          Text('|', style: TextStyle(color: AppColors.border.border_333333)),
-          const SizedBox(width: 4),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Text(
+              '|',
+              style: AppTypography.caption1.copyWith(
+                color: AppColors.border.border_333333,
+              ),
+            ),
+          ),
           _SubTab(
             label: '거래안내',
             isSelected: selectedIndex == 1,
@@ -78,6 +85,7 @@ class _SubTab extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
+      behavior: HitTestBehavior.opaque,
       child: Text(
         label,
         style: AppTypography.subtitle.copyWith(
@@ -97,31 +105,23 @@ class _TradingHoursTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            '미국',
-            style: AppTypography.subtitle.copyWith(
-              color: AppColors.text.text_fafafa,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
+          const BusinessGuideSectionLabel(label: '미국'),
           const SizedBox(height: 8),
           const BusinessGuideTable(rows: _usRows),
-          const SizedBox(height: 32),
         ],
       ),
     );
   }
 }
 
-
 const _usRows = [
   BusinessGuideTableRow(label: '프리마켓', description: '- 18:00~23:29'),
   BusinessGuideTableRow(label: '정규장', description: '- 23:30~06:00'),
-  BusinessGuideTableRow(label: '에프터마켓', description: '- 06:00~10:00'),
+  BusinessGuideTableRow(label: '애프터마켓', description: '- 06:00~10:00'),
   BusinessGuideTableRow(label: '주간거래', description: '- 10:30~18:00'),
   BusinessGuideTableRow(label: '예약주문', description: '- 08:00~23:00'),
 ];
