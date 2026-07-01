@@ -29,6 +29,11 @@ class AppAssets {
   static const flagUs = 'assets/ui/icon_us_flag.png';
   static const carotUp = 'assets/ui/icon_carot_up.png';
   // static const carotDown = 'assets/ui/icon_carot_down.png';
+
+  static const marketIcon = 'assets/ui/icon_market.png';
+  static const feedIcon = 'assets/ui/icon_feed.png';
+  static const assetIcon = 'assets/ui/icon_asset.png';
+  static const myIcon = 'assets/ui/icon_my.png';
 }
 
 class AppAssetSizes {
