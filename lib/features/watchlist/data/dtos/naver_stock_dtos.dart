@@ -14,19 +14,14 @@ class NaverAutocompleteItemDto {
   });
 
   factory NaverAutocompleteItemDto.fromJson(Map<String, dynamic> json) {
-    // TODO(assignment): Read the autocomplete fields from json and create the
-    // DTO. See README.md for the expected Naver endpoint and sample payload.
-    //
-    // Required fields:
-    // - code
-    // - name
-    // - typeCode
-    // - typeName
-    // - url
-    // - nationCode
-    // - category
-    throw UnimplementedError(
-      'TODO(assignment): implement NaverAutocompleteItemDto.fromJson',
+    return NaverAutocompleteItemDto(
+      code: _readString(json['code']),
+      name: _readString(json['name']),
+      typeCode: _readString(json['typeCode']),
+      typeName: _readString(json['typeName']),
+      url: _readString(json['url']),
+      nationCode: _readString(json['nationCode']),
+      category: _readString(json['category']),
     );
   }
 
@@ -58,19 +53,17 @@ class NaverRealtimeQuoteDto {
   });
 
   factory NaverRealtimeQuoteDto.fromJson(Map<String, dynamic> json) {
-    // TODO(assignment): Map the realtime quote payload into this DTO.
-    //
-    // Naver keys used by the solution:
-    // - cd: symbol
-    // - nv: current price
-    // - pcv: previous close
-    // - ov: open price
-    // - hv: high price
-    // - lv: low price
-    // - aq: accumulated trading volume
-    // - countOfListedStock: listed share count (optional)
-    throw UnimplementedError(
-      'TODO(assignment): implement NaverRealtimeQuoteDto.fromJson',
+    // Naver realtime API는 축약된 키를 사용 (cd=symbol, nv=현재가, pcv=전일종가 등)
+    // countOfListedStock은 null일 수 있으므로 nullable로 처리 후 기본값 0 적용
+    return NaverRealtimeQuoteDto(
+      symbol: _readString(json['cd']),
+      currentPrice: _readDouble(json['nv']),
+      previousClose: _readDouble(json['pcv']),
+      openPrice: _readDouble(json['ov']),
+      highPrice: _readDouble(json['hv']),
+      lowPrice: _readDouble(json['lv']),
+      accumulatedTradingVolume: _readInt(json['aq']),
+      countOfListedStock: _readNullableInt(json['countOfListedStock']) ?? 0,
     );
   }
 
@@ -105,9 +98,10 @@ class NaverChartMetadataDto {
   });
 
   factory NaverChartMetadataDto.fromJson(Map<String, dynamic> json) {
-    // TODO(assignment): Map the chart metadata payload into this DTO.
-    throw UnimplementedError(
-      'TODO(assignment): implement NaverChartMetadataDto.fromJson',
+    return NaverChartMetadataDto(
+      symbol: _readString(json['symbolCode']),
+      stockName: _readString(json['stockName']),
+      stockExchangeNameKor: _readString(json['stockExchangeNameKor']),
     );
   }
 
@@ -127,9 +121,13 @@ class NaverHistoricalPriceDto {
   });
 
   factory NaverHistoricalPriceDto.fromJson(Map<String, dynamic> json) {
-    // TODO(assignment): Parse one historical OHLCV row.
-    throw UnimplementedError(
-      'TODO(assignment): implement NaverHistoricalPriceDto.fromJson',
+    return NaverHistoricalPriceDto(
+      localDate: _readLocalDate(json['localDate']),
+      closePrice: _readDouble(json['closePrice']),
+      openPrice: _readDouble(json['openPrice']),
+      highPrice: _readDouble(json['highPrice']),
+      lowPrice: _readDouble(json['lowPrice']),
+      accumulatedTradingVolume: _readInt(json['accumulatedTradingVolume']),
     );
   }
 
@@ -149,10 +147,15 @@ class NaverHistoricalChartDto {
   });
 
   factory NaverHistoricalChartDto.fromJson(Map<String, dynamic> json) {
-    // TODO(assignment): Parse the chart wrapper and convert each priceInfos
-    // entry with NaverHistoricalPriceDto.fromJson.
-    throw UnimplementedError(
-      'TODO(assignment): implement NaverHistoricalChartDto.fromJson',
+    final rawList = json['priceInfos'] as List<dynamic>;
+    return NaverHistoricalChartDto(
+      symbol: _readString(json['code']),
+      periodType: _readString(json['periodType']),
+      priceInfos: rawList
+          .map((e) => NaverHistoricalPriceDto.fromJson(
+                Map<String, dynamic>.from(e as Map),
+              ))
+          .toList(),
     );
   }
 

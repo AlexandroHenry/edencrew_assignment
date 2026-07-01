@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:sample/features/market/presentation/market_screen.dart';
 
 import '../../../theme/app_theme.dart';
+import '../../market/presentation/market_screen.dart';
 import '../../search/presentation/screens/search_screen.dart';
 import '../../watchlist/presentation/screens/watchlist_screen.dart';
 import 'widgets/app_bottom_nav.dart';
