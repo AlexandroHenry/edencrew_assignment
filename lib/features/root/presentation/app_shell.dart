@@ -15,7 +15,7 @@ class AppShell extends StatefulWidget {
 }
 
 class _AppShellState extends State<AppShell> {
-  AppTab _currentTab = AppTab.watchlist;
+  AppTab _currentTab = AppTab.market;
 
   @override
   Widget build(BuildContext context) {
@@ -29,15 +29,16 @@ class _AppShellState extends State<AppShell> {
       ),
       child: Scaffold(
         backgroundColor: AppColors.bg.bg_121212,
+        // IndexedStack 순서 = AppTab enum 순서
+        // AppTab: market(0), watchlist(1), discussion(2), search(3), news(4)
         body: IndexedStack(
           index: _currentTab.index,
           children: const [
             MarketScreen(),
             WatchlistScreen(),
-            _PlaceholderScreen(label: '종목토론'),
+            _PlaceholderScreen(label: '피드'),
             SearchScreen(),
-            _PlaceholderScreen(label: '뉴스'),
-            _PlaceholderScreen(label: '설정'),
+            _PlaceholderScreen(label: '마이'),
           ],
         ),
         bottomNavigationBar: AppBottomNav(
