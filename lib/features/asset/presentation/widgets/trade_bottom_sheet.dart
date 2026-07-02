@@ -23,14 +23,14 @@ class TradeBottomSheet extends ConsumerStatefulWidget {
 
   // 드로어가 MaterialApp builder 위에 있어 context에 Navigator가 없음.
   // rootNavigatorKey.currentContext로 MaterialApp Navigator를 직접 참조한다.
-  static Future<void> show(
-    BuildContext context, {
+  // context 파라미터를 제거해 async gap에서 BuildContext를 넘기지 않아도 된다.
+  static Future<void> show({
     required String stockCode,
     required String stockName,
     required double currentPrice,
     required TradeType tradeType,
   }) {
-    final navContext = rootNavigatorKey.currentContext ?? context;
+    final navContext = rootNavigatorKey.currentContext!;
     return showModalBottomSheet<void>(
       context: navContext,
       isScrollControlled: true,
@@ -59,6 +59,15 @@ class _TradeBottomSheetState extends ConsumerState<TradeBottomSheet> {
   Color get _accentColor => isBuy
       ? AppColors.mainAndAccent.up_f93f62
       : AppColors.mainAndAccent.down_4780ff;
+
+  Color get _stockColor {
+    const palette = [
+      Color(0xFF1428A0), Color(0xFFE60012), Color(0xFF00529F),
+      Color(0xFF00A651), Color(0xFFF5B800), Color(0xFF8B5CF6),
+      Color(0xFFEC4899), Color(0xFFF97316),
+    ];
+    return palette[widget.stockName.hashCode.abs() % palette.length];
+  }
 
   @override
   void dispose() {
@@ -98,15 +107,51 @@ class _TradeBottomSheetState extends ConsumerState<TradeBottomSheet> {
               ),
             ),
 
-            // 헤더: 탭 + 닫기
+            // 종목 정보 헤더
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
               child: Row(
                 children: [
-                  _TypeTab(label: '매수', isActive: isBuy, color: AppColors.mainAndAccent.up_f93f62),
-                  const SizedBox(width: 8),
-                  _TypeTab(label: '매도', isActive: !isBuy, color: AppColors.mainAndAccent.down_4780ff),
-                  const Spacer(),
+                  // 종목 이니셜 아이콘
+                  Container(
+                    width: 36,
+                    height: 36,
+                    decoration: BoxDecoration(
+                      color: _stockColor.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: _stockColor.withValues(alpha: 0.4)),
+                    ),
+                    alignment: Alignment.center,
+                    child: Text(
+                      widget.stockName.characters.first,
+                      style: TextStyle(
+                        fontFamily: 'Pretendard',
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: _stockColor,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.stockName,
+                          style: AppTypography.subtitle.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w700,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        Text(
+                          widget.stockCode,
+                          style: AppTypography.caption2.copyWith(color: Colors.white38),
+                        ),
+                      ],
+                    ),
+                  ),
                   GestureDetector(
                     onTap: () => Navigator.pop(context),
                     child: const Icon(Icons.close, color: Colors.white54, size: 22),
@@ -115,7 +160,21 @@ class _TradeBottomSheetState extends ConsumerState<TradeBottomSheet> {
               ),
             ),
 
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
+
+            // 매수/매도 탭
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+              child: Row(
+                children: [
+                  _TypeTab(label: '매수', isActive: isBuy, color: AppColors.mainAndAccent.up_f93f62),
+                  const SizedBox(width: 8),
+                  _TypeTab(label: '매도', isActive: !isBuy, color: AppColors.mainAndAccent.down_4780ff),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 12),
             Divider(height: 1, color: Colors.white.withValues(alpha: 0.08)),
 
             // 현재가 배너

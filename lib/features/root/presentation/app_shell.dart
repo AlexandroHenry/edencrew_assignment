@@ -1,22 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../theme/app_theme.dart';
 import '../../asset/presentation/screens/asset_screen.dart';
 import '../../feed/presentation/screens/feed_screen.dart';
 import '../../market/presentation/market_screen.dart';
+import '../../market/presentation/providers/market_ranking_detail_drawer_controller.dart';
 import '../../watchlist/presentation/screens/watchlist_screen.dart';
 import 'widgets/app_bottom_nav.dart';
 
-class AppShell extends StatefulWidget {
+class AppShell extends ConsumerStatefulWidget {
   const AppShell({super.key});
 
   @override
-  State<AppShell> createState() => _AppShellState();
+  ConsumerState<AppShell> createState() => _AppShellState();
 }
 
-class _AppShellState extends State<AppShell> {
+class _AppShellState extends ConsumerState<AppShell> {
   AppTab _currentTab = AppTab.market;
+
+  void _onTabSelected(AppTab tab) {
+    // 탭 전환 시 드로어가 열려있으면 닫는다
+    if (ref.read(marketRankingDetailDrawerItemProvider) != null) {
+      closeMarketRankingDetailDrawer(ref);
+    }
+    setState(() => _currentTab = tab);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,8 +40,6 @@ class _AppShellState extends State<AppShell> {
       ),
       child: Scaffold(
         backgroundColor: AppColors.bg.bg_121212,
-        // IndexedStack 순서 = AppTab enum 순서
-        // AppTab: market(0), watchlist(1), discussion(2), search(3), news(4)
         body: IndexedStack(
           index: _currentTab.index,
           children: const [
@@ -44,11 +52,7 @@ class _AppShellState extends State<AppShell> {
         ),
         bottomNavigationBar: AppBottomNav(
           currentTab: _currentTab,
-          onTabSelected: (tab) {
-            setState(() {
-              _currentTab = tab;
-            });
-          },
+          onTabSelected: _onTabSelected,
         ),
       ),
     );
