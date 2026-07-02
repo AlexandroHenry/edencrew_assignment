@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../../theme/app_theme.dart';
+import '../../asset/presentation/screens/asset_screen.dart';
 import '../../feed/presentation/screens/feed_screen.dart';
 import '../../market/presentation/market_screen.dart';
-import '../../search/presentation/screens/search_screen.dart';
 import '../../watchlist/presentation/screens/watchlist_screen.dart';
 import 'widgets/app_bottom_nav.dart';
 
@@ -38,7 +38,7 @@ class _AppShellState extends State<AppShell> {
             MarketScreen(),
             WatchlistScreen(),
             FeedScreen(),
-            SearchScreen(),
+            AssetScreen(),
             _PlaceholderScreen(label: '마이'),
           ],
         ),
