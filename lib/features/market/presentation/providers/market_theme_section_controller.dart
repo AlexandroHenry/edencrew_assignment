@@ -49,6 +49,7 @@ class MarketThemeSectionController
       }).toList();
 
       return MarketThemeItem(
+        no: dto.no,
         rank: rank,
         name: dto.name,
         changePercent: dto.changeRate,

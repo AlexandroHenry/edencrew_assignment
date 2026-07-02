@@ -45,6 +45,7 @@ class NaverThemeClient {
         );
       }).toList();
       return NaverThemeItemDto(
+        no: row.no,
         name: row.name,
         changeRate: row.changeRate,
         upCount: row.upCount,
@@ -56,15 +57,13 @@ class NaverThemeClient {
   }
 
   List<_RawThemeRow> _parseRows(String html, int limit) {
-    // <tr> 단위로 분리 후 col_type1 포함 행만 필터
     final rowRegex = RegExp(r'<tr>(.*?)</tr>', dotAll: true);
-    final nameRegex =
-        RegExp(r'col_type1[^>]*><a[^>]+>([^<]+)</a>', dotAll: true);
-    final rateRegex =
-        RegExp(r'col_type2.*?([+-]?\d+\.\d+)%', dotAll: true);
+    final nameRegex = RegExp(
+        r'sise_group_detail\.naver\?type=theme&no=(\d+)[^>]*>([^<]+)</a>',
+        dotAll: true);
+    final rateRegex = RegExp(r'col_type2.*?([+-]?\d+\.\d+)%', dotAll: true);
     final countRegex = RegExp(r'col_type4">\s*(\d+)\s*</td>');
-    final stockRegex =
-        RegExp(r'code=(\w+)">([^<]+)</a>', dotAll: true);
+    final stockRegex = RegExp(r'code=(\w+)">([^<]+)</a>', dotAll: true);
 
     final results = <_RawThemeRow>[];
 
@@ -72,16 +71,25 @@ class NaverThemeClient {
       final row = m.group(1)!;
       if (!row.contains('col_type1') || !row.contains('col_type2')) continue;
 
-      final name = nameRegex.firstMatch(row)?.group(1)?.trim();
+      final nameMatch = nameRegex.firstMatch(row);
+      final no = nameMatch?.group(1);
+      final name = nameMatch?.group(2)?.trim();
       final rateStr = rateRegex.firstMatch(row)?.group(1);
-      final counts = countRegex.allMatches(row).map((c) => int.parse(c.group(1)!)).toList();
-      final stocks = stockRegex.allMatches(row)
+      final counts = countRegex
+          .allMatches(row)
+          .map((c) => int.parse(c.group(1)!))
+          .toList();
+      final stocks = stockRegex
+          .allMatches(row)
           .map((s) => _RawStock(code: s.group(1)!, name: s.group(2)!.trim()))
           .toList();
 
-      if (name == null || rateStr == null || counts.length < 3) continue;
+      if (no == null || name == null || rateStr == null || counts.length < 3) {
+        continue;
+      }
 
       results.add(_RawThemeRow(
+        no: no,
         name: name,
         changeRate: double.parse(rateStr),
         upCount: counts[0],
@@ -126,6 +134,7 @@ class NaverThemeClient {
 
 class _RawThemeRow {
   const _RawThemeRow({
+    required this.no,
     required this.name,
     required this.changeRate,
     required this.upCount,
@@ -133,6 +142,7 @@ class _RawThemeRow {
     required this.downCount,
     required this.topStocks,
   });
+  final String no;
   final String name;
   final double changeRate;
   final int upCount;
