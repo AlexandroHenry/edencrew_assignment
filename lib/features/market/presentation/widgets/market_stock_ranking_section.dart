@@ -67,6 +67,9 @@ class MarketStockRankingSection extends ConsumerWidget {
                   item.id,
                   name: item.name,
                   logoUrl: item.logoUrl,
+                  price: item.price,
+                  changePercent: item.changePercent,
+                  isOverseas: item.isOverseas,
                 ),
               );
             },

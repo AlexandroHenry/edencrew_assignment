@@ -57,7 +57,12 @@ class MarketEtfRankingSection extends ConsumerWidget {
             onItemTap: (item) {
               MarketRankingDetailDrawer.open(
                 ref,
-                marketRankingDetailForId(item.id, name: item.name),
+                marketRankingDetailForId(
+                  item.id,
+                  name: item.name,
+                  price: item.price,
+                  changePercent: item.changePercent,
+                ),
               );
             },
           ),
