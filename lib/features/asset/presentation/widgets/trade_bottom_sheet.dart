@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sample/features/asset/presentation/providers/asset_screen_controller.dart';
+import 'package:sample/features/market/presentation/widgets/market_ranking_detail_app_builder.dart';
 import 'package:sample/theme/app_theme.dart';
 
 enum TradeType { buy, sell }
@@ -20,7 +21,8 @@ class TradeBottomSheet extends ConsumerStatefulWidget {
   final double currentPrice;
   final TradeType tradeType;
 
-  // useRootNavigator: true — 드로어 Stack 내부 context여도 루트 Scaffold를 사용
+  // 드로어가 MaterialApp builder 위에 있어 context에 Navigator가 없음.
+  // rootNavigatorKey.currentContext로 MaterialApp Navigator를 직접 참조한다.
   static Future<void> show(
     BuildContext context, {
     required String stockCode,
@@ -28,9 +30,9 @@ class TradeBottomSheet extends ConsumerStatefulWidget {
     required double currentPrice,
     required TradeType tradeType,
   }) {
+    final navContext = rootNavigatorKey.currentContext ?? context;
     return showModalBottomSheet<void>(
-      context: context,
-      useRootNavigator: true,
+      context: navContext,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (_) => TradeBottomSheet(
