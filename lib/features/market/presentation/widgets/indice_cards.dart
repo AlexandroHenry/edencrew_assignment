@@ -8,184 +8,42 @@ import 'package:sample/features/market/presentation/widgets/index_card.dart';
 import 'package:sample/features/market/presentation/widgets/index_card2.dart';
 import 'package:sample/features/market/presentation/widgets/index_card_error.dart';
 import 'package:sample/features/market/presentation/widgets/index_card_skeleton.dart';
-import 'package:sample/theme/app_theme.dart';
 
-// 해외 지수는 Figma 스펙상 열당 2개씩 묶어 4열로 배치한다.
+// 해외 지수는 Figma 스펙상 열당 2개씩 묶어 배치한다.
 const _overseasColumnSize = 2;
 
-enum _IndexTab {
-  main('주요 지표'),
-  domestic('국내'),
-  us('미국'),
-  asia('아시아'),
-  europe('유럽'),
-  market('시장지표');
-
-  const _IndexTab(this.label);
-  final String label;
-}
-
-// 탭별 표시할 지수 key 목록 (주요 지표는 domestic 전체 + 미국 상위 2개)
-const _usKeys = {'^GSPC', '^IXIC', '^DJI'};
-const _asiaKeys = {'^N225'};
-const _europeKeys = {'^FTSE', '^GDAXI', '^FCHI'};
-const _mainOverseasKeys = {'^GSPC', '^IXIC'};
-
-class IndiceCards extends ConsumerStatefulWidget {
+class IndiceCards extends ConsumerWidget {
   const IndiceCards({super.key});
 
   @override
-  ConsumerState<IndiceCards> createState() => _IndiceCardsState();
-}
-
-class _IndiceCardsState extends ConsumerState<IndiceCards> {
-  _IndexTab _selectedTab = _IndexTab.main;
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final asyncState = ref.watch(indiceCardsControllerProvider);
     final controller = ref.read(indiceCardsControllerProvider.notifier);
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _TabRow(
-          selected: _selectedTab,
-          onSelect: (tab) => setState(() => _selectedTab = tab),
-        ),
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
-          child: IntrinsicHeight(
-            child: asyncState.when(
-              loading: () => const _IndiceCardsSkeletonRow(),
-              error: (_, _) => _IndiceCardsErrorRow(
-                onRetry: () => ref.invalidate(indiceCardsControllerProvider),
-              ),
-              data: (state) {
-                final filtered = _filter(state, _selectedTab);
-                return _IndiceCardsDataRow(
-                  domestic: filtered.domestic,
-                  overseas: filtered.overseas,
-                  onRetryDomestic: controller.retryDomestic,
-                  onRetryOverseas: controller.retryOverseas,
-                  onCardTap: (key, name) => _openIndexDetail(context, key, name),
-                );
-              },
-            ),
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+      child: IntrinsicHeight(
+        child: asyncState.when(
+          loading: () => const _IndiceCardsSkeletonRow(),
+          error: (_, _) => _IndiceCardsErrorRow(
+            onRetry: () => ref.invalidate(indiceCardsControllerProvider),
+          ),
+          data: (state) => _IndiceCardsDataRow(
+            state: state,
+            onRetryDomestic: controller.retryDomestic,
+            onRetryOverseas: controller.retryOverseas,
+            onCardTap: (key, name) => _openIndexDetail(context, key, name),
           ),
         ),
-      ],
+      ),
     );
-  }
-
-  _FilteredState _filter(IndiceCardsState state, _IndexTab tab) {
-    switch (tab) {
-      case _IndexTab.main:
-        return _FilteredState(
-          domestic: state.domestic,
-          overseas: state.overseas.where((q) => _mainOverseasKeys.contains(q.key)).toList(),
-        );
-      case _IndexTab.domestic:
-        return _FilteredState(domestic: state.domestic, overseas: const []);
-      case _IndexTab.us:
-        return _FilteredState(
-          domestic: const [],
-          overseas: state.overseas.where((q) => _usKeys.contains(q.key)).toList(),
-        );
-      case _IndexTab.asia:
-        return _FilteredState(
-          domestic: state.domestic,
-          overseas: state.overseas.where((q) => _asiaKeys.contains(q.key)).toList(),
-        );
-      case _IndexTab.europe:
-        return _FilteredState(
-          domestic: const [],
-          overseas: state.overseas.where((q) => _europeKeys.contains(q.key)).toList(),
-        );
-      case _IndexTab.market:
-        return _FilteredState(domestic: state.domestic, overseas: state.overseas);
-    }
   }
 
   void _openIndexDetail(BuildContext context, String indexCode, String marketName) {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (_) => IndexDetailScreen(indexCode: indexCode, marketName: marketName),
-      ),
-    );
-  }
-}
-
-class _FilteredState {
-  const _FilteredState({required this.domestic, required this.overseas});
-  final List<IndexQuote> domestic;
-  final List<IndexQuote> overseas;
-}
-
-class _TabRow extends StatelessWidget {
-  const _TabRow({required this.selected, required this.onSelect});
-
-  final _IndexTab selected;
-  final ValueChanged<_IndexTab> onSelect;
-
-  @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      child: Row(
-        children: [
-          for (final tab in _IndexTab.values) ...[
-            _TabButton(
-              label: tab.label,
-              isSelected: tab == selected,
-              onTap: () => onSelect(tab),
-            ),
-            if (tab != _IndexTab.values.last) const SizedBox(width: 8),
-          ],
-        ],
-      ),
-    );
-  }
-}
-
-class _TabButton extends StatelessWidget {
-  const _TabButton({
-    required this.label,
-    required this.isSelected,
-    required this.onTap,
-  });
-
-  final String label;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        decoration: BoxDecoration(
-          color: isSelected ? AppColors.bg.bg_4_333333 : Colors.transparent,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: isSelected
-                ? AppColors.border.border_4_424242
-                : AppColors.border.border_333333,
-          ),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: 13,
-            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-            color: isSelected
-                ? AppColors.text.text_ffffff
-                : AppColors.text.text_2_bdbdbd,
-          ),
-        ),
       ),
     );
   }
@@ -254,39 +112,37 @@ class _IndiceCardsErrorRow extends StatelessWidget {
 
 class _IndiceCardsDataRow extends StatelessWidget {
   const _IndiceCardsDataRow({
-    required this.domestic,
-    required this.overseas,
+    required this.state,
     required this.onRetryDomestic,
     required this.onRetryOverseas,
     required this.onCardTap,
   });
 
-  final List<IndexQuote> domestic;
-  final List<IndexQuote> overseas;
+  final IndiceCardsState state;
   final void Function(String indexCode) onRetryDomestic;
   final void Function(String symbol) onRetryOverseas;
   final void Function(String indexCode, String marketName) onCardTap;
 
   @override
   Widget build(BuildContext context) {
-    final overseasColumns = _chunk(overseas, _overseasColumnSize);
+    final overseasColumns = _chunk(state.overseas, _overseasColumnSize);
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        for (var i = 0; i < domestic.length; i++) ...[
+        for (var i = 0; i < state.domestic.length; i++) ...[
           if (i > 0) const SizedBox(width: 12),
           SizedBox(
             width: 160,
             child: _IndexQuoteSlot(
-              quote: domestic[i],
+              quote: state.domestic[i],
               compact: false,
-              onRetry: () => onRetryDomestic(domestic[i].key),
-              onTap: () => onCardTap(domestic[i].key, domestic[i].marketName),
+              onRetry: () => onRetryDomestic(state.domestic[i].key),
+              onTap: () => onCardTap(state.domestic[i].key, state.domestic[i].marketName),
             ),
           ),
         ],
-        if (domestic.isNotEmpty && overseasColumns.isNotEmpty)
+        if (state.domestic.isNotEmpty && overseasColumns.isNotEmpty)
           const SizedBox(width: 12),
         for (var c = 0; c < overseasColumns.length; c++) ...[
           if (c > 0) const SizedBox(width: 12),
