@@ -57,8 +57,8 @@ class AiMarketScreen extends ConsumerWidget {
                       ),
                     ),
                   ),
-                  data: (items) => AiMarketSummaryList(
-                    items: items,
+                  data: (s) => AiMarketSummaryList(
+                    items: s.items,
                     onItemTap: (item) =>
                         AiMarketSummaryPopup.show(context, item),
                   ),
