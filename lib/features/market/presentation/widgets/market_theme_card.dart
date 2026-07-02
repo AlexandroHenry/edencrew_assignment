@@ -56,12 +56,25 @@ class MarketThemeCard extends StatelessWidget {
             upCount: item.upCount,
           ),
           const SizedBox(height: 16),
-          for (var index = 0; index < item.topStocks.length; index++) ...[
-            MarketThemeTopStockRow(stock: item.topStocks[index]),
-            if (index < item.topStocks.length - 1) const SizedBox(height: 8),
+          // 항상 3개 행 유지 — 데이터 부족 시 빈 행으로 채워 카드 높이 균일
+          for (var index = 0; index < 3; index++) ...[
+            if (index < item.topStocks.length)
+              MarketThemeTopStockRow(stock: item.topStocks[index])
+            else
+              const _EmptyStockRow(),
+            if (index < 2) const SizedBox(height: 8),
           ],
         ],
       ),
     );
+  }
+}
+
+class _EmptyStockRow extends StatelessWidget {
+  const _EmptyStockRow();
+
+  @override
+  Widget build(BuildContext context) {
+    return const SizedBox(height: 18);
   }
 }
