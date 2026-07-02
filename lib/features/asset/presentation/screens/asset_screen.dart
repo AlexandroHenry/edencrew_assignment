@@ -16,33 +16,38 @@ class AssetScreen extends ConsumerWidget {
     return Theme(
       data: buildNamuhXDarkTheme(),
       child: AnnotatedRegion<SystemUiOverlayStyle>(
-        value: SystemUiOverlayStyle(
+        value: const SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,
           statusBarIconBrightness: Brightness.light,
           statusBarBrightness: Brightness.dark,
-          systemNavigationBarColor: AppColors.bg.bg_2_212121,
-          systemNavigationBarIconBrightness: Brightness.light,
         ),
         child: Scaffold(
           backgroundColor: AppColors.bg.bg_121212,
           appBar: AppBar(
             automaticallyImplyLeading: false,
-            title: Text('자산', style: AppTypography.heading2),
+            backgroundColor: AppColors.bg.bg_121212,
+            elevation: 0,
+            title: Text(
+              '내 자산',
+              style: AppTypography.heading2.copyWith(color: Colors.white),
+            ),
             actions: [
               TextButton(
                 onPressed: () => _confirmReset(context, ref),
                 child: Text(
                   '초기화',
-                  style: AppTypography.caption1.copyWith(
-                    color: AppColors.text.text_3_9e9e9e,
-                  ),
+                  style: AppTypography.caption1.copyWith(color: Colors.white38),
                 ),
               ),
             ],
           ),
           body: state.isLoading
-              ? const Center(child: CircularProgressIndicator())
+              ? const Center(
+                  child: CircularProgressIndicator(color: Colors.white24),
+                )
               : RefreshIndicator(
+                  color: Colors.white,
+                  backgroundColor: AppColors.bg.bg_2_212121,
                   onRefresh: () async =>
                       ref.invalidate(assetScreenControllerProvider),
                   child: CustomScrollView(
@@ -51,39 +56,65 @@ class AssetScreen extends ConsumerWidget {
                       SliverToBoxAdapter(
                         child: AssetSummaryCard(state: state),
                       ),
-                      const SliverToBoxAdapter(child: SizedBox(height: 24)),
-                      if (state.holdings.isEmpty)
+
+                      if (state.holdings.isEmpty) ...[
                         SliverFillRemaining(
-                          child: Center(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.account_balance_wallet_outlined,
+                                size: 52,
+                                color: Colors.white12,
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                '보유 종목이 없습니다',
+                                style: AppTypography.subtitle.copyWith(
+                                  color: Colors.white38,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                '종목 상세 화면에서 매수해보세요',
+                                style: AppTypography.caption1.copyWith(
+                                  color: Colors.white24,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ] else ...[
+                        SliverToBoxAdapter(
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(16, 24, 16, 10),
+                            child: Row(
                               children: [
                                 Text(
-                                  '보유 종목이 없습니다',
+                                  '보유 종목',
                                   style: AppTypography.subtitle.copyWith(
-                                    color: AppColors.text.text_2_bdbdbd,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w700,
                                   ),
                                 ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  '종목 상세에서 매수해보세요',
-                                  style: AppTypography.caption1.copyWith(
-                                    color: AppColors.text.text_3_9e9e9e,
+                                const SizedBox(width: 6),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 2,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.bg.bg_4_333333,
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Text(
+                                    '${state.holdings.length}',
+                                    style: AppTypography.caption2.copyWith(
+                                      color: Colors.white54,
+                                    ),
                                   ),
                                 ),
                               ],
-                            ),
-                          ),
-                        )
-                      else ...[
-                        SliverToBoxAdapter(
-                          child: Padding(
-                            padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-                            child: Text(
-                              '보유 종목  ${state.holdings.length}',
-                              style: AppTypography.caption1.copyWith(
-                                color: AppColors.text.text_2_bdbdbd,
-                              ),
                             ),
                           ),
                         ),
@@ -95,14 +126,15 @@ class AssetScreen extends ConsumerWidget {
                                 children: [
                                   AssetHoldingRow(
                                     holding: holding,
+                                    rank: i + 1,
                                     onTap: () {},
                                   ),
                                   if (i < state.holdings.length - 1)
                                     Divider(
                                       height: 1,
-                                      indent: 16,
+                                      indent: 68,
                                       endIndent: 16,
-                                      color: AppColors.border.border_333333,
+                                      color: Colors.white.withValues(alpha: 0.05),
                                     ),
                                 ],
                               );
@@ -110,7 +142,7 @@ class AssetScreen extends ConsumerWidget {
                             childCount: state.holdings.length,
                           ),
                         ),
-                        const SliverToBoxAdapter(child: SizedBox(height: 32)),
+                        const SliverToBoxAdapter(child: SizedBox(height: 40)),
                       ],
                     ],
                   ),
@@ -124,31 +156,33 @@ class AssetScreen extends ConsumerWidget {
     showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: AppColors.bg.bg_2_212121,
+        backgroundColor: const Color(0xFF1E1E1E),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text('포트폴리오 초기화', style: AppTypography.heading2),
         content: Text(
           '모든 보유 종목과 거래 내역이 삭제되고\n시드머니 1,000만원으로 초기화됩니다.',
-          style: AppTypography.caption1.copyWith(
-            color: AppColors.text.text_2_bdbdbd,
-          ),
+          style: AppTypography.caption1.copyWith(color: Colors.white54),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text('취소',
-                style: AppTypography.caption1.copyWith(
-                  color: AppColors.text.text_2_bdbdbd,
-                )),
+            child: Text(
+              '취소',
+              style: AppTypography.caption1.copyWith(color: Colors.white38),
+            ),
           ),
           TextButton(
             onPressed: () {
               Navigator.pop(ctx);
               ref.read(assetScreenControllerProvider.notifier).reset();
             },
-            child: Text('초기화',
-                style: AppTypography.caption1.copyWith(
-                  color: AppColors.mainAndAccent.up_f93f62,
-                )),
+            child: Text(
+              '초기화',
+              style: AppTypography.caption1.copyWith(
+                color: AppColors.mainAndAccent.up_f93f62,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
           ),
         ],
       ),
