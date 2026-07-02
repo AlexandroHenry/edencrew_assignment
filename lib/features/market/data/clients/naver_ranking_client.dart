@@ -61,7 +61,7 @@ class NaverRankingClient {
         logoUrl: symbol.isNotEmpty ? '$_logoBase$symbol.svg' : null,
         isOverseas: false,
       ));
-      if (results.length >= 5) break;
+      if (results.length >= 20) break;
     }
     return results;
   }
@@ -100,7 +100,7 @@ class NaverRankingClient {
         logoUrl: symbol.isNotEmpty ? '$_logoBase$symbol.svg' : null,
         isOverseas: false,
       ));
-      if (results.length >= 5) break;
+      if (results.length >= 20) break;
     }
     return results;
   }

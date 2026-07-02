@@ -17,7 +17,7 @@ class YahooFinanceRankingClient {
   Future<List<RankingItemDto>> _fetch({required String scrId}) async {
     final res = await _dio.get<Map<String, dynamic>>(
       _base,
-      queryParameters: {'scrIds': scrId, 'count': 5, 'formatted': true},
+      queryParameters: {'scrIds': scrId, 'count': 20, 'formatted': true},
       options: Options(headers: {'User-Agent': 'Mozilla/5.0'}),
     );
     final data = res.data;
