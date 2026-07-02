@@ -14,13 +14,10 @@ class AiMarketController extends AsyncNotifier<List<AiMarketSummaryItem>> {
     final current = await _client.fetchCurrent();
     final dtos = <AiMarketBriefingDto>[current];
 
-    // 최대 9개 이전 브리핑 로드 (총 10개 목록)
-    var dto = current;
-    for (var i = 0; i < 9; i++) {
-      final prevId = dto.previousBriefingId;
-      if (prevId == null) break;
+    // /current은 previousBriefing: null을 반환하므로 id를 1씩 감소하며 직접 조회
+    for (var id = current.id - 1; id >= current.id - 9 && id > 0; id--) {
       try {
-        dto = await _client.fetchById(prevId);
+        final dto = await _client.fetchById(id);
         dtos.add(dto);
       } catch (_) {
         break;

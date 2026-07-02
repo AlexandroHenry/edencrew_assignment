@@ -45,11 +45,11 @@ class AiMarketScreen extends ConsumerWidget {
                   loading: () => const Center(
                     child: CircularProgressIndicator(),
                   ),
-                  error: (e, _) => Center(
+                  error: (e, st) => Center(
                     child: Padding(
                       padding: const EdgeInsets.all(24),
                       child: Text(
-                        'AI 시황을 불러오지 못했습니다.',
+                        '에러: $e',
                         style: AppTypography.body2.copyWith(
                           color: AppColors.text.text_3_9e9e9e,
                         ),

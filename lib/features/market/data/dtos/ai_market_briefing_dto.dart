@@ -31,20 +31,20 @@ class AiMarketBriefingDto {
     final prev = json['previousBriefing'] as Map<String, dynamic>?;
     final next = json['nextBriefing'] as Map<String, dynamic>?;
     return AiMarketBriefingDto(
-      id: json['id'] as int,
+      id: int.tryParse('${json['id']}') ?? 0,
       title: json['title'] as String? ?? '',
       summary: json['summary'] as String? ?? '',
       detail: json['detail'] as String? ?? '',
       briefingDate: json['briefingDate'] as String? ?? '',
-      briefingHour: json['briefingHour'] as int? ?? 0,
+      briefingHour: int.tryParse('${json['briefingHour'] ?? 0}') ?? 0,
       createdAtLabel: json['createdAtLabel'] as String? ?? '',
       articles: (json['articles'] as List? ?? [])
           .map((e) => AiMarketBriefingArticleDto.fromJson(
               e as Map<String, dynamic>))
           .toList(),
-      previousBriefingId: prev?['id'] as int?,
+      previousBriefingId: prev == null ? null : int.tryParse('${prev['id']}'),
       previousBriefingTitle: prev?['title'] as String?,
-      nextBriefingId: next?['id'] as int?,
+      nextBriefingId: next == null ? null : int.tryParse('${next['id']}'),
       nextBriefingTitle: next?['title'] as String?,
     );
   }
