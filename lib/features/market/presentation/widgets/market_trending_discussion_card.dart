@@ -33,6 +33,7 @@ class MarketTrendingDiscussionCard extends StatelessWidget {
             price: data.price,
             changePercent: data.changePercent,
             logoColor: data.logoColor,
+            sparklineValues: data.sparklineValues,
           ),
           const SizedBox(height: 12),
           for (var index = 0; index < data.topics.length; index++) ...[

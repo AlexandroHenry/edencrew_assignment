@@ -9,6 +9,7 @@ class MarketTrendingDiscussionCardData {
     required this.changePercent,
     required this.topics,
     this.logoColor,
+    this.sparklineValues = const [],
   });
 
   final String stockCode;
@@ -17,4 +18,5 @@ class MarketTrendingDiscussionCardData {
   final double changePercent;
   final Color? logoColor;
   final List<MarketTrendingDiscussionTopic> topics;
+  final List<double> sparklineValues;
 }
