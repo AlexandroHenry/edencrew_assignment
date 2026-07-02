@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:sample/features/market/presentation/data/index_detail_sample_data.dart';
 import 'package:sample/features/market/presentation/providers/index_detail_controller.dart';
 import 'package:sample/features/market/presentation/widgets/index_detail_chart.dart';
 import 'package:sample/features/market/presentation/widgets/index_detail_investor_trends_card.dart';
@@ -11,14 +10,20 @@ import 'package:sample/features/market/presentation/widgets/index_detail_quote_s
 import 'package:sample/theme/app_theme.dart';
 
 class IndexDetailScreen extends ConsumerWidget {
-  const IndexDetailScreen({super.key, required this.marketName});
+  const IndexDetailScreen({
+    super.key,
+    required this.indexCode,
+    required this.marketName,
+  });
 
+  final String indexCode;
   final String marketName;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(indexDetailControllerProvider);
-    final controller = ref.read(indexDetailControllerProvider.notifier);
+    final state = ref.watch(indexDetailControllerProvider(indexCode));
+    final controller =
+        ref.read(indexDetailControllerProvider(indexCode).notifier);
 
     return Theme(
       data: buildNamuhXDarkTheme(),
@@ -40,34 +45,51 @@ class IndexDetailScreen extends ConsumerWidget {
             title: Text(marketName),
             centerTitle: true,
           ),
-          body: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const IndexDetailPriceHeader(),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-                  child: IndexDetailChart(
-                    values: indexDetailChartValues,
-                    volumes: indexDetailVolumeValues,
-                  ),
-                ),
-                IndexDetailPeriodChips(
-                  selectedPeriod: state.period,
-                  onPeriodSelected: controller.setPeriod,
-                ),
-                IndexDetailInvestorTrendsCard(
-                  items: indexDetailInvestorTrendItems,
-                ),
-                IndexDetailQuoteSection(
-                  items: indexDetailQuoteItems,
-                  quoteMode: state.quoteMode,
-                  onQuoteModeSelected: controller.setQuoteMode,
-                ),
-                const SizedBox(height: 32),
-              ],
-            ),
-          ),
+          body: state.isLoading
+              ? const Center(
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : state.errorMessage != null
+                  ? Center(
+                      child: Text(
+                        '데이터를 불러오지 못했습니다',
+                        style: AppTypography.caption1.copyWith(
+                          color: AppColors.text.text_3_9e9e9e,
+                        ),
+                      ),
+                    )
+                  : SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          IndexDetailPriceHeader(indexCode: indexCode),
+                          Padding(
+                            padding:
+                                const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                            child: state.chartValues.length >= 2
+                                ? IndexDetailChart(
+                                    values: state.chartValues,
+                                    volumes: state.chartVolumes,
+                                  )
+                                : const SizedBox(height: 220),
+                          ),
+                          IndexDetailPeriodChips(
+                            selectedPeriod: state.period,
+                            onPeriodSelected: controller.setPeriod,
+                          ),
+                          if (state.investorItems.isNotEmpty)
+                            IndexDetailInvestorTrendsCard(
+                              items: state.investorItems,
+                            ),
+                          IndexDetailQuoteSection(
+                            items: state.quoteItems,
+                            quoteMode: state.quoteMode,
+                            onQuoteModeSelected: controller.setQuoteMode,
+                          ),
+                          const SizedBox(height: 32),
+                        ],
+                      ),
+                    ),
         ),
       ),
     );
