@@ -32,6 +32,8 @@ class MarketThemeMovementSummary extends StatelessWidget {
                 child: Text(
                   '하락 $downCount',
                   textAlign: TextAlign.center,
+                  softWrap: false,
+                  overflow: TextOverflow.visible,
                   style: AppTypography.xs.copyWith(
                     color: AppColors.mainAndAccent.down_4780ff,
                   ),
@@ -43,6 +45,8 @@ class MarketThemeMovementSummary extends StatelessWidget {
                 child: Text(
                   '보합 $flatCount',
                   textAlign: TextAlign.center,
+                  softWrap: false,
+                  overflow: TextOverflow.visible,
                   style: AppTypography.xs.copyWith(
                     color: AppDerivedColors.openTag,
                   ),
@@ -54,6 +58,8 @@ class MarketThemeMovementSummary extends StatelessWidget {
                 child: Text(
                   '상승 $upCount',
                   textAlign: TextAlign.center,
+                  softWrap: false,
+                  overflow: TextOverflow.visible,
                   style: AppTypography.xs.copyWith(
                     color: AppColors.mainAndAccent.up_f93f62,
                   ),
