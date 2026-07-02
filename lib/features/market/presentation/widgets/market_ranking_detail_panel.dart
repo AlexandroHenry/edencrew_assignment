@@ -11,6 +11,7 @@ import 'package:sample/features/market/presentation/widgets/market_ranking_detai
 import 'package:sample/features/market/presentation/widgets/market_ranking_detail_mini_chart_section.dart';
 import 'package:sample/features/market/presentation/widgets/market_ranking_detail_price_stats_section.dart';
 import 'package:sample/features/market/presentation/widgets/market_ranking_detail_price_summary.dart';
+import 'package:sample/features/watchlist/data/repositories/favorite_ids_local_store.dart';
 import 'package:sample/features/watchlist/presentation/providers/favorite_ids_controller.dart';
 import 'package:sample/theme/app_theme.dart';
 
@@ -23,7 +24,9 @@ class MarketRankingDetailPanel extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final favoriteIds =
         ref.watch(favoriteIdsControllerProvider).valueOrNull ?? const {};
-    final isFavorite = favoriteIds.contains(item.id);
+    // item.id는 raw 종목코드 — canonical 형식으로 변환해 관심종목 상태와 비교
+    final canonicalId = canonicalDomesticFavoriteId(item.id);
+    final isFavorite = favoriteIds.contains(canonicalId);
 
     // 해외 종목 등 국내 코드가 아니면 컨트롤러가 항상 null을 반환하므로 item(샘플)이 그대로 쓰인다.
     final quoteAsync = ref.watch(marketRankingDetailQuoteProvider(item.id));
@@ -43,7 +46,7 @@ class MarketRankingDetailPanel extends ConsumerWidget {
                 onHeartTap: () {
                   ref
                       .read(favoriteIdsControllerProvider.notifier)
-                      .toggle(item.id);
+                      .toggle(canonicalId);
                 },
               ),
               const SizedBox(height: 20),
