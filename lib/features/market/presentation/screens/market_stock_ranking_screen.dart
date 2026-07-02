@@ -2,24 +2,52 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sample/features/market/presentation/data/market_ranking_detail_sample_data.dart';
-import 'package:sample/features/market/presentation/models/market_stock_ranking_filter.dart';
-import 'package:sample/features/market/presentation/models/market_stock_ranking_region.dart';
 import 'package:sample/features/market/presentation/providers/market_ranking_detail_drawer_controller.dart';
-import 'package:sample/features/market/presentation/providers/market_stock_ranking_controller.dart';
+import 'package:sample/features/market/presentation/providers/market_stock_ranking_list_controller.dart';
 import 'package:sample/features/market/presentation/widgets/market_ranking_detail_drawer.dart';
 import 'package:sample/features/market/presentation/widgets/market_stock_ranking_list.dart';
 import 'package:sample/features/market/presentation/widgets/market_stock_ranking_screen_filters.dart';
 import 'package:sample/features/watchlist/presentation/providers/favorite_ids_controller.dart';
 import 'package:sample/theme/app_theme.dart';
 
-class MarketStockRankingScreen extends ConsumerWidget {
+class MarketStockRankingScreen extends ConsumerStatefulWidget {
   const MarketStockRankingScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final rankingAsync = ref.watch(marketStockRankingControllerProvider);
-    final rankingState = rankingAsync.valueOrNull;
-    final controller = ref.read(marketStockRankingControllerProvider.notifier);
+  ConsumerState<MarketStockRankingScreen> createState() =>
+      _MarketStockRankingScreenState();
+}
+
+class _MarketStockRankingScreenState
+    extends ConsumerState<MarketStockRankingScreen> {
+  final _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    final pos = _scrollController.position;
+    if (pos.pixels >= pos.maxScrollExtent - 300) {
+      ref
+          .read(marketStockRankingListControllerProvider.notifier)
+          .fetchNextPage();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final state = ref.watch(marketStockRankingListControllerProvider);
+    final controller =
+        ref.read(marketStockRankingListControllerProvider.notifier);
     final favoriteIds =
         ref.watch(favoriteIdsControllerProvider).valueOrNull ?? const {};
 
@@ -49,51 +77,72 @@ class MarketStockRankingScreen extends ConsumerWidget {
           body: Column(
             children: [
               MarketStockRankingScreenFilters(
-                selectedFilter:
-                    rankingState?.filter ?? MarketStockRankingFilter.mostViewed,
+                selectedFilter: state.filter,
                 onFilterChanged: controller.setFilter,
-                selectedRegion:
-                    rankingState?.region ?? MarketStockRankingRegion.all,
+                selectedRegion: state.region,
                 onRegionChanged: controller.setRegion,
               ),
               Expanded(
-                child: rankingAsync.when(
-                  loading: () => const Center(
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  ),
-                  error: (e, _) => Center(
-                    child: Text(
-                      '데이터를 불러오지 못했습니다',
-                      style: AppTypography.caption1.copyWith(
-                        color: AppColors.text.text_3_9e9e9e,
-                      ),
-                    ),
-                  ),
-                  data: (state) => ListView(
-                    children: [
-                      MarketStockRankingList(
-                        items: state.items,
-                        favoriteIds: favoriteIds,
-                        onHeartTap: (id) {
-                          ref
-                              .read(favoriteIdsControllerProvider.notifier)
-                              .toggle(id);
-                        },
-                        onItemTap: (item) {
-                          MarketRankingDetailDrawer.open(
-                            ref,
-                            marketRankingDetailForId(
-                              item.id,
-                              name: item.name,
-                              logoUrl: item.logoUrl,
+                child: state.isLoading
+                    ? const Center(
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : state.errorMessage != null
+                        ? Center(
+                            child: Text(
+                              '데이터를 불러오지 못했습니다',
+                              style: AppTypography.caption1.copyWith(
+                                color: AppColors.text.text_3_9e9e9e,
+                              ),
                             ),
-                          );
-                        },
-                      ),
-                      const SizedBox(height: 24),
-                    ],
-                  ),
-                ),
+                          )
+                        : ListView(
+                            controller: _scrollController,
+                            children: [
+                              MarketStockRankingList(
+                                items: state.items,
+                                favoriteIds: favoriteIds,
+                                onHeartTap: (id) {
+                                  ref
+                                      .read(
+                                          favoriteIdsControllerProvider.notifier)
+                                      .toggle(id);
+                                },
+                                onItemTap: (item) {
+                                  MarketRankingDetailDrawer.open(
+                                    ref,
+                                    marketRankingDetailForId(
+                                      item.id,
+                                      name: item.name,
+                                      logoUrl: item.logoUrl,
+                                    ),
+                                  );
+                                },
+                              ),
+                              if (state.isLoadingMore)
+                                const Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 16),
+                                  child: Center(
+                                    child: CircularProgressIndicator(
+                                        strokeWidth: 2),
+                                  ),
+                                ),
+                              if (!state.hasMore && state.items.isNotEmpty)
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 20),
+                                  child: Center(
+                                    child: Text(
+                                      '모든 종목을 불러왔습니다',
+                                      style: AppTypography.caption1.copyWith(
+                                        color: AppColors.text.text_3_9e9e9e,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              const SizedBox(height: 24),
+                            ],
+                          ),
               ),
             ],
           ),
