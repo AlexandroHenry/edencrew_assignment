@@ -66,12 +66,17 @@ class NaverIndexClient {
         .whereType<num>()
         .map((e) => e.toDouble())
         .toList();
-    final volumes = priceInfos
+    // accumulatedTradingVolume은 당일 누적값 → 차분해 분별 거래량으로 변환
+    final accumulated = priceInfos
         .map((e) =>
             (e as Map<String, dynamic>)['accumulatedTradingVolume'])
         .whereType<num>()
         .map((e) => e.toDouble())
         .toList();
+    final volumes = List<double>.generate(accumulated.length, (i) {
+      if (i == 0) return accumulated[i];
+      return (accumulated[i] - accumulated[i - 1]).clamp(0.0, double.infinity);
+    });
     return IndexChartDto(prices: values, volumes: volumes);
   }
 
