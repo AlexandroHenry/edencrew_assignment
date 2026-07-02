@@ -108,6 +108,7 @@ class MarketScreen extends ConsumerWidget {
                 const MarketEtfRankingSection(),
                 const SizedBox(height: 38),
                 const MarketTrendingDiscussionSection(),
+                const SizedBox(height: 40),
               ],
             ),
           ),
