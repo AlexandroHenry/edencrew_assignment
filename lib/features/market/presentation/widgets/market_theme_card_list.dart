@@ -12,13 +12,16 @@ class MarketThemeCardList extends StatelessWidget {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-      child: Row(
-        children: [
-          for (var index = 0; index < items.length; index++) ...[
-            MarketThemeCard(item: items[index]),
-            if (index < items.length - 1) const SizedBox(width: 12),
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            for (var index = 0; index < items.length; index++) ...[
+              MarketThemeCard(item: items[index]),
+              if (index < items.length - 1) const SizedBox(width: 12),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }

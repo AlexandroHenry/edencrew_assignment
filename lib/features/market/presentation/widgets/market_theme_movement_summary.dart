@@ -18,33 +18,47 @@ class MarketThemeMovementSummary extends StatelessWidget {
   Widget build(BuildContext context) {
     final total = downCount + flatCount + upCount;
     final downFlex = total == 0 ? 1 : downCount;
-    final flatFlex = total == 0 ? 1 : (flatCount == 0 ? 0 : flatCount);
+    final flatFlex = flatCount; // 0이면 세그먼트·라벨 모두 생략
     final upFlex = total == 0 ? 1 : upCount;
 
+    // 라벨 행과 바 행이 동일한 flex를 공유해야 라벨이 해당 세그먼트 수평 중앙에 위치
     return Column(
       children: [
-        // 레이블은 항상 좌/중/우 고정 위치 — 바 비율과 무관
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              '하락 $downCount',
-              style: AppTypography.xs.copyWith(
-                color: AppColors.mainAndAccent.down_4780ff,
+            if (downFlex > 0)
+              Expanded(
+                flex: downFlex,
+                child: Text(
+                  '하락 $downCount',
+                  textAlign: TextAlign.center,
+                  style: AppTypography.xs.copyWith(
+                    color: AppColors.mainAndAccent.down_4780ff,
+                  ),
+                ),
               ),
-            ),
-            Text(
-              '보합 $flatCount',
-              style: AppTypography.xs.copyWith(
-                color: AppDerivedColors.openTag,
+            if (flatFlex > 0)
+              Expanded(
+                flex: flatFlex,
+                child: Text(
+                  '보합 $flatCount',
+                  textAlign: TextAlign.center,
+                  style: AppTypography.xs.copyWith(
+                    color: AppDerivedColors.openTag,
+                  ),
+                ),
               ),
-            ),
-            Text(
-              '상승 $upCount',
-              style: AppTypography.xs.copyWith(
-                color: AppColors.mainAndAccent.up_f93f62,
+            if (upFlex > 0)
+              Expanded(
+                flex: upFlex,
+                child: Text(
+                  '상승 $upCount',
+                  textAlign: TextAlign.center,
+                  style: AppTypography.xs.copyWith(
+                    color: AppColors.mainAndAccent.up_f93f62,
+                  ),
+                ),
               ),
-            ),
           ],
         ),
         const SizedBox(height: 6),
