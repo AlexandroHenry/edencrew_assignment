@@ -18,40 +18,31 @@ class MarketThemeMovementSummary extends StatelessWidget {
   Widget build(BuildContext context) {
     final total = downCount + flatCount + upCount;
     final downFlex = total == 0 ? 1 : downCount;
-    final flatFlex = total == 0 ? 1 : flatCount;
+    final flatFlex = total == 0 ? 1 : (flatCount == 0 ? 0 : flatCount);
     final upFlex = total == 0 ? 1 : upCount;
 
     return Column(
       children: [
+        // 레이블은 항상 좌/중/우 고정 위치 — 바 비율과 무관
         Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Expanded(
-              flex: downFlex,
-              child: Text(
-                '하락 $downCount',
-                style: AppTypography.xs.copyWith(
-                  color: AppColors.mainAndAccent.down_4780ff,
-                ),
+            Text(
+              '하락 $downCount',
+              style: AppTypography.xs.copyWith(
+                color: AppColors.mainAndAccent.down_4780ff,
               ),
             ),
-            Expanded(
-              flex: flatFlex,
-              child: Text(
-                '보합 $flatCount',
-                textAlign: TextAlign.center,
-                style: AppTypography.xs.copyWith(
-                  color: AppDerivedColors.openTag,
-                ),
+            Text(
+              '보합 $flatCount',
+              style: AppTypography.xs.copyWith(
+                color: AppDerivedColors.openTag,
               ),
             ),
-            Expanded(
-              flex: upFlex,
-              child: Text(
-                '상승 $upCount',
-                textAlign: TextAlign.right,
-                style: AppTypography.xs.copyWith(
-                  color: AppColors.mainAndAccent.up_f93f62,
-                ),
+            Text(
+              '상승 $upCount',
+              style: AppTypography.xs.copyWith(
+                color: AppColors.mainAndAccent.up_f93f62,
               ),
             ),
           ],
@@ -61,26 +52,31 @@ class MarketThemeMovementSummary extends StatelessWidget {
           height: 4,
           child: Row(
             children: [
-              Expanded(
-                flex: downFlex,
-                child: MarketThemeMovementBarSegment(
-                  color: AppColors.mainAndAccent.down_4780ff,
+              if (downFlex > 0) ...[
+                Expanded(
+                  flex: downFlex,
+                  child: MarketThemeMovementBarSegment(
+                    color: AppColors.mainAndAccent.down_4780ff,
+                  ),
                 ),
-              ),
-              const SizedBox(width: 2),
-              Expanded(
-                flex: flatFlex,
-                child: MarketThemeMovementBarSegment(
-                  color: AppDerivedColors.openTag,
+                if (flatFlex > 0 || upFlex > 0) const SizedBox(width: 2),
+              ],
+              if (flatFlex > 0) ...[
+                Expanded(
+                  flex: flatFlex,
+                  child: MarketThemeMovementBarSegment(
+                    color: AppDerivedColors.openTag,
+                  ),
                 ),
-              ),
-              const SizedBox(width: 2),
-              Expanded(
-                flex: upFlex,
-                child: MarketThemeMovementBarSegment(
-                  color: AppColors.mainAndAccent.up_f93f62,
+                if (upFlex > 0) const SizedBox(width: 2),
+              ],
+              if (upFlex > 0)
+                Expanded(
+                  flex: upFlex,
+                  child: MarketThemeMovementBarSegment(
+                    color: AppColors.mainAndAccent.up_f93f62,
+                  ),
                 ),
-              ),
             ],
           ),
         ),
