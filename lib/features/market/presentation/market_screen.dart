@@ -1,19 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sample/features/market/presentation/screens/ai_market_screen.dart';
 import 'package:sample/features/market/presentation/widgets/ai_banner.dart';
 import 'package:sample/features/market/presentation/widgets/appbar_button.dart';
-import 'package:sample/features/market/presentation/widgets/index_card.dart';
-import 'package:sample/features/market/presentation/widgets/index_card2.dart';
+import 'package:sample/features/market/presentation/widgets/indice_cards.dart';
+import 'package:sample/features/market/presentation/widgets/market_etf_ranking_section.dart';
 import 'package:sample/features/market/presentation/widgets/market_header.dart';
+import 'package:sample/features/market/presentation/widgets/market_stock_ranking_section.dart';
+import 'package:sample/features/market/presentation/widgets/market_theme_section.dart';
+import 'package:sample/features/market/presentation/widgets/market_trending_discussion_section.dart';
 import 'package:sample/features/market/presentation/widgets/market_types.dart';
 import 'package:sample/theme/app_assets.dart';
 import 'package:sample/theme/app_theme.dart';
 
-class MarketScreen extends StatelessWidget {
+class MarketScreen extends ConsumerWidget {
   const MarketScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Theme(
       data: buildNamuhXDarkTheme(),
       child: AnnotatedRegion<SystemUiOverlayStyle>(
@@ -47,33 +52,31 @@ class MarketScreen extends StatelessWidget {
               ),
             ],
           ),
-          body: Column(
-            children: [
-              MarketHeader(),
-              AiBanner(),
-              MarketTypes(),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
-                    SizedBox(width: 160, child: IndexCard()),
-                    SizedBox(width: 12),
-                    SizedBox(width: 160, child: IndexCard()),
-                    SizedBox(width: 12),
-                    // SizedBox(width: 160, child: IndexCard()),
-                    Column(
-                      children: [
-                        IndexCard2(),
-                        SizedBox(height: 10),
-                        IndexCard2(),
-                      ],
-                    ),
-                  ],
+          body: SingleChildScrollView(
+            child: Column(
+              children: [
+                MarketHeader(),
+                AiBanner(
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (context) => const AiMarketScreen(),
+                      ),
+                    );
+                  },
                 ),
-              ),
-            ],
+                MarketTypes(),
+                IndiceCards(),
+                const SizedBox(height: 38),
+                const MarketStockRankingSection(),
+                const SizedBox(height: 38),
+                const MarketThemeSection(),
+                const SizedBox(height: 38),
+                const MarketEtfRankingSection(),
+                const SizedBox(height: 38),
+                const MarketTrendingDiscussionSection(),
+              ],
+            ),
           ),
         ),
       ),
