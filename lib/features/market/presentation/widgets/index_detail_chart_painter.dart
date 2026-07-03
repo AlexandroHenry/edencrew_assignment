@@ -75,6 +75,7 @@ class IndexDetailChartPainter extends CustomPainter {
     }
 
     final maxVolume = volumes.reduce(math.max);
+    if (maxVolume == 0) return;
     final barWidth = width / volumes.length * 0.45;
     final gap = width / volumes.length;
 

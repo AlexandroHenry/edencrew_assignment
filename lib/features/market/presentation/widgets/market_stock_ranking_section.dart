@@ -55,7 +55,7 @@ class MarketStockRankingSection extends ConsumerWidget {
             ),
           ),
           data: (state) => MarketStockRankingList(
-            items: state.items,
+            items: state.items.take(10).toList(),
             favoriteIds: favoriteIds,
             onHeartTap: (id) {
               ref.read(favoriteIdsControllerProvider.notifier).toggle(id);

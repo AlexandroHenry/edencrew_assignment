@@ -40,7 +40,7 @@ class MarketThemeSectionController
           .map((s) => _colorFromCode(s.code))
           .toList();
 
-      final topStocks = dto.topStocks.asMap().entries.map((e) {
+      final topStocks = dto.topStocks.take(3).toList().asMap().entries.map((e) {
         return MarketThemeTopStock(
           rank: e.key + 1,
           name: e.value.name,

@@ -33,17 +33,19 @@ class IndiceCards extends ConsumerWidget {
             state: state,
             onRetryDomestic: controller.retryDomestic,
             onRetryOverseas: controller.retryOverseas,
-            onCardTap: (name) => _openIndexDetail(context, name),
+            onCardTap: (key, name) => _openIndexDetail(context, key, name),
           ),
         ),
       ),
     );
   }
 
-  void _openIndexDetail(BuildContext context, String marketName) {
+  void _openIndexDetail(
+      BuildContext context, String indexCode, String marketName) {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
-        builder: (_) => IndexDetailScreen(marketName: marketName),
+        builder: (_) =>
+            IndexDetailScreen(indexCode: indexCode, marketName: marketName),
       ),
     );
   }
@@ -121,7 +123,7 @@ class _IndiceCardsDataRow extends StatelessWidget {
   final IndiceCardsState state;
   final void Function(String indexCode) onRetryDomestic;
   final void Function(String symbol) onRetryOverseas;
-  final void Function(String marketName) onCardTap;
+  final void Function(String indexCode, String marketName) onCardTap;
 
   @override
   Widget build(BuildContext context) {
@@ -138,7 +140,7 @@ class _IndiceCardsDataRow extends StatelessWidget {
               quote: state.domestic[i],
               compact: false,
               onRetry: () => onRetryDomestic(state.domestic[i].key),
-              onTap: () => onCardTap(state.domestic[i].marketName),
+              onTap: () => onCardTap(state.domestic[i].key, state.domestic[i].marketName),
             ),
           ),
         ],
@@ -173,7 +175,7 @@ class _OverseasColumn extends StatelessWidget {
 
   final List<IndexQuote> items;
   final void Function(String symbol) onRetry;
-  final void Function(String marketName) onTap;
+  final void Function(String indexCode, String marketName) onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -189,7 +191,7 @@ class _OverseasColumn extends StatelessWidget {
                 quote: items[i],
                 compact: true,
                 onRetry: () => onRetry(items[i].key),
-                onTap: () => onTap(items[i].marketName),
+                onTap: () => onTap(items[i].key, items[i].marketName),
               ),
             ),
           ],
