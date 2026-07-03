@@ -103,6 +103,7 @@ class IndiceCardsController extends AsyncNotifier<IndiceCardsState> {
     state = AsyncData(IndiceCardsState(
       domestic: mergedDomestic,
       overseas: mergedOverseas,
+      lastRefreshedAt: DateTime.now(),
     ));
   }
 
@@ -211,21 +212,25 @@ class IndiceCardsController extends AsyncNotifier<IndiceCardsState> {
 
 @immutable
 class IndiceCardsState {
-  const IndiceCardsState({
+  IndiceCardsState({
     this.domestic = const [],
     this.overseas = const [],
-  });
+    DateTime? lastRefreshedAt,
+  }) : lastRefreshedAt = lastRefreshedAt ?? DateTime.now();
 
   final List<IndexQuote> domestic;
   final List<IndexQuote> overseas;
+  final DateTime lastRefreshedAt;
 
   IndiceCardsState copyWith({
     List<IndexQuote>? domestic,
     List<IndexQuote>? overseas,
+    DateTime? lastRefreshedAt,
   }) {
     return IndiceCardsState(
       domestic: domestic ?? this.domestic,
       overseas: overseas ?? this.overseas,
+      lastRefreshedAt: lastRefreshedAt ?? this.lastRefreshedAt,
     );
   }
 }

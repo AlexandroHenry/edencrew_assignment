@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:sample/features/market/domain/models/index_quote.dart';
 import 'package:sample/features/market/presentation/models/market_index_card_data.dart';
 import 'package:sample/features/market/presentation/providers/indice_cards_controller.dart';
@@ -8,6 +9,7 @@ import 'package:sample/features/market/presentation/widgets/index_card.dart';
 import 'package:sample/features/market/presentation/widgets/index_card2.dart';
 import 'package:sample/features/market/presentation/widgets/index_card_error.dart';
 import 'package:sample/features/market/presentation/widgets/index_card_skeleton.dart';
+import 'package:sample/theme/app_theme.dart';
 
 // 해외 지수는 Figma 스펙상 열당 2개씩 묶어 배치한다.
 const _overseasColumnSize = 2;
@@ -20,23 +22,30 @@ class IndiceCards extends ConsumerWidget {
     final asyncState = ref.watch(indiceCardsControllerProvider);
     final controller = ref.read(indiceCardsControllerProvider.notifier);
 
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
-      child: IntrinsicHeight(
-        child: asyncState.when(
-          loading: () => const _IndiceCardsSkeletonRow(),
-          error: (_, _) => _IndiceCardsErrorRow(
-            onRetry: () => ref.invalidate(indiceCardsControllerProvider),
-          ),
-          data: (state) => _IndiceCardsDataRow(
-            state: state,
-            onRetryDomestic: controller.retryDomestic,
-            onRetryOverseas: controller.retryOverseas,
-            onCardTap: (key, name) => _openIndexDetail(context, key, name),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+          child: IntrinsicHeight(
+            child: asyncState.when(
+              loading: () => const _IndiceCardsSkeletonRow(),
+              error: (_, _) => _IndiceCardsErrorRow(
+                onRetry: () => ref.invalidate(indiceCardsControllerProvider),
+              ),
+              data: (state) => _IndiceCardsDataRow(
+                state: state,
+                onRetryDomestic: controller.retryDomestic,
+                onRetryOverseas: controller.retryOverseas,
+                onCardTap: (key, name) => _openIndexDetail(context, key, name),
+              ),
+            ),
           ),
         ),
-      ),
+        if (asyncState.valueOrNull != null)
+          _RefreshTimestamp(at: asyncState.valueOrNull!.lastRefreshedAt),
+      ],
     );
   }
 
@@ -236,5 +245,23 @@ class _IndexQuoteSlot extends StatelessWidget {
     return compact
         ? IndexCard2(data: data, onTap: onTap)
         : IndexCard(data: data, onTap: onTap);
+  }
+}
+
+class _RefreshTimestamp extends StatelessWidget {
+  const _RefreshTimestamp({required this.at});
+
+  final DateTime at;
+
+  @override
+  Widget build(BuildContext context) {
+    final formatted = DateFormat('HH:mm:ss').format(at);
+    return Padding(
+      padding: const EdgeInsets.only(left: 16, bottom: 4),
+      child: Text(
+        '기준 $formatted',
+        style: AppTypography.xs,
+      ),
+    );
   }
 }
