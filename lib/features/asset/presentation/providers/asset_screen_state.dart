@@ -15,11 +15,12 @@ class AssetScreenState {
   final bool isLoading;
   final String? errorMessage;
 
+  // 전체 합산은 항상 원화 기준 — USD 종목은 avgBuyPriceKrw / currentPriceKrw로 환산
   double get totalCurrentValue =>
-      holdings.fold(0, (sum, h) => sum + h.totalCurrentValue);
+      holdings.fold(0, (sum, h) => sum + h.totalCurrentValueKrw);
 
   double get totalBuyAmount =>
-      holdings.fold(0, (sum, h) => sum + h.totalBuyAmount);
+      holdings.fold(0, (sum, h) => sum + h.totalBuyAmountKrw);
 
   double get totalAssets => cash + totalCurrentValue;
 

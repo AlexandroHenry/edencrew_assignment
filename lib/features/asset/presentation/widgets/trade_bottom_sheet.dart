@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sample/features/asset/presentation/providers/asset_screen_controller.dart';
 import 'package:sample/features/market/domain/services/ranking_detail_formatter.dart';
+import 'package:sample/features/market/presentation/providers/indice_cards_controller.dart';
 import 'package:sample/features/market/presentation/widgets/market_ranking_detail_app_builder.dart';
 import 'package:sample/features/watchlist/domain/services/watchlist_formatters.dart';
 import 'package:sample/theme/app_theme.dart';
@@ -58,6 +59,22 @@ class _TradeBottomSheetState extends ConsumerState<TradeBottomSheet> {
   bool get isBuy => widget.tradeType == TradeType.buy;
   bool get _isUsd => !isDomesticStockSymbol(widget.stockCode);
   double get totalAmount => widget.currentPrice * _quantity;
+
+  // KRW=X 환율 — USD 종목 매수/매도 시 원화 환산에 사용
+  double? _usdKrwRate(WidgetRef ref) {
+    final indicesState = ref.read(indiceCardsControllerProvider).valueOrNull;
+    return indicesState?.overseas
+        .where((q) => q.key == 'KRW=X')
+        .firstOrNull
+        ?.price;
+  }
+
+  double _toPriceKrw(double nativePrice, WidgetRef ref) {
+    if (!_isUsd) return nativePrice;
+    final rate = _usdKrwRate(ref);
+    // 환율을 불러오지 못한 경우 fallback — 매수 차단보다 최선 추정이 낫다
+    return nativePrice * (rate ?? 1350.0);
+  }
 
   Color get _accentColor => isBuy
       ? AppColors.mainAndAccent.up_f93f62
@@ -419,18 +436,23 @@ class _TradeBottomSheetState extends ConsumerState<TradeBottomSheet> {
     setState(() => _isSubmitting = true);
     final controller = ref.read(assetScreenControllerProvider.notifier);
 
+    final priceKrw = _toPriceKrw(widget.currentPrice, ref);
+
     bool success;
     if (isBuy) {
       success = await controller.buy(
         stockCode: widget.stockCode,
         stockName: widget.stockName,
         currentPrice: widget.currentPrice,
+        currentPriceKrw: priceKrw,
+        currency: _isUsd ? 'USD' : 'KRW',
         quantity: _quantity,
       );
     } else {
       success = await controller.sell(
         stockCode: widget.stockCode,
         currentPrice: widget.currentPrice,
+        currentPriceKrw: priceKrw,
         quantity: _quantity,
       );
     }

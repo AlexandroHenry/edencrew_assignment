@@ -53,7 +53,8 @@ class AssetSummaryCard extends StatelessWidget {
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(
-                      pnl == 0
+                      // totalUnrealizedPnl은 항상 원화 기준 (USD 종목 포함 전체 환산 합계)
+              pnl == 0
                           ? '±0원 (0.00%)'
                           : '${isUp ? '+' : ''}${_fmt(pnl)}원 (${isUp ? '+' : ''}${pnlPct.toStringAsFixed(2)}%)',
                       style: AppTypography.caption1.copyWith(

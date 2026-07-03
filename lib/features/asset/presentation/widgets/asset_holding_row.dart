@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sample/features/asset/domain/models/portfolio_holding.dart';
+import 'package:sample/features/watchlist/domain/services/watchlist_formatters.dart';
 import 'package:sample/theme/app_theme.dart';
 
 class AssetHoldingRow extends StatelessWidget {
@@ -78,7 +79,7 @@ class AssetHoldingRow extends StatelessWidget {
                       ),
                       const SizedBox(height: 3),
                       Text(
-                        '${holding.quantity}주  ·  평균 ${_fmt(holding.avgBuyPrice)}원',
+                        '${holding.quantity}주  ·  평균 ${_fmtPrice(holding.avgBuyPrice, holding.currency)}',
                         style: AppTypography.caption2.copyWith(
                           color: AppColors.text.text_3_9e9e9e,
                         ),
@@ -93,7 +94,7 @@ class AssetHoldingRow extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Text(
-                      '${_fmt(holding.totalCurrentValue)}원',
+                      _fmtPrice(holding.totalCurrentValue, holding.currency),
                       style: AppTypography.subtitle.copyWith(
                         fontWeight: FontWeight.w600,
                       ),
@@ -103,7 +104,7 @@ class AssetHoldingRow extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          '${isUp ? '+' : ''}${_fmt(pnl)}',
+                          '${isUp ? '+' : ''}${_fmtPrice(pnl.abs(), holding.currency, showSign: pnl < 0 ? '-' : (isUp ? '+' : ''))}',
                           style: AppTypography.caption2.copyWith(color: pnlColor),
                         ),
                         const SizedBox(width: 4),
@@ -174,15 +175,12 @@ class AssetHoldingRow extends StatelessWidget {
     return palette[name.hashCode.abs() % palette.length];
   }
 
-  String _fmt(double v) {
-    final n = v.round().abs();
-    final s = n.toString();
-    final buf = StringBuffer();
-    for (var i = 0; i < s.length; i++) {
-      if (i > 0 && (s.length - i) % 3 == 0) buf.write(',');
-      buf.write(s[i]);
+  String _fmtPrice(double v, String currency, {String showSign = ''}) {
+    if (currency == 'USD') {
+      final sign = showSign.isNotEmpty ? showSign : (v < 0 ? '-' : '');
+      return '$sign\$${v.abs().toStringAsFixed(2)}';
     }
-    return (v < 0 ? '-' : '') + buf.toString();
+    return '$showSign${formatCurrencyValue(currency: 'KRW', value: v.abs(), includeSymbol: false)}원';
   }
 }
 
