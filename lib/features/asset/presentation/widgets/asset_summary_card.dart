@@ -30,16 +30,16 @@ class AssetSummaryCard extends StatelessWidget {
             children: [
               Text(
                 '총 자산',
-                style: AppTypography.caption1.copyWith(color: Colors.white54),
+                style: AppTypography.caption1,
               ),
               const SizedBox(height: 6),
               Text(
                 '${_fmt(state.totalAssets)}원',
-                style: const TextStyle(
-                  fontFamily: 'Pretendard',
+                style: TextStyle(
+                  fontFamily: AppFonts.pretendard,
                   fontSize: 32,
                   fontWeight: FontWeight.w700,
-                  color: Colors.white,
+                  color: AppColors.text.text_fafafa,
                   letterSpacing: -0.5,
                 ),
               ),
@@ -65,7 +65,9 @@ class AssetSummaryCard extends StatelessWidget {
                   const SizedBox(width: 6),
                   Text(
                     '평가손익',
-                    style: AppTypography.caption2.copyWith(color: Colors.white38),
+                    style: AppTypography.caption2.copyWith(
+                      color: AppColors.text.text_3_9e9e9e,
+                    ),
                   ),
                 ],
               ),
@@ -80,9 +82,9 @@ class AssetSummaryCard extends StatelessWidget {
           margin: const EdgeInsets.symmetric(horizontal: 16),
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: const Color(0xFF1E1E1E),
+            color: AppColors.bg.bg_2_212121,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
+            border: Border.all(color: AppColors.border.border_333333),
           ),
           child: Column(
             children: [
@@ -92,15 +94,17 @@ class AssetSummaryCard extends StatelessWidget {
                     child: _AssetMetric(
                       label: '주식 평가액',
                       value: '${_fmt(state.totalCurrentValue)}원',
-                      valueColor: Colors.white,
                     ),
                   ),
-                  Container(width: 1, height: 36, color: Colors.white12),
+                  Container(
+                    width: 1,
+                    height: 36,
+                    color: AppColors.border.border_333333,
+                  ),
                   Expanded(
                     child: _AssetMetric(
                       label: '예수금 (주문가능)',
                       value: '${_fmt(state.cash)}원',
-                      valueColor: Colors.white,
                       align: CrossAxisAlignment.end,
                     ),
                   ),
@@ -117,17 +121,19 @@ class AssetSummaryCard extends StatelessWidget {
                 children: [
                   _LegendDot(color: AppColors.mainAndAccent.up_f93f62),
                   const SizedBox(width: 4),
-                  Text('주식', style: AppTypography.caption2.copyWith(color: Colors.white54)),
+                  Text('주식', style: AppTypography.caption2),
                   const SizedBox(width: 12),
                   _LegendDot(color: AppColors.mainAndAccent.down_4780ff),
                   const SizedBox(width: 4),
-                  Text('현금', style: AppTypography.caption2.copyWith(color: Colors.white54)),
+                  Text('현금', style: AppTypography.caption2),
                   const Spacer(),
                   Text(
                     state.totalAssets > 0
                         ? '주식 ${(state.totalCurrentValue / state.totalAssets * 100).toStringAsFixed(1)}%'
                         : '주식 0%',
-                    style: AppTypography.caption2.copyWith(color: Colors.white38),
+                    style: AppTypography.caption2.copyWith(
+                      color: AppColors.text.text_3_9e9e9e,
+                    ),
                   ),
                 ],
               ),
@@ -154,13 +160,11 @@ class _AssetMetric extends StatelessWidget {
   const _AssetMetric({
     required this.label,
     required this.value,
-    this.valueColor,
     this.align = CrossAxisAlignment.start,
   });
 
   final String label;
   final String value;
-  final Color? valueColor;
   final CrossAxisAlignment align;
 
   @override
@@ -168,12 +172,17 @@ class _AssetMetric extends StatelessWidget {
     return Column(
       crossAxisAlignment: align,
       children: [
-        Text(label, style: AppTypography.caption2.copyWith(color: Colors.white38)),
+        Text(
+          label,
+          style: AppTypography.caption2.copyWith(
+            color: AppColors.text.text_3_9e9e9e,
+          ),
+        ),
         const SizedBox(height: 4),
         Text(
           value,
           style: AppTypography.caption1.copyWith(
-            color: valueColor ?? Colors.white,
+            color: AppColors.text.text_fafafa,
             fontWeight: FontWeight.w600,
           ),
         ),

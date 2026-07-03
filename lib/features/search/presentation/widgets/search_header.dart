@@ -29,7 +29,7 @@ class SearchHeader extends StatelessWidget {
       onTap: () => focusNode.requestFocus(),
       child: Container(
         height: SearchLayoutSpec.headerHeight,
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           border: Border(
             bottom: BorderSide(color: AppDerivedColors.searchDivider),
           ),

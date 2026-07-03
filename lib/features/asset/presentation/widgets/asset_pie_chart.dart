@@ -263,22 +263,24 @@ class _CenterLabel extends StatelessWidget {
       children: [
         Text(
           label,
-          style: AppTypography.caption2.copyWith(color: Colors.white54),
+          style: AppTypography.caption2.copyWith(
+            color: AppColors.text.text_3_9e9e9e,
+          ),
           overflow: TextOverflow.ellipsis,
         ),
         const SizedBox(height: 2),
         Text(
           '${pct.toStringAsFixed(1)}%',
-          style: const TextStyle(
-            fontFamily: 'Pretendard',
+          style: TextStyle(
+            fontFamily: AppFonts.pretendard,
             fontSize: 18,
             fontWeight: FontWeight.w700,
-            color: Colors.white,
+            color: AppColors.text.text_fafafa,
           ),
         ),
         Text(
           '${_fmt(value)}원',
-          style: AppTypography.caption2.copyWith(color: Colors.white54),
+          style: AppTypography.caption2,
         ),
       ],
     );
@@ -326,7 +328,7 @@ class _LegendItem extends StatelessWidget {
               child: Text(
                 slice.label,
                 style: AppTypography.caption2.copyWith(
-                  color: Colors.white70,
+                  color: AppColors.text.text_2_bdbdbd,
                 ),
                 overflow: TextOverflow.ellipsis,
               ),
@@ -334,7 +336,7 @@ class _LegendItem extends StatelessWidget {
             Text(
               '${pct.toStringAsFixed(1)}%',
               style: AppTypography.caption2.copyWith(
-                color: Colors.white54,
+                color: AppColors.text.text_3_9e9e9e,
                 fontWeight: FontWeight.w600,
               ),
             ),

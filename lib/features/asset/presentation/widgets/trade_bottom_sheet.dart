@@ -91,7 +91,7 @@ class _TradeBottomSheetState extends ConsumerState<TradeBottomSheet> {
       padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
       child: Container(
         decoration: BoxDecoration(
-          color: const Color(0xFF1A1A1A),
+          color: AppColors.bg.bg_2_212121,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
         ),
         child: Column(
@@ -104,7 +104,7 @@ class _TradeBottomSheetState extends ConsumerState<TradeBottomSheet> {
                 width: 36,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: Colors.white24,
+                  color: AppColors.border.border_333333,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -143,21 +143,26 @@ class _TradeBottomSheetState extends ConsumerState<TradeBottomSheet> {
                         Text(
                           widget.stockName,
                           style: AppTypography.subtitle.copyWith(
-                            color: Colors.white,
                             fontWeight: FontWeight.w700,
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
                         Text(
                           widget.stockCode,
-                          style: AppTypography.caption2.copyWith(color: Colors.white38),
+                          style: AppTypography.caption2.copyWith(
+                            color: AppColors.text.text_3_9e9e9e,
+                          ),
                         ),
                       ],
                     ),
                   ),
                   GestureDetector(
                     onTap: () => Navigator.pop(context),
-                    child: const Icon(Icons.close, color: Colors.white54, size: 22),
+                    child: Icon(
+                      Icons.close,
+                      color: AppColors.text.text_3_9e9e9e,
+                      size: 22,
+                    ),
                   ),
                 ],
               ),
@@ -178,7 +183,7 @@ class _TradeBottomSheetState extends ConsumerState<TradeBottomSheet> {
             ),
 
             const SizedBox(height: 12),
-            Divider(height: 1, color: Colors.white.withValues(alpha: 0.08)),
+            Divider(height: 1, color: AppColors.border.border_333333),
 
             // 현재가 배너
             Container(
@@ -189,7 +194,9 @@ class _TradeBottomSheetState extends ConsumerState<TradeBottomSheet> {
                 children: [
                   Text(
                     '현재가',
-                    style: AppTypography.caption1.copyWith(color: Colors.white54),
+                    style: AppTypography.caption1.copyWith(
+                      color: AppColors.text.text_3_9e9e9e,
+                    ),
                   ),
                   const Spacer(),
                   Text(
@@ -214,12 +221,14 @@ class _TradeBottomSheetState extends ConsumerState<TradeBottomSheet> {
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                       decoration: BoxDecoration(
-                        border: Border.all(color: Colors.white24),
+                        border: Border.all(color: AppColors.border.border_333333),
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
                         '시장가',
-                        style: AppTypography.caption1.copyWith(color: Colors.white70),
+                        style: AppTypography.caption1.copyWith(
+                          color: AppColors.text.text_2_bdbdbd,
+                        ),
                       ),
                     ),
                   ),
@@ -243,14 +252,14 @@ class _TradeBottomSheetState extends ConsumerState<TradeBottomSheet> {
                             keyboardType: TextInputType.number,
                             textAlign: TextAlign.center,
                             style: AppTypography.subtitle.copyWith(
-                              color: Colors.white,
+                              color: AppColors.text.text_fafafa,
                               fontWeight: FontWeight.w700,
                             ),
                             decoration: InputDecoration(
                               isDense: true,
                               contentPadding: const EdgeInsets.symmetric(vertical: 8),
                               filled: true,
-                              fillColor: Colors.white.withValues(alpha: 0.05),
+                              fillColor: AppColors.bg.bg_4_333333,
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(6),
                                 borderSide: BorderSide(color: _accentColor.withValues(alpha: 0.5)),
@@ -261,7 +270,9 @@ class _TradeBottomSheetState extends ConsumerState<TradeBottomSheet> {
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(6),
-                                borderSide: BorderSide(color: Colors.white24),
+                                borderSide: BorderSide(
+                                  color: AppColors.border.border_333333,
+                                ),
                               ),
                             ),
                             onChanged: (v) {
@@ -311,7 +322,7 @@ class _TradeBottomSheetState extends ConsumerState<TradeBottomSheet> {
                   ),
                   const SizedBox(height: 14),
 
-                  Divider(height: 1, color: Colors.white.withValues(alpha: 0.08)),
+                  Divider(height: 1, color: AppColors.border.border_333333),
                   const SizedBox(height: 14),
 
                   // 주문금액
@@ -334,7 +345,9 @@ class _TradeBottomSheetState extends ConsumerState<TradeBottomSheet> {
                       isBuy
                           ? _formatCash(state.cash)
                           : '$heldQty주',
-                      style: AppTypography.caption1.copyWith(color: Colors.white54),
+                      style: AppTypography.caption1.copyWith(
+                      color: AppColors.text.text_3_9e9e9e,
+                    ),
                     ),
                   ),
                 ],
@@ -372,12 +385,14 @@ class _TradeBottomSheetState extends ConsumerState<TradeBottomSheet> {
                       height: 52,
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.05),
+                        color: AppColors.bg.bg_4_333333,
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Text(
                         isBuy ? '잔고가 부족합니다' : '보유 종목이 없습니다',
-                        style: AppTypography.subtitle.copyWith(color: Colors.white38),
+                        style: AppTypography.subtitle.copyWith(
+                          color: AppColors.text.text_3_9e9e9e,
+                        ),
                       ),
                     ),
             ),
@@ -476,13 +491,13 @@ class _TypeTab extends StatelessWidget {
         color: isActive ? color.withValues(alpha: 0.15) : Colors.transparent,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: isActive ? color : Colors.white24,
+          color: isActive ? color : AppColors.border.border_333333,
         ),
       ),
       child: Text(
         label,
         style: AppTypography.caption1.copyWith(
-          color: isActive ? color : Colors.white38,
+          color: isActive ? color : AppColors.text.text_3_9e9e9e,
           fontWeight: isActive ? FontWeight.w700 : FontWeight.w400,
         ),
       ),
@@ -502,7 +517,7 @@ class _InfoRow extends StatelessWidget {
       children: [
         Text(
           label,
-          style: AppTypography.caption1.copyWith(color: Colors.white54),
+          style: AppTypography.caption1,
         ),
         child,
       ],
@@ -526,13 +541,21 @@ class _QtyButton extends StatelessWidget {
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           color: enabled
-              ? Colors.white.withValues(alpha: 0.08)
+              ? AppColors.bg.bg_4_333333
               : Colors.transparent,
           border: Border.all(
-            color: enabled ? Colors.white38 : Colors.white12,
+            color: enabled
+                ? AppColors.border.border_333333
+                : AppColors.border.border_333333.withValues(alpha: 0.5),
           ),
         ),
-        child: Icon(icon, size: 16, color: enabled ? Colors.white : Colors.white24),
+        child: Icon(
+          icon,
+          size: 16,
+          color: enabled
+              ? AppColors.text.text_fafafa
+              : AppColors.text.text_3_9e9e9e,
+        ),
       ),
     );
   }
@@ -552,14 +575,16 @@ class _FractionButton extends StatelessWidget {
         height: 28,
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.05),
+          color: AppColors.bg.bg_4_333333,
           borderRadius: BorderRadius.circular(4),
-          border: Border.all(color: Colors.white12),
+          border: Border.all(color: AppColors.border.border_333333),
         ),
         child: Text(
           label,
           style: AppTypography.caption2.copyWith(
-            color: enabled ? Colors.white70 : Colors.white24,
+            color: enabled
+                ? AppColors.text.text_2_bdbdbd
+                : AppColors.text.text_3_9e9e9e,
           ),
         ),
       ),
