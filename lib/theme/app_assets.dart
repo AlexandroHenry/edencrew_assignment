@@ -28,6 +28,9 @@ class AppAssets {
   static const notification = 'assets/ui/icon_notification.png';
   static const flagKr = 'assets/ui/icon_kr_flag.png';
   static const flagUs = 'assets/ui/icon_us_flag.png';
+  static const flagDe = 'assets/ui/icon_de_flag.svg';
+  static const flagFr = 'assets/ui/icon_fr_flag.svg';
+  static const flagJp = 'assets/ui/icon_jp_flag.svg';
   static const carotUp = 'assets/ui/icon_carot_up.png';
   // static const carotDown = 'assets/ui/icon_carot_down.png';
 

@@ -43,7 +43,7 @@ class IndexCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                Image.asset(data.flagAssetPath, width: 20, height: 20),
+                AppSvgIcon(assetPath: data.flagAssetPath, width: 20, height: 20),
                 const SizedBox(width: 8),
                 Text(data.marketName, style: AppTypography.subtitle),
               ],
@@ -130,7 +130,7 @@ class _InvestorColumn extends StatelessWidget {
     final color = isPositive
         ? AppColors.mainAndAccent.up_f93f62
         : AppColors.mainAndAccent.down_4780ff;
-    final valueStr = '${isPositive ? '+' : ''}${_formatInt(value)}';
+    final valueStr = '${isPositive ? '+' : '-'}${_formatInt(value)}';
 
     return Expanded(
       child: Column(

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:sample/features/market/presentation/data/market_ranking_detail_candle_sample_data.dart';
+import 'package:sample/features/market/presentation/models/market_ranking_detail_candle.dart';
 import 'package:sample/features/market/presentation/widgets/market_ranking_detail_mini_chart_painter.dart';
 import 'package:sample/theme/app_theme.dart';
 
 class MarketRankingDetailMiniChartSection extends StatelessWidget {
-  const MarketRankingDetailMiniChartSection({super.key});
+  const MarketRankingDetailMiniChartSection({super.key, required this.candles});
+
+  final List<MarketRankingDetailMiniCandleData> candles;
 
   static const _periods = ['10분', '일', '주'];
 
@@ -16,9 +18,7 @@ class MarketRankingDetailMiniChartSection extends StatelessWidget {
           height: 104,
           width: double.infinity,
           child: CustomPaint(
-            painter: MarketRankingDetailMiniChartPainter(
-              candles: marketRankingDetailMiniCandleSampleData,
-            ),
+            painter: MarketRankingDetailMiniChartPainter(candles: candles),
           ),
         ),
         const SizedBox(height: 12),

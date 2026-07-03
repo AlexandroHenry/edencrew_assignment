@@ -85,6 +85,7 @@ class MarketStockRankingScreen extends ConsumerWidget {
                             marketRankingDetailForId(
                               item.id,
                               name: item.name,
+                              logoUrl: item.logoUrl,
                             ),
                           );
                         },
