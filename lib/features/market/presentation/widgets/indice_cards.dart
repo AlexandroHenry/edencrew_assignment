@@ -9,7 +9,7 @@ import 'package:sample/features/market/presentation/widgets/index_card2.dart';
 import 'package:sample/features/market/presentation/widgets/index_card_error.dart';
 import 'package:sample/features/market/presentation/widgets/index_card_skeleton.dart';
 
-// 해외 지수는 Figma 스펙상 열당 2개씩 묶어 4열로 배치한다.
+// 해외 지수는 Figma 스펙상 열당 2개씩 묶어 배치한다.
 const _overseasColumnSize = 2;
 
 class IndiceCards extends ConsumerWidget {
@@ -40,12 +40,10 @@ class IndiceCards extends ConsumerWidget {
     );
   }
 
-  void _openIndexDetail(
-      BuildContext context, String indexCode, String marketName) {
+  void _openIndexDetail(BuildContext context, String indexCode, String marketName) {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
-        builder: (_) =>
-            IndexDetailScreen(indexCode: indexCode, marketName: marketName),
+        builder: (_) => IndexDetailScreen(indexCode: indexCode, marketName: marketName),
       ),
     );
   }

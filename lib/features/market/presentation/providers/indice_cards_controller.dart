@@ -31,6 +31,7 @@ const _domesticDefs = [
 ];
 
 // FTSE 100은 Figma 목업 기준 flagUs를 그대로 사용 — 영국 국기 에셋은 이번 범위에 없음
+// 시장지표(환율/원자재)는 Yahoo Finance FX/선물 심볼로 제공 — KRW=X: USD/KRW, GC=F: 금선물, CL=F: WTI
 const _overseasDefs = [
   _OverseasIndexDef('^GSPC', 'S&P500', AppAssets.flagUs),
   _OverseasIndexDef('^IXIC', '나스닥종합', AppAssets.flagUs),
@@ -39,6 +40,11 @@ const _overseasDefs = [
   _OverseasIndexDef('^GDAXI', 'DAX', AppAssets.flagDe),
   _OverseasIndexDef('^FCHI', 'CAC 40', AppAssets.flagFr),
   _OverseasIndexDef('^N225', 'Nikkei 225', AppAssets.flagJp),
+  _OverseasIndexDef('KRW=X', '달러/원', AppAssets.flagUs),
+  _OverseasIndexDef('JPYKRW=X', '엔/원', AppAssets.flagJp),
+  _OverseasIndexDef('EURKRW=X', '유로/원', AppAssets.flagFr),
+  _OverseasIndexDef('GC=F', '금', AppAssets.flagUs),
+  _OverseasIndexDef('CL=F', 'WTI', AppAssets.flagUs),
 ];
 
 class IndiceCardsController extends AsyncNotifier<IndiceCardsState> {
