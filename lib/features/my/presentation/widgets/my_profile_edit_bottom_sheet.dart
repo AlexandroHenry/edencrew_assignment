@@ -39,24 +39,21 @@ class _MyProfileEditBottomSheetState extends State<MyProfileEditBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final viewInsets = MediaQuery.viewInsetsOf(context);
-    final bottomPadding = MediaQuery.paddingOf(context).bottom;
-
-    // 키보드 높이는 바깥 Padding이 아니라 시트 내부 여백으로 반영한다.
-    // 배경색이 키보드 영역까지 이어져 transparent 공간이 보이지 않는다.
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.fromLTRB(
-        24,
-        8,
-        24,
-        bottomPadding + 24 + viewInsets.bottom,
-      ),
-      decoration: BoxDecoration(
-        color: AppColors.bg.bg_2_212121,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-      ),
-      child: SingleChildScrollView(
+    final bottomInset = MediaQuery.paddingOf(context).bottom;
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: Container(
+        width: double.infinity,
+        padding: EdgeInsets.only(
+          left: 24,
+          right: 24,
+          top: 8,
+          bottom: bottomInset + 24,
+        ),
+        decoration: const BoxDecoration(
+          color: Color(0xFF212121),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -235,9 +232,8 @@ class _SaveButton extends StatelessWidget {
         child: Center(
           child: Text(
             '저장',
-            style: AppTypography.body2.copyWith(
-              color: AppColors.grays.white,
-            ),
+            style: AppTypography.body2
+                .copyWith(color: AppColors.bg.bg_121212),
           ),
         ),
       ),
