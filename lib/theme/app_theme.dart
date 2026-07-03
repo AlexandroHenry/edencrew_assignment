@@ -1,6 +1,9 @@
 // ignore_for_file: non_constant_identifier_names
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
+import 'app_palette.dart';
 
 class AppColors {
   static const bg = _AppColorsBg();
@@ -15,16 +18,18 @@ class AppColors {
 }
 
 class AppDerivedColors {
-  static const searchDivider = Color(0xFF616161);
+  static Color get searchDivider => AppPaletteScope.current.searchDivider;
   static const modalScrim = Color(0x99000000);
-  static const searchToastBackground = Color(0xB3252525);
+  static Color get searchToastBackground =>
+      AppPaletteScope.current.searchToastBackground;
   static const searchToastBorder = Color(0x33B980FF);
   static const searchToastGlow = Color(0x40B980FF);
   static const flat = Color(0xFF9E9E9E);
-  static const skeleton = Color(0xFF2A2A2A);
-  static const skeletonHighlight = Color(0xFF383838);
-  static const chipBackground = Color(0xFF1B1B1B);
-  static const chartWick = Color(0xFF585858);
+  static Color get skeleton => AppPaletteScope.current.skeleton;
+  static Color get skeletonHighlight =>
+      AppPaletteScope.current.skeletonHighlight;
+  static Color get chipBackground => AppPaletteScope.current.chipBackground;
+  static Color get chartWick => AppPaletteScope.current.chartWick;
   static const openTag = Color(0xFF14A68C);
   static const aiMarketPrimaryButton = Color(0xFF99D939);
   static const aiMarketSecondaryButton = Color(0xFF4780FF);
@@ -35,39 +40,35 @@ class AppDerivedColors {
 class _AppColorsBg {
   const _AppColorsBg();
 
-  final Color bg_121212 = const Color(0xFF121212); // BG/BG_121212
-  final Color bg_2_212121 = const Color(0xFF212121); // BG/BG 2_212121
-  final Color bg_4_333333 = const Color(0xFF333333); // BG/BG 4_333333
+  Color get bg_121212 => AppPaletteScope.current.bgPrimary;
+  Color get bg_2_212121 => AppPaletteScope.current.bgSecondary;
+  Color get bg_4_333333 => AppPaletteScope.current.bgTertiary;
 }
 
 class _AppColorsBackground {
   const _AppColorsBackground();
 
-  final Color level6 = const Color(0xFF393C42); // background-level6
+  Color get level6 => AppPaletteScope.current.backgroundLevel6;
 }
 
 class _AppColorsBorder {
   const _AppColorsBorder();
 
-  final Color border_333333 = const Color(0xFF333333); // Border/Border_333333
-  final Color border_4_424242 = const Color(
-    0xFF424242,
-  ); // Border/Border 4_424242
-  final Color border_5_3b3e53 = const Color(
-    0xFF3B3E53,
-  ); // Border/Border 5_3B3E53
+  Color get border_333333 => AppPaletteScope.current.borderPrimary;
+  Color get border_4_424242 => AppPaletteScope.current.borderSecondary;
+  Color get border_5_3b3e53 => AppPaletteScope.current.borderTertiary;
 }
 
 class _AppColorsText {
   const _AppColorsText();
 
-  final Color text_fafafa = const Color(0xFFFAFAFA); // Text/Text_FAFAFA
-  final Color text_2_bdbdbd = const Color(0xFFBDBDBD); // Text/Text 2_BDBDBD
-  final Color text_3_9e9e9e = const Color(0xFF9E9E9E); // Text/Text 3_9E9E9E
-  final Color text_5_e0e0e0 = const Color(0xFFE0E0E0); // Text/Text 5_E0E0E0
-  final Color text_9_fafafa = const Color(0xFFFAFAFA); // Text/Text 9_FAFAFA
-  final Color text_10_424242 = const Color(0xFF424242); // Text/Text 10_424242
-  final Color text_ffffff = const Color(0xFFFFFFFF); // Text/Text_FFFFFF
+  Color get text_fafafa => AppPaletteScope.current.textPrimary;
+  Color get text_2_bdbdbd => AppPaletteScope.current.textSecondary;
+  Color get text_3_9e9e9e => AppPaletteScope.current.textTertiary;
+  Color get text_5_e0e0e0 => AppPaletteScope.current.textQuaternary;
+  Color get text_9_fafafa => AppPaletteScope.current.textPrimary;
+  Color get text_10_424242 => AppPaletteScope.current.textMuted;
+  Color get text_ffffff => AppPaletteScope.current.textPrimary;
 }
 
 class _AppColorsMainAndAccent {
@@ -88,7 +89,7 @@ class _AppColorsMainAndAccent {
 class _AppColorsLabels {
   const _AppColorsLabels();
 
-  final Color primary_dark = const Color(0xFFFFFFFF); // Labels/Primary - Dark
+  Color get primary_dark => AppPaletteScope.current.labelPrimary;
 }
 
 class _AppColorsPoint {
@@ -100,9 +101,9 @@ class _AppColorsPoint {
 class _AppColorsDarkTheme {
   const _AppColorsDarkTheme();
 
-  final Color c_424242 = const Color(0xFF424242); // Dark theme/424242
-  final Color fafafa = const Color(0xFFFAFAFA); // Dark theme/FAFAFA
-  final Color bdbdbd = const Color(0xFFBDBDBD); // Dark theme/BDBDBD
+  Color get c_424242 => AppPaletteScope.current.borderSecondary;
+  Color get fafafa => AppPaletteScope.current.textPrimary;
+  Color get bdbdbd => AppPaletteScope.current.textSecondary;
 }
 
 class _AppColorsGrays {
@@ -124,7 +125,7 @@ TextStyle tabularTextStyle(TextStyle style) {
 class AppTypography {
   static const _heading1FontSize = 24.0;
 
-  static final heading1 = TextStyle(
+  static TextStyle get heading1 => TextStyle(
     fontFamily: AppFonts.pretendard,
     fontSize: _heading1FontSize,
     fontWeight: FontWeight.w600,
@@ -135,7 +136,7 @@ class AppTypography {
 
   static const _heading2FontSize = 20.0;
 
-  static final heading2 = TextStyle(
+  static TextStyle get heading2 => TextStyle(
     fontFamily: AppFonts.pretendard,
     fontSize: _heading2FontSize,
     fontWeight: FontWeight.w600,
@@ -146,7 +147,7 @@ class AppTypography {
 
   static const _subtitleFontSize = 14.0;
 
-  static final subtitle = TextStyle(
+  static TextStyle get subtitle => TextStyle(
     fontFamily: AppFonts.pretendard,
     fontSize: _subtitleFontSize,
     fontWeight: FontWeight.w500,
@@ -157,7 +158,7 @@ class AppTypography {
 
   static const _caption1FontSize = 12.0;
 
-  static final caption1 = TextStyle(
+  static TextStyle get caption1 => TextStyle(
     fontFamily: AppFonts.pretendard,
     fontSize: _caption1FontSize,
     fontWeight: FontWeight.w400,
@@ -168,7 +169,7 @@ class AppTypography {
 
   static const _caption2FontSize = 11.0;
 
-  static final caption2 = TextStyle(
+  static TextStyle get caption2 => TextStyle(
     fontFamily: AppFonts.pretendard,
     fontSize: _caption2FontSize,
     fontWeight: FontWeight.w400,
@@ -179,7 +180,7 @@ class AppTypography {
 
   static const _xsFontSize = 10.0;
 
-  static final xs = TextStyle(
+  static TextStyle get xs => TextStyle(
     fontFamily: AppFonts.pretendard,
     fontSize: _xsFontSize,
     fontWeight: FontWeight.w400,
@@ -190,7 +191,7 @@ class AppTypography {
 
   static const _body2FontSize = 14.0;
 
-  static final body2 = TextStyle(
+  static TextStyle get body2 => TextStyle(
     fontFamily: AppFonts.pretendard,
     fontSize: _body2FontSize,
     fontWeight: FontWeight.w600,
@@ -200,7 +201,7 @@ class AppTypography {
     fontFeatures: _tabularFigures,
   );
 
-  static final header = TextStyle(
+  static TextStyle get header => TextStyle(
     fontFamily: AppFonts.pretendard,
     fontSize: 24,
     fontWeight: FontWeight.w500,
@@ -209,7 +210,7 @@ class AppTypography {
     color: AppColors.mainAndAccent.primary_ff8a00,
   );
 
-  static final filter = TextStyle(
+  static TextStyle get filter => TextStyle(
     fontFamily: AppFonts.pretendard,
     fontSize: 12,
     fontWeight: FontWeight.w500,
@@ -218,7 +219,7 @@ class AppTypography {
     color: AppColors.text.text_5_e0e0e0,
   );
 
-  static final date = TextStyle(
+  static TextStyle get date => TextStyle(
     fontFamily: AppFonts.pretendard,
     fontSize: 12,
     fontWeight: FontWeight.w500,
@@ -229,7 +230,7 @@ class AppTypography {
     decorationColor: AppColors.text.text_2_bdbdbd,
   );
 
-  static final listName = TextStyle(
+  static TextStyle get listName => TextStyle(
     fontFamily: AppFonts.pretendard,
     fontSize: 14,
     fontWeight: FontWeight.w400,
@@ -238,7 +239,7 @@ class AppTypography {
     color: AppColors.text.text_fafafa,
   );
 
-  static final listMetric = TextStyle(
+  static TextStyle get listMetric => TextStyle(
     fontFamily: AppFonts.pretendard,
     fontSize: 12,
     fontWeight: FontWeight.w500,
@@ -248,7 +249,7 @@ class AppTypography {
     fontFeatures: _tabularFigures,
   );
 
-  static final detailPrice = TextStyle(
+  static TextStyle get detailPrice => TextStyle(
     fontFamily: AppFonts.pretendard,
     fontSize: 15,
     fontWeight: FontWeight.w500,
@@ -258,7 +259,7 @@ class AppTypography {
     fontFeatures: _tabularFigures,
   );
 
-  static final detailChange = TextStyle(
+  static TextStyle get detailChange => TextStyle(
     fontFamily: AppFonts.pretendard,
     fontSize: 12,
     fontWeight: FontWeight.w500,
@@ -268,7 +269,7 @@ class AppTypography {
     fontFeatures: _tabularFigures,
   );
 
-  static final detailMetric = TextStyle(
+  static TextStyle get detailMetric => TextStyle(
     fontFamily: AppFonts.pretendard,
     fontSize: 11,
     fontWeight: FontWeight.w500,
@@ -278,7 +279,7 @@ class AppTypography {
     fontFeatures: _tabularFigures,
   );
 
-  static final detailLabel = TextStyle(
+  static TextStyle get detailLabel => TextStyle(
     fontFamily: AppFonts.pretendard,
     fontSize: 10,
     fontWeight: FontWeight.w700,
@@ -287,7 +288,7 @@ class AppTypography {
     color: AppColors.labels.primary_dark,
   );
 
-  static final action = TextStyle(
+  static TextStyle get action => TextStyle(
     fontFamily: AppFonts.pretendard,
     fontSize: 12,
     fontWeight: FontWeight.w600,
@@ -296,7 +297,7 @@ class AppTypography {
     color: AppColors.text.text_fafafa,
   );
 
-  static final sheetTitle = TextStyle(
+  static TextStyle get sheetTitle => TextStyle(
     fontFamily: AppFonts.pretendard,
     fontSize: 18,
     fontWeight: FontWeight.w700,
@@ -305,7 +306,7 @@ class AppTypography {
     color: AppColors.text.text_fafafa,
   );
 
-  static final sheetOption = TextStyle(
+  static TextStyle get sheetOption => TextStyle(
     fontFamily: AppFonts.pretendard,
     fontSize: 14,
     fontWeight: FontWeight.w500,
@@ -314,7 +315,7 @@ class AppTypography {
     color: AppColors.text.text_2_bdbdbd,
   );
 
-  static final sheetPickerValue = TextStyle(
+  static TextStyle get sheetPickerValue => TextStyle(
     fontFamily: AppFonts.pretendard,
     fontSize: 16,
     fontWeight: FontWeight.w600,
@@ -324,7 +325,7 @@ class AppTypography {
     fontFeatures: _tabularFigures,
   );
 
-  static final sheetPickerLabel = TextStyle(
+  static TextStyle get sheetPickerLabel => TextStyle(
     fontFamily: AppFonts.pretendard,
     fontSize: 12,
     fontWeight: FontWeight.w500,
@@ -333,7 +334,7 @@ class AppTypography {
     color: AppColors.text.text_3_9e9e9e,
   );
 
-  static final sheetButton = TextStyle(
+  static TextStyle get sheetButton => TextStyle(
     fontFamily: AppFonts.pretendard,
     fontSize: 16,
     fontWeight: FontWeight.w600,
@@ -341,7 +342,7 @@ class AppTypography {
     letterSpacing: 0,
   );
 
-  static final nav = TextStyle(
+  static TextStyle get nav => TextStyle(
     fontFamily: AppFonts.pretendard,
     fontSize: 10,
     fontWeight: FontWeight.w500,
@@ -350,7 +351,7 @@ class AppTypography {
     color: AppColors.text.text_fafafa,
   );
 
-  static final searchQuery = TextStyle(
+  static TextStyle get searchQuery => TextStyle(
     fontFamily: AppFonts.pretendard,
     fontSize: 14,
     fontWeight: FontWeight.w400,
@@ -359,7 +360,7 @@ class AppTypography {
     color: AppColors.text.text_fafafa,
   );
 
-  static final searchName = TextStyle(
+  static TextStyle get searchName => TextStyle(
     fontFamily: AppFonts.pretendard,
     fontSize: 14,
     fontWeight: FontWeight.w600,
@@ -368,7 +369,7 @@ class AppTypography {
     color: AppColors.text.text_fafafa,
   );
 
-  static final searchMeta = TextStyle(
+  static TextStyle get searchMeta => TextStyle(
     fontFamily: AppFonts.pretendard,
     fontSize: 12,
     fontWeight: FontWeight.w500,
@@ -378,7 +379,7 @@ class AppTypography {
     fontFeatures: _tabularFigures,
   );
 
-  static final searchEmptyTitle = TextStyle(
+  static TextStyle get searchEmptyTitle => TextStyle(
     fontFamily: AppFonts.pretendard,
     fontSize: 14,
     fontWeight: FontWeight.w400,
@@ -387,7 +388,7 @@ class AppTypography {
     color: AppColors.text.text_fafafa,
   );
 
-  static final searchEmptyDescription = TextStyle(
+  static TextStyle get searchEmptyDescription => TextStyle(
     fontFamily: AppFonts.pretendard,
     fontSize: 12,
     fontWeight: FontWeight.w400,
@@ -396,7 +397,7 @@ class AppTypography {
     color: AppColors.text.text_3_9e9e9e,
   );
 
-  static final searchToast = TextStyle(
+  static TextStyle get searchToast => TextStyle(
     fontFamily: AppFonts.pretendard,
     fontSize: 14,
     fontWeight: FontWeight.w500,
@@ -406,53 +407,85 @@ class AppTypography {
   );
 }
 
-ThemeData buildNamuhXDarkTheme() {
+SystemUiOverlayStyle systemUiOverlayForBrightness(Brightness brightness) {
+  final isDark = brightness == Brightness.dark;
+  return SystemUiOverlayStyle(
+    statusBarColor: Colors.transparent,
+    statusBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
+    statusBarBrightness: isDark ? Brightness.dark : Brightness.light,
+    systemNavigationBarColor: isDark
+        ? AppPalette.dark.bgSecondary
+        : AppPalette.light.bgSecondary,
+    systemNavigationBarDividerColor: isDark
+        ? AppPalette.dark.bgSecondary
+        : AppPalette.light.bgSecondary,
+    systemNavigationBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
+  );
+}
+
+SystemUiOverlayStyle systemUiOverlayStyle(BuildContext context) {
+  return systemUiOverlayForBrightness(Theme.of(context).brightness);
+}
+
+ThemeData buildNamuhXDarkTheme() => _buildNamuhXTheme(AppPalette.dark);
+
+ThemeData buildNamuhXLightTheme() => _buildNamuhXTheme(AppPalette.light);
+
+ThemeData _buildNamuhXTheme(AppPalette palette) {
   final textTheme = TextTheme(
-    headlineSmall: AppTypography.header,
-    bodyLarge: AppTypography.listName,
-    bodyMedium: AppTypography.filter,
-    labelSmall: AppTypography.nav,
+    headlineSmall: AppTypography.header.copyWith(color: palette.textPrimary),
+    bodyLarge: AppTypography.listName.copyWith(color: palette.textPrimary),
+    bodyMedium: AppTypography.filter.copyWith(color: palette.textQuaternary),
+    labelSmall: AppTypography.nav.copyWith(color: palette.textPrimary),
   );
 
-  const iconTheme = IconThemeData(color: Color(0xFFFAFAFA), size: 24);
+  final iconTheme = IconThemeData(color: palette.textPrimary, size: 24);
 
   return ThemeData(
     useMaterial3: true,
-    brightness: Brightness.dark,
+    brightness: palette == AppPalette.light ? Brightness.light : Brightness.dark,
     fontFamily: AppFonts.pretendard,
-    scaffoldBackgroundColor: AppColors.bg.bg_121212,
-    canvasColor: AppColors.bg.bg_121212,
+    scaffoldBackgroundColor: palette.bgPrimary,
+    canvasColor: palette.bgPrimary,
     splashFactory: NoSplash.splashFactory,
     highlightColor: Colors.transparent,
     textTheme: textTheme,
     iconTheme: iconTheme,
-    appBarTheme: const AppBarTheme(
-      backgroundColor: Color(0xFF121212),
-      foregroundColor: Color(0xFFFAFAFA),
+    appBarTheme: AppBarTheme(
+      backgroundColor: palette.bgPrimary,
+      foregroundColor: palette.textPrimary,
       elevation: 0,
       scrolledUnderElevation: 0,
       surfaceTintColor: Colors.transparent,
       iconTheme: iconTheme,
       actionsIconTheme: iconTheme,
     ),
-    colorScheme: ColorScheme.dark(
-      primary: AppColors.mainAndAccent.primary_ff8a00,
-      secondary: AppColors.mainAndAccent.primary_ff8a00,
-      surface: AppColors.bg.bg_121212,
-      onSurface: AppColors.text.text_fafafa,
-      error: AppColors.mainAndAccent.up_f93f62,
-    ),
+    colorScheme: palette == AppPalette.light
+        ? ColorScheme.light(
+            primary: AppColors.mainAndAccent.primary_ff8a00,
+            secondary: AppColors.mainAndAccent.primary_ff8a00,
+            surface: palette.bgPrimary,
+            onSurface: palette.textPrimary,
+            error: AppColors.mainAndAccent.up_f93f62,
+          )
+        : ColorScheme.dark(
+            primary: AppColors.mainAndAccent.primary_ff8a00,
+            secondary: AppColors.mainAndAccent.primary_ff8a00,
+            surface: palette.bgPrimary,
+            onSurface: palette.textPrimary,
+            error: AppColors.mainAndAccent.up_f93f62,
+          ),
     bottomSheetTheme: const BottomSheetThemeData(
       backgroundColor: Colors.transparent,
       surfaceTintColor: Colors.transparent,
     ),
     popupMenuTheme: PopupMenuThemeData(
-      color: AppColors.bg.bg_2_212121,
+      color: palette.bgSecondary,
       elevation: 12,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       textStyle: textTheme.bodyMedium,
     ),
-    dividerColor: AppColors.border.border_333333,
+    dividerColor: palette.borderPrimary,
   );
 }
 
