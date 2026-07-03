@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../../theme/app_theme.dart';
+import '../../my/presentation/screens/my_screen.dart';
 import '../../search/presentation/screens/search_screen.dart';
 import '../../watchlist/presentation/screens/watchlist_screen.dart';
 import 'widgets/app_bottom_nav.dart';
@@ -37,7 +38,7 @@ class _AppShellState extends State<AppShell> {
             _PlaceholderScreen(label: '종목토론'),
             SearchScreen(),
             _PlaceholderScreen(label: '뉴스'),
-            _PlaceholderScreen(label: '설정'),
+            MyScreen(),
           ],
         ),
         bottomNavigationBar: AppBottomNav(
