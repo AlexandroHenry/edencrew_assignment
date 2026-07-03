@@ -7,6 +7,8 @@ import '../providers/my_screen_controller.dart';
 import '../widgets/my_investment_summary_card.dart';
 import '../widgets/my_profile_card.dart';
 import '../widgets/my_profile_edit_bottom_sheet.dart';
+import '../widgets/my_reset_confirm_dialog.dart';
+import '../widgets/my_settings_section.dart';
 import '../widgets/my_watchlist_count_card.dart';
 
 class MyScreen extends ConsumerWidget {
@@ -38,6 +40,13 @@ class MyScreen extends ConsumerWidget {
                 MyInvestmentSummaryCard(summary: state.summary),
                 const SizedBox(height: 12),
                 MyWatchlistCountCard(count: watchlistCount),
+                const SizedBox(height: 24),
+                Text('설정', style: AppTypography.caption1),
+                const SizedBox(height: 8),
+                MySettingsSection(
+                  onResetTap: () => _onResetTap(context, ref),
+                ),
+                const SizedBox(height: 32),
               ],
             ),
     );
@@ -56,5 +65,14 @@ class MyScreen extends ConsumerWidget {
     );
     if (updated == null) return;
     ref.read(myScreenControllerProvider.notifier).updateProfile(updated);
+  }
+
+  Future<void> _onResetTap(BuildContext context, WidgetRef ref) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (_) => const MyResetConfirmDialog(),
+    );
+    if (confirmed != true) return;
+    await ref.read(myScreenControllerProvider.notifier).resetAll();
   }
 }

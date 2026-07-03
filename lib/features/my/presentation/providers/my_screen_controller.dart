@@ -31,4 +31,11 @@ class MyScreenController extends Notifier<MyScreenState> {
     await ref.read(userProfileRepositoryProvider).save(profile);
     state = state.copyWith(profile: profile);
   }
+
+  // 프로필을 기본값으로 되돌린다. 되돌리기 불가능한 작업이므로 UI에서 확인 다이얼로그를 거쳐야 한다.
+  Future<void> resetAll() async {
+    const defaultProfile = UserProfile();
+    await ref.read(userProfileRepositoryProvider).save(defaultProfile);
+    state = const MyScreenState();
+  }
 }
