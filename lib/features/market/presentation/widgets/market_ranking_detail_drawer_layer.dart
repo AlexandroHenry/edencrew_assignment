@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:sample/features/market/presentation/models/market_ranking_detail_item.dart';
-import 'package:sample/features/market/presentation/utils/market_app_layout.dart';
 import 'package:sample/features/market/presentation/widgets/market_ranking_detail_panel.dart';
 import 'package:sample/theme/app_theme.dart';
 
@@ -18,10 +17,7 @@ class MarketRankingDetailDrawerLayer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final media = MediaQuery.of(context);
-    final topChrome = MarketAppLayout.appBarChromeHeight(context);
-    final bottomChrome = MarketAppLayout.bottomChromeHeight(context);
-    final panelWidth = media.size.width * _drawerWidthRatio;
+    final panelWidth = MediaQuery.sizeOf(context).width * _drawerWidthRatio;
 
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: 1, end: 0),
@@ -30,11 +26,7 @@ class MarketRankingDetailDrawerLayer extends StatelessWidget {
       builder: (context, slide, child) {
         return Stack(
           children: [
-            Positioned(
-              top: topChrome,
-              left: 0,
-              right: 0,
-              bottom: bottomChrome,
+            Positioned.fill(
               child: GestureDetector(
                 onTap: onDismiss,
                 behavior: HitTestBehavior.opaque,
@@ -46,9 +38,9 @@ class MarketRankingDetailDrawerLayer extends StatelessWidget {
               ),
             ),
             Positioned(
-              top: topChrome,
+              top: 0,
               right: 0,
-              bottom: bottomChrome,
+              bottom: 0,
               width: panelWidth,
               child: Transform.translate(
                 offset: Offset(panelWidth * slide, 0),
@@ -64,19 +56,19 @@ class MarketRankingDetailDrawerLayer extends StatelessWidget {
         shadowColor: Colors.black.withValues(alpha: 0.45),
         child: Container(
           width: panelWidth,
-          decoration: const BoxDecoration(
-            color: Color(0xFF121212),
-            borderRadius: BorderRadius.only(topLeft: Radius.circular(20)),
+          decoration: BoxDecoration(
+            color: AppColors.bg.bg_121212,
             boxShadow: [
               BoxShadow(
-                color: Color(0x66000000),
+                color: AppDerivedColors.modalScrim.withValues(alpha: 0.35),
                 blurRadius: 24,
-                offset: Offset(-4, 0),
+                offset: const Offset(-4, 0),
               ),
             ],
           ),
-          clipBehavior: Clip.antiAlias,
-          child: MarketRankingDetailPanel(item: item),
+          child: SafeArea(
+            child: MarketRankingDetailPanel(item: item),
+          ),
         ),
       ),
     );

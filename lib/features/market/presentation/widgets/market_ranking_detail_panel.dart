@@ -124,17 +124,17 @@ class _PanelLoadingBody extends StatelessWidget {
           onHeartTap: onHeartTap,
         ),
         const SizedBox(height: 32),
-        const Center(
+        Center(
           child: CircularProgressIndicator(
             strokeWidth: 2,
-            color: Colors.white38,
+            color: AppColors.mainAndAccent.primary_ff8a00,
           ),
         ),
         const SizedBox(height: 16),
         Center(
           child: Text(
             '시세 데이터를 불러오는 중...',
-            style: AppTypography.caption1.copyWith(color: Colors.white38),
+            style: AppTypography.caption1,
           ),
         ),
       ],
