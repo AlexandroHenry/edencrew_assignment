@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sample/features/market/presentation/screens/ai_market_screen.dart';
 import 'package:sample/features/market/presentation/widgets/ai_banner.dart';
 import 'package:sample/features/market/presentation/widgets/appbar_button.dart';
@@ -13,11 +14,11 @@ import 'package:sample/features/market/presentation/widgets/market_types.dart';
 import 'package:sample/theme/app_assets.dart';
 import 'package:sample/theme/app_theme.dart';
 
-class MarketScreen extends StatelessWidget {
+class MarketScreen extends ConsumerWidget {
   const MarketScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Theme(
       data: buildNamuhXDarkTheme(),
       child: AnnotatedRegion<SystemUiOverlayStyle>(

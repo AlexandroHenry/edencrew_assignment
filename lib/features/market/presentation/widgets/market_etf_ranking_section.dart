@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sample/features/market/presentation/data/market_etf_ranking_sample_data.dart';
+import 'package:sample/features/market/presentation/data/market_ranking_detail_sample_data.dart';
 import 'package:sample/features/market/presentation/providers/market_etf_ranking_controller.dart';
+import 'package:sample/features/market/presentation/screens/market_etf_ranking_screen.dart';
 import 'package:sample/features/market/presentation/widgets/market_etf_ranking_filter_chips.dart';
 import 'package:sample/features/market/presentation/widgets/market_etf_ranking_list.dart';
+import 'package:sample/features/market/presentation/widgets/market_ranking_detail_drawer.dart';
 import 'package:sample/features/market/presentation/widgets/market_ranking_more_footer.dart';
 import 'package:sample/features/market/presentation/widgets/market_ranking_section_title.dart';
 import 'package:sample/features/watchlist/presentation/providers/favorite_ids_controller.dart';
@@ -32,8 +35,22 @@ class MarketEtfRankingSection extends ConsumerWidget {
           onHeartTap: (id) {
             ref.read(favoriteIdsControllerProvider.notifier).toggle(id);
           },
+          onItemTap: (item) {
+            MarketRankingDetailDrawer.open(
+              ref,
+              marketRankingDetailForId(item.id, name: item.name),
+            );
+          },
         ),
-        const MarketRankingMoreFooter(),
+        MarketRankingMoreFooter(
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => const MarketEtfRankingScreen(),
+              ),
+            );
+          },
+        ),
       ],
     );
   }
