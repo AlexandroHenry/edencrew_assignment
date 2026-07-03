@@ -15,40 +15,37 @@ class AssetScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(assetScreenControllerProvider);
 
-    return Theme(
-      data: buildNamuhXDarkTheme(),
-      child: AnnotatedRegion<SystemUiOverlayStyle>(
-        value: const SystemUiOverlayStyle(
-          statusBarColor: Colors.transparent,
-          statusBarIconBrightness: Brightness.light,
-          statusBarBrightness: Brightness.dark,
-        ),
-        child: Scaffold(
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: systemUiOverlayStyle(context),
+      child: Scaffold(
           backgroundColor: AppColors.bg.bg_121212,
           appBar: AppBar(
             automaticallyImplyLeading: false,
-            backgroundColor: AppColors.bg.bg_121212,
             elevation: 0,
             title: Text(
               '내 자산',
-              style: AppTypography.heading2.copyWith(color: Colors.white),
+              style: AppTypography.heading2,
             ),
             actions: [
               TextButton(
                 onPressed: () => _confirmReset(context, ref),
                 child: Text(
                   '초기화',
-                  style: AppTypography.caption1.copyWith(color: Colors.white38),
+                  style: AppTypography.caption1.copyWith(
+                    color: AppColors.text.text_3_9e9e9e,
+                  ),
                 ),
               ),
             ],
           ),
           body: state.isLoading
-              ? const Center(
-                  child: CircularProgressIndicator(color: Colors.white24),
+              ? Center(
+                  child: CircularProgressIndicator(
+                    color: AppColors.mainAndAccent.primary_ff8a00,
+                  ),
                 )
               : RefreshIndicator(
-                  color: Colors.white,
+                  color: AppColors.mainAndAccent.primary_ff8a00,
                   backgroundColor: AppColors.bg.bg_2_212121,
                   onRefresh: () async =>
                       ref.invalidate(assetScreenControllerProvider),
@@ -67,20 +64,20 @@ class AssetScreen extends ConsumerWidget {
                               Icon(
                                 Icons.account_balance_wallet_outlined,
                                 size: 52,
-                                color: Colors.white12,
+                                color: AppColors.text.text_3_9e9e9e,
                               ),
                               const SizedBox(height: 16),
                               Text(
                                 '보유 종목이 없습니다',
                                 style: AppTypography.subtitle.copyWith(
-                                  color: Colors.white38,
+                                  color: AppColors.text.text_2_bdbdbd,
                                 ),
                               ),
                               const SizedBox(height: 8),
                               Text(
                                 '종목 상세 화면에서 매수해보세요',
                                 style: AppTypography.caption1.copyWith(
-                                  color: Colors.white24,
+                                  color: AppColors.text.text_3_9e9e9e,
                                 ),
                               ),
                             ],
@@ -93,10 +90,10 @@ class AssetScreen extends ConsumerWidget {
                             margin: const EdgeInsets.fromLTRB(16, 20, 16, 0),
                             padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
                             decoration: BoxDecoration(
-                              color: const Color(0xFF1E1E1E),
+                              color: AppColors.bg.bg_2_212121,
                               borderRadius: BorderRadius.circular(14),
                               border: Border.all(
-                                color: Colors.white.withValues(alpha: 0.06),
+                                color: AppColors.border.border_333333,
                               ),
                             ),
                             child: Column(
@@ -105,7 +102,6 @@ class AssetScreen extends ConsumerWidget {
                                 Text(
                                   '자산 비율',
                                   style: AppTypography.subtitle.copyWith(
-                                    color: Colors.white,
                                     fontWeight: FontWeight.w700,
                                   ),
                                 ),
@@ -128,7 +124,6 @@ class AssetScreen extends ConsumerWidget {
                                 Text(
                                   '보유 종목',
                                   style: AppTypography.subtitle.copyWith(
-                                    color: Colors.white,
                                     fontWeight: FontWeight.w700,
                                   ),
                                 ),
@@ -145,7 +140,7 @@ class AssetScreen extends ConsumerWidget {
                                   child: Text(
                                     '${state.holdings.length}',
                                     style: AppTypography.caption2.copyWith(
-                                      color: Colors.white54,
+                                      color: AppColors.text.text_3_9e9e9e,
                                     ),
                                   ),
                                 ),
@@ -185,7 +180,7 @@ class AssetScreen extends ConsumerWidget {
                                       height: 1,
                                       indent: 68,
                                       endIndent: 16,
-                                      color: Colors.white.withValues(alpha: 0.05),
+                                      color: AppColors.border.border_333333,
                                     ),
                                 ],
                               );
@@ -199,7 +194,6 @@ class AssetScreen extends ConsumerWidget {
                   ),
                 ),
         ),
-      ),
     );
   }
 
@@ -207,19 +201,21 @@ class AssetScreen extends ConsumerWidget {
     showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: const Color(0xFF1E1E1E),
+        backgroundColor: AppColors.bg.bg_2_212121,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text('포트폴리오 초기화', style: AppTypography.heading2),
         content: Text(
           '모든 보유 종목과 거래 내역이 삭제되고\n시드머니 1,000만원으로 초기화됩니다.',
-          style: AppTypography.caption1.copyWith(color: Colors.white54),
+          style: AppTypography.caption1,
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
             child: Text(
               '취소',
-              style: AppTypography.caption1.copyWith(color: Colors.white38),
+              style: AppTypography.caption1.copyWith(
+                color: AppColors.text.text_3_9e9e9e,
+              ),
             ),
           ),
           TextButton(

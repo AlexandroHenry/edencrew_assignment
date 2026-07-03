@@ -15,6 +15,10 @@ class MarketRankingDetailActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final useLightText =
+        backgroundColor == AppColors.mainAndAccent.up_f93f62 ||
+        backgroundColor == AppColors.mainAndAccent.down_4780ff;
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -24,7 +28,9 @@ class MarketRankingDetailActionButton extends StatelessWidget {
         child: Text(
           label,
           style: AppTypography.subtitle.copyWith(
-            color: AppColors.text.text_fafafa,
+            color: useLightText
+                ? AppColors.grays.white
+                : AppColors.text.text_fafafa,
             fontWeight: FontWeight.w500,
           ),
         ),

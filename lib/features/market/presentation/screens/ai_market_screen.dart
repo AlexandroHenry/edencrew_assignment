@@ -14,17 +14,9 @@ class AiMarketScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final async = ref.watch(aiMarketControllerProvider);
 
-    return Theme(
-      data: buildNamuhXDarkTheme(),
-      child: AnnotatedRegion<SystemUiOverlayStyle>(
-        value: SystemUiOverlayStyle(
-          statusBarColor: Colors.transparent,
-          statusBarIconBrightness: Brightness.light,
-          statusBarBrightness: Brightness.dark,
-          systemNavigationBarColor: AppColors.bg.bg_2_212121,
-          systemNavigationBarIconBrightness: Brightness.light,
-        ),
-        child: Scaffold(
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: systemUiOverlayStyle(context),
+      child: Scaffold(
           backgroundColor: AppColors.bg.bg_121212,
           appBar: AppBar(
             leading: IconButton(
@@ -69,7 +61,6 @@ class AiMarketScreen extends ConsumerWidget {
             ],
           ),
         ),
-      ),
     );
   }
 }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sample/features/market/data/providers/index_repository_providers.dart';
@@ -5,6 +7,8 @@ import 'package:sample/features/market/domain/models/index_quote.dart';
 import 'package:sample/features/market/domain/repositories/index_repository.dart';
 import 'package:sample/features/market/domain/repositories/overseas_index_repository.dart';
 import 'package:sample/theme/app_assets.dart';
+
+const _refreshInterval = Duration(seconds: 3);
 
 final indiceCardsControllerProvider =
     AsyncNotifierProvider<IndiceCardsController, IndiceCardsState>(
@@ -62,7 +66,45 @@ class IndiceCardsController extends AsyncNotifier<IndiceCardsState> {
     final overseas = await Future.wait(
       _overseasDefs.map((d) => _fetchOverseas(d)),
     );
+
+    // 3초 간격으로 조용히 갱신 — 로딩 상태 없이 기존 데이터를 유지하면서 백그라운드 fetch
+    final timer = Timer.periodic(_refreshInterval, (_) => _silentRefresh());
+    ref.onDispose(timer.cancel);
+
     return IndiceCardsState(domestic: domestic, overseas: overseas);
+  }
+
+  Future<void> _silentRefresh() async {
+    final current = state.valueOrNull;
+    if (current == null) return;
+
+    final results = await Future.wait([
+      Future.wait(_domesticDefs.map((d) => _fetchDomestic(d))),
+      Future.wait(_overseasDefs.map((d) => _fetchOverseas(d))),
+    ]);
+
+    // 에러 카드는 기존 상태를 유지해 깜빡임을 방지한다
+    final freshDomestic = results[0];
+    final freshOverseas = results[1];
+
+    final mergedDomestic = [
+      for (var i = 0; i < current.domestic.length; i++)
+        freshDomestic[i].errorMessage == null
+            ? freshDomestic[i]
+            : current.domestic[i],
+    ];
+    final mergedOverseas = [
+      for (var i = 0; i < current.overseas.length; i++)
+        freshOverseas[i].errorMessage == null
+            ? freshOverseas[i]
+            : current.overseas[i],
+    ];
+
+    state = AsyncData(IndiceCardsState(
+      domestic: mergedDomestic,
+      overseas: mergedOverseas,
+      lastRefreshedAt: DateTime.now(),
+    ));
   }
 
   Future<void> retryDomestic(String indexCode) async {
@@ -170,21 +212,25 @@ class IndiceCardsController extends AsyncNotifier<IndiceCardsState> {
 
 @immutable
 class IndiceCardsState {
-  const IndiceCardsState({
+  IndiceCardsState({
     this.domestic = const [],
     this.overseas = const [],
-  });
+    DateTime? lastRefreshedAt,
+  }) : lastRefreshedAt = lastRefreshedAt ?? DateTime.now();
 
   final List<IndexQuote> domestic;
   final List<IndexQuote> overseas;
+  final DateTime lastRefreshedAt;
 
   IndiceCardsState copyWith({
     List<IndexQuote>? domestic,
     List<IndexQuote>? overseas,
+    DateTime? lastRefreshedAt,
   }) {
     return IndiceCardsState(
       domestic: domestic ?? this.domestic,
       overseas: overseas ?? this.overseas,
+      lastRefreshedAt: lastRefreshedAt ?? this.lastRefreshedAt,
     );
   }
 }

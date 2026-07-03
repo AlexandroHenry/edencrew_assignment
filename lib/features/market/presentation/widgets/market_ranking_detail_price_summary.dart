@@ -64,7 +64,7 @@ class _MarketRankingDetailPriceSummaryState
               child: Text(
                 currencySymbol,
                 style: AppTypography.subtitle.copyWith(
-                  color: Colors.white54,
+                  color: AppColors.text.text_3_9e9e9e,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -88,7 +88,9 @@ class _MarketRankingDetailPriceSummaryState
           const SizedBox(height: 2),
           Text(
             '환율 기준 ${_fmtRate(usdKrwRate)}원/달러',
-            style: AppTypography.caption2.copyWith(color: Colors.white38),
+            style: AppTypography.caption2.copyWith(
+              color: AppColors.text.text_3_9e9e9e,
+            ),
           ),
         ],
 
@@ -98,7 +100,7 @@ class _MarketRankingDetailPriceSummaryState
           Text(
             '≈ ₩${_fmtKrw(krwPrice)}',
             style: AppTypography.caption1.copyWith(
-              color: Colors.white38,
+              color: AppColors.text.text_3_9e9e9e,
             ),
           ),
         ],
@@ -185,12 +187,12 @@ class _CurrencyToggleButton extends StatelessWidget {
         decoration: BoxDecoration(
           color: showKrw
               ? AppColors.mainAndAccent.down_4780ff.withValues(alpha: 0.15)
-              : Colors.white.withValues(alpha: 0.08),
+              : AppColors.bg.bg_4_333333,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: showKrw
                 ? AppColors.mainAndAccent.down_4780ff.withValues(alpha: 0.5)
-                : Colors.white24,
+                : AppColors.border.border_333333,
           ),
         ),
         child: Row(
@@ -205,7 +207,7 @@ class _CurrencyToggleButton extends StatelessWidget {
                 fontWeight: FontWeight.w700,
                 color: showKrw
                     ? AppColors.mainAndAccent.down_4780ff
-                    : Colors.white54,
+                    : AppColors.text.text_3_9e9e9e,
               ),
             ),
             Icon(
@@ -213,16 +215,16 @@ class _CurrencyToggleButton extends StatelessWidget {
               size: 12,
               color: showKrw
                   ? AppColors.mainAndAccent.down_4780ff
-                  : Colors.white38,
+                  : AppColors.text.text_3_9e9e9e,
             ),
             Text(
               showKrw ? '\$' : '₩',
               style: TextStyle(
-                fontFamily: 'Pretendard',
+                fontFamily: AppFonts.pretendard,
                 fontSize: 11,
                 fontWeight: FontWeight.w700,
                 color: showKrw
-                    ? Colors.white54
+                    ? AppColors.text.text_3_9e9e9e
                     : AppColors.mainAndAccent.down_4780ff,
               ),
             ),

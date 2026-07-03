@@ -73,14 +73,15 @@ class AssetHoldingRow extends StatelessWidget {
                         holding.stockName,
                         style: AppTypography.subtitle.copyWith(
                           fontWeight: FontWeight.w600,
-                          color: Colors.white,
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 3),
                       Text(
                         '${holding.quantity}주  ·  평균 ${_fmt(holding.avgBuyPrice)}원',
-                        style: AppTypography.caption2.copyWith(color: Colors.white38),
+                        style: AppTypography.caption2.copyWith(
+                          color: AppColors.text.text_3_9e9e9e,
+                        ),
                       ),
                     ],
                   ),
@@ -95,7 +96,6 @@ class AssetHoldingRow extends StatelessWidget {
                       '${_fmt(holding.totalCurrentValue)}원',
                       style: AppTypography.subtitle.copyWith(
                         fontWeight: FontWeight.w600,
-                        color: Colors.white,
                       ),
                     ),
                     const SizedBox(height: 3),
