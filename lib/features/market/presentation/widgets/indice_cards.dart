@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sample/features/market/domain/models/index_quote.dart';
 import 'package:sample/features/market/presentation/models/market_index_card_data.dart';
 import 'package:sample/features/market/presentation/providers/indice_cards_controller.dart';
-import 'package:sample/features/market/presentation/screens/index_detail_screen.dart';
+import 'package:sample/features/market/presentation/screens/market_chart_detail_screen.dart';
 import 'package:sample/features/market/presentation/widgets/index_card.dart';
 import 'package:sample/features/market/presentation/widgets/index_card2.dart';
 import 'package:sample/features/market/presentation/widgets/index_card_error.dart';
@@ -43,7 +43,7 @@ class IndiceCards extends ConsumerWidget {
   void _openIndexDetail(BuildContext context, String indexCode, String marketName) {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
-        builder: (_) => IndexDetailScreen(indexCode: indexCode, marketName: marketName),
+        builder: (_) => MarketChartDetailScreen(indexCode: indexCode, marketName: marketName),
       ),
     );
   }

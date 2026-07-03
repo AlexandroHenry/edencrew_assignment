@@ -9,8 +9,9 @@ import 'package:sample/features/market/presentation/widgets/index_detail_price_h
 import 'package:sample/features/market/presentation/widgets/index_detail_quote_section.dart';
 import 'package:sample/theme/app_theme.dart';
 
-class IndexDetailScreen extends ConsumerWidget {
-  const IndexDetailScreen({
+// 지수·종목 공통 차트+시세 화면. indexCode는 코스피 코드(KOSPI 등) 또는 종목코드(6자리)를 받는다.
+class MarketChartDetailScreen extends ConsumerWidget {
+  const MarketChartDetailScreen({
     super.key,
     required this.indexCode,
     required this.marketName,
