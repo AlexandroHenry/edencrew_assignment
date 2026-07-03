@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sample/features/asset/presentation/providers/asset_screen_controller.dart';
+import 'package:sample/features/market/domain/services/ranking_detail_formatter.dart';
 import 'package:sample/features/market/presentation/widgets/market_ranking_detail_app_builder.dart';
+import 'package:sample/features/watchlist/domain/services/watchlist_formatters.dart';
 import 'package:sample/theme/app_theme.dart';
 
 enum TradeType { buy, sell }
@@ -54,6 +56,7 @@ class _TradeBottomSheetState extends ConsumerState<TradeBottomSheet> {
   bool _isSubmitting = false;
 
   bool get isBuy => widget.tradeType == TradeType.buy;
+  bool get _isUsd => !isDomesticStockSymbol(widget.stockCode);
   double get totalAmount => widget.currentPrice * _quantity;
 
   Color get _accentColor => isBuy
@@ -190,7 +193,7 @@ class _TradeBottomSheetState extends ConsumerState<TradeBottomSheet> {
                   ),
                   const Spacer(),
                   Text(
-                    '${_fmtPrice(widget.currentPrice)}원',
+                    _formatStockPrice(widget.currentPrice),
                     style: AppTypography.subtitle.copyWith(
                       color: _accentColor,
                       fontWeight: FontWeight.w700,
@@ -315,7 +318,7 @@ class _TradeBottomSheetState extends ConsumerState<TradeBottomSheet> {
                   _InfoRow(
                     label: '주문금액',
                     child: Text(
-                      '${_fmtPrice(totalAmount)}원',
+                      _formatStockPrice(totalAmount),
                       style: AppTypography.heading2.copyWith(
                         color: _accentColor,
                         fontWeight: FontWeight.w700,
@@ -329,7 +332,7 @@ class _TradeBottomSheetState extends ConsumerState<TradeBottomSheet> {
                     label: isBuy ? '주문가능 예수금' : '보유수량',
                     child: Text(
                       isBuy
-                          ? '${_fmtPrice(state.cash)}원'
+                          ? _formatCash(state.cash)
                           : '$heldQty주',
                       style: AppTypography.caption1.copyWith(color: Colors.white54),
                     ),
@@ -447,15 +450,15 @@ class _TradeBottomSheetState extends ConsumerState<TradeBottomSheet> {
     );
   }
 
-  String _fmtPrice(double v) {
-    final n = v.round().abs();
-    final s = n.toString();
-    final buf = StringBuffer();
-    for (var i = 0; i < s.length; i++) {
-      if (i > 0 && (s.length - i) % 3 == 0) buf.write(',');
-      buf.write(s[i]);
+  String _formatStockPrice(double value) {
+    if (_isUsd) {
+      return formatCurrencyValue(currency: 'USD', value: value);
     }
-    return buf.toString();
+    return '${formatCurrencyValue(currency: 'KRW', value: value, includeSymbol: false)}원';
+  }
+
+  String _formatCash(double value) {
+    return '${formatCurrencyValue(currency: 'KRW', value: value, includeSymbol: false)}원';
   }
 }
 

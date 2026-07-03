@@ -12,6 +12,7 @@ class MarketRankingRow extends StatelessWidget {
     required this.price,
     required this.isFavorite,
     required this.onHeartTap,
+    this.isOverseas = false,
     this.subtitle,
     this.onTap,
     this.isLoading = false,
@@ -22,7 +23,8 @@ class MarketRankingRow extends StatelessWidget {
   final String title;
   final String? subtitle;
   final double changePercent;
-  final int price;
+  final double price;
+  final bool isOverseas;
   final bool isFavorite;
   final bool isLoading;
   final VoidCallback onHeartTap;
@@ -70,7 +72,10 @@ class MarketRankingRow extends StatelessWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      MarketMetricUtils.formatPrice(price),
+                      MarketMetricUtils.formatStockPrice(
+                        price,
+                        isUsd: isOverseas,
+                      ),
                       style: AppTypography.listMetric.copyWith(color: metricColor),
                     ),
                   ],

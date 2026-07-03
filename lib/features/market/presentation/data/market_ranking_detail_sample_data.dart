@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sample/features/market/presentation/models/market_ranking_detail_item.dart';
 import 'package:sample/features/market/presentation/models/market_ranking_insight_item.dart';
+import 'package:sample/features/market/presentation/utils/market_metric_utils.dart';
 import 'package:sample/theme/app_theme.dart';
 
 const _samsungDetail = MarketRankingDetailItem(
@@ -179,7 +180,7 @@ MarketRankingDetailItem marketRankingDetailForId(
   String id, {
   String? name,
   String? logoUrl,
-  int? price,
+  double? price,
   double? changePercent,
   int? changeAmount,
   bool isOverseas = false,
@@ -190,19 +191,11 @@ MarketRankingDetailItem marketRankingDetailForId(
     id: id,
     name: resolvedName,
     logoUrl: logoUrl,
-    priceLabel: price != null ? _fmtPrice(price) : null,
+    priceLabel: price != null
+        ? MarketMetricUtils.formatStockPrice(price, isUsd: isOverseas)
+        : null,
     changePercent: changePercent,
     changeAmount: changeAmount,
     isOverseas: isOverseas,
   );
-}
-
-String _fmtPrice(int price) {
-  final s = price.abs().toString();
-  final buf = StringBuffer();
-  for (var i = 0; i < s.length; i++) {
-    if (i > 0 && (s.length - i) % 3 == 0) buf.write(',');
-    buf.write(s[i]);
-  }
-  return buf.toString();
 }

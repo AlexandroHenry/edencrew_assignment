@@ -72,9 +72,9 @@ class TrendingDiscussionRepository {
 
   Future<List<double>> _fetchSparkline(String code) async {
     try {
-      // 당일 분봉 기준 스파크라인 — 카드 미니차트용으로 30포인트 다운샘플
+      // 당일 분봉 기준 스파크라인 — 종목은 /item/{code} 엔드포인트 사용
       final res = await _dio.get<Map<String, dynamic>>(
-        'https://api.stock.naver.com/chart/domestic/stock/$code/day',
+        'https://api.stock.naver.com/chart/domestic/item/$code',
         queryParameters: {'periodType': 'day'},
         options: Options(headers: {'User-Agent': 'Mozilla/5.0'}),
       );

@@ -21,8 +21,8 @@ MarketRankingDetailItem mergeQuoteIntoItem(
   return base.copyWith(
     subtitle: subtitle,
     priceLabel: isDomestic
-        ? MarketMetricUtils.formatPrice(quote.currentPrice.round())
-        : _fmtDecimal(quote.currentPrice),
+        ? MarketMetricUtils.formatStockPrice(quote.currentPrice, isUsd: false)
+        : MarketMetricUtils.formatStockPrice(quote.currentPrice, isUsd: true),
     changePercent: quote.changePercent,
     changeAmount: quote.changeAmount.round(),
     volumeLabel: isDomestic
@@ -77,22 +77,12 @@ MarketRankingPriceStat _stat({
     type: type,
     label: label,
     priceLabel: isDomestic
-        ? MarketMetricUtils.formatPrice(price.round())
-        : _fmtDecimal(price),
+        ? MarketMetricUtils.formatStockPrice(price, isUsd: false)
+        : MarketMetricUtils.formatStockPrice(price, isUsd: true),
     changePercent: changePercent,
     tagColor: tagColor,
     valueColor: MarketMetricUtils.metricColor(changePercent),
   );
-}
-
-String _fmtDecimal(double v) {
-  if (v >= 1000) {
-    return v.toStringAsFixed(2).replaceAllMapped(
-      RegExp(r'(\d)(?=(\d{3})+\.)'),
-      (m) => '${m[1]},',
-    );
-  }
-  return v.toStringAsFixed(2);
 }
 
 String _fmtVolume(int v) {

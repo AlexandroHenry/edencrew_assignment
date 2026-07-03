@@ -99,7 +99,7 @@ class MarketRankingDetailPanel extends ConsumerWidget {
   }
 
   double _parsePrice(String label) =>
-      double.tryParse(label.replaceAll(',', '').replaceAll('원', '').trim()) ?? 0;
+      double.tryParse(label.replaceAll(RegExp(r'[^0-9.]'), '')) ?? 0;
 }
 
 /// 드로어가 열렸으나 quote 아직 없을 때 헤더 + 스켈레톤 표시 (mock 데이터 없음)

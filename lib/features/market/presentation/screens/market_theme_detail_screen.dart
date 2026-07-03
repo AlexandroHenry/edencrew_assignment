@@ -165,8 +165,8 @@ class _Body extends ConsumerWidget {
     );
   }
 
-  int _parsePrice(String s) =>
-      int.tryParse(s.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0;
+  double _parsePrice(String s) =>
+      double.tryParse(s.replaceAll(RegExp(r'[^0-9.]'), '')) ?? 0;
 
   // changeRate 문자열에서 절댓값 파싱 후 isUp/isDown으로 부호 결정
   double _parseChangePercent(NaverThemeStockDto stock) {

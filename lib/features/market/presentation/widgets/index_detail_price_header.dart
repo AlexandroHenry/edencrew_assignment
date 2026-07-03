@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sample/features/market/presentation/providers/index_detail_controller.dart';
@@ -39,13 +41,14 @@ class IndexDetailPriceHeader extends ConsumerWidget {
           Row(
             spacing: 4,
             children: [
-              Image.asset(
-                AppAssets.carotUp,
-                width: 10,
-                height: 10,
-                color: color,
-                // 하락 시 180도 회전
-                filterQuality: FilterQuality.high,
+              Transform.rotate(
+                angle: state.isUp ? 0 : math.pi,
+                child: Image.asset(
+                  AppAssets.carotUp,
+                  width: 10,
+                  height: 10,
+                  color: color,
+                ),
               ),
               Text(
                 '${MarketMetricUtils.formatPrice(state.changeVal.abs().round())} '

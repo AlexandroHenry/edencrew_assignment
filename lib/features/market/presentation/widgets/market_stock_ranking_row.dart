@@ -30,6 +30,7 @@ class MarketStockRankingRow extends StatelessWidget {
       title: item.name,
       changePercent: item.changePercent,
       price: item.price,
+      isOverseas: item.isOverseas,
       isFavorite: isFavorite,
       isLoading: isLoading,
       onHeartTap: onHeartTap,
