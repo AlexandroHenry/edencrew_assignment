@@ -7,6 +7,7 @@ class AppAssets {
   static const searchIcon = 'assets/ui/icon_search.svg';
   static const searchClearButton = 'assets/ui/button_clear.png';
   static const favoriteHeart = 'assets/ui/icon_favorite_heart.svg';
+  static const heartFilled = 'assets/ui/icon_heart_filled.png';
   static const navWatchlist = 'assets/ui/icon_nav_watchlist.svg';
   static const actionNews = 'assets/ui/icon_action_news.svg';
   static const actionDiscussion = 'assets/ui/icon_action_discussion.svg';
@@ -29,6 +30,11 @@ class AppAssets {
   static const flagUs = 'assets/ui/icon_us_flag.png';
   static const carotUp = 'assets/ui/icon_carot_up.png';
   // static const carotDown = 'assets/ui/icon_carot_down.png';
+
+  static const marketIcon = 'assets/ui/icon_market.png';
+  static const feedIcon = 'assets/ui/icon_feed.png';
+  static const assetIcon = 'assets/ui/icon_asset.png';
+  static const myIcon = 'assets/ui/icon_my.png';
 }
 
 class AppAssetSizes {

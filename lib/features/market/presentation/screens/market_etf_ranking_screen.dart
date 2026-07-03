@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sample/features/market/presentation/data/market_ranking_detail_sample_data.dart';
-import 'package:sample/features/market/presentation/data/market_us_etf_ranking_sample_data.dart';
+import 'package:sample/features/market/presentation/models/market_etf_ranking_filter.dart';
 import 'package:sample/features/market/presentation/providers/market_etf_ranking_controller.dart';
 import 'package:sample/features/market/presentation/providers/market_ranking_detail_drawer_controller.dart';
 import 'package:sample/features/market/presentation/widgets/market_etf_ranking_filter_chips.dart';
@@ -16,8 +16,9 @@ class MarketEtfRankingScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final rankingState = ref.watch(marketEtfRankingControllerProvider);
-    final controller = ref.read(marketEtfRankingControllerProvider.notifier);
+    final rankingAsync = ref.watch(marketUsEtfRankingControllerProvider);
+    final rankingState = rankingAsync.valueOrNull;
+    final controller = ref.read(marketUsEtfRankingControllerProvider.notifier);
     final favoriteIds =
         ref.watch(favoriteIdsControllerProvider).valueOrNull ?? const {};
 
@@ -49,33 +50,47 @@ class MarketEtfRankingScreen extends ConsumerWidget {
               Padding(
                 padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
                 child: MarketEtfRankingFilterChips(
-                  selectedFilter: rankingState.filter,
+                  selectedFilter:
+                      rankingState?.filter ?? MarketEtfRankingFilter.highVolume,
                   onFilterChanged: controller.setFilter,
                 ),
               ),
               Expanded(
-                child: ListView(
-                  children: [
-                    MarketEtfRankingList(
-                      items: marketUsEtfRankingSampleItems,
-                      favoriteIds: favoriteIds,
-                      onHeartTap: (id) {
-                        ref
-                            .read(favoriteIdsControllerProvider.notifier)
-                            .toggle(id);
-                      },
-                      onItemTap: (item) {
-                        MarketRankingDetailDrawer.open(
-                          ref,
-                          marketRankingDetailForId(
-                            item.id,
-                            name: item.name,
-                          ),
-                        );
-                      },
+                child: rankingAsync.when(
+                  loading: () => const Center(
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                  error: (e, _) => Center(
+                    child: Text(
+                      '데이터를 불러오지 못했습니다',
+                      style: AppTypography.caption1.copyWith(
+                        color: AppColors.text.text_3_9e9e9e,
+                      ),
                     ),
-                    const SizedBox(height: 24),
-                  ],
+                  ),
+                  data: (state) => ListView(
+                    children: [
+                      MarketEtfRankingList(
+                        items: state.items,
+                        favoriteIds: favoriteIds,
+                        onHeartTap: (id) {
+                          ref
+                              .read(favoriteIdsControllerProvider.notifier)
+                              .toggle(id);
+                        },
+                        onItemTap: (item) {
+                          MarketRankingDetailDrawer.open(
+                            ref,
+                            marketRankingDetailForId(
+                              item.id,
+                              name: item.name,
+                            ),
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 24),
+                    ],
+                  ),
                 ),
               ),
             ],
