@@ -53,7 +53,7 @@ class AppBottomNav extends StatelessWidget {
       ),
       _BottomNavItemData(
         tab: AppTab.settings,
-        label: '설정',
+        label: '마이',
         itemWidth: 68,
         assetPath: AppAssets.navSettings,
         assetWidth: AppAssetSizes.navSettings.width,
