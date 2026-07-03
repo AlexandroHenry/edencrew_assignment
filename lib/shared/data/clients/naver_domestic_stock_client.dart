@@ -1,7 +1,9 @@
 // ignore_for_file: unused_element, unused_field
 
 import 'dart:convert';
+import 'dart:typed_data';
 
+import 'package:charset_converter/charset_converter.dart';
 import 'package:dio/dio.dart';
 
 import '../dtos/naver_stock_dtos.dart';
@@ -60,7 +62,9 @@ class NaverDomesticStockClient implements NaverStockDataClient {
     }
 
     if (data is List<int>) {
-      final decoded = jsonDecode(utf8.decode(data));
+      final decoded = jsonDecode(
+        utf8.decode(data, allowMalformed: true),
+      );
       if (decoded is Map<String, dynamic>) {
         return decoded;
       }
@@ -122,12 +126,12 @@ class NaverDomesticStockClient implements NaverStockDataClient {
     if (unique.isEmpty) return {};
 
     final query = 'SERVICE_ITEM:${unique.join(',')}';
-    final response = await _dio.get<Object>(
+    final response = await _dio.get<List<int>>(
       'https://polling.finance.naver.com/api/realtime',
       queryParameters: {'query': query},
       options: Options(
         headers: _defaultHeaders,
-        responseType: ResponseType.plain,
+        responseType: ResponseType.bytes,
       ),
     );
 
@@ -181,8 +185,11 @@ class NaverDomesticStockClient implements NaverStockDataClient {
       ),
     );
 
-    // Naver 일별 시세 페이지는 EUC-KR 인코딩이므로 latin1로 디코딩 후 파싱
-    final html = latin1.decode(response.data!);
+    // Naver 일별 시세 페이지는 EUC-KR 인코딩
+    final html = await CharsetConverter.decode(
+      'EUC-KR',
+      Uint8List.fromList(response.data!),
+    );
     final priceInfos = _parseDailyRows(html, symbol);
     final lastPage = _parseLastPage(html);
 
@@ -286,7 +293,10 @@ class NaverDomesticStockClient implements NaverStockDataClient {
       ),
     );
 
-    final html = latin1.decode(response.data!);
+    final html = await CharsetConverter.decode(
+      'EUC-KR',
+      Uint8List.fromList(response.data!),
+    );
     return _parseIntradayRows(html);
   }
 

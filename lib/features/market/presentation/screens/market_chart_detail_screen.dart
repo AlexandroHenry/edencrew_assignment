@@ -25,8 +25,9 @@ class MarketChartDetailScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(indexDetailControllerProvider(indexCode));
-    final controller =
-        ref.read(indexDetailControllerProvider(indexCode).notifier);
+    final controller = ref.read(
+      indexDetailControllerProvider(indexCode).notifier,
+    );
 
     return Theme(
       data: buildNamuhXDarkTheme(),
@@ -49,51 +50,49 @@ class MarketChartDetailScreen extends ConsumerWidget {
             centerTitle: true,
           ),
           body: state.isLoading
-              ? const Center(
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                )
+              ? const Center(child: CircularProgressIndicator(strokeWidth: 2))
               : state.errorMessage != null
-                  ? Center(
-                      child: Text(
-                        '데이터를 불러오지 못했습니다',
-                        style: AppTypography.caption1.copyWith(
-                          color: AppColors.text.text_3_9e9e9e,
+              ? Center(
+                  child: Text(
+                    '데이터를 불러오지 못했습니다',
+                    style: AppTypography.caption1.copyWith(
+                      color: AppColors.text.text_3_9e9e9e,
+                    ),
+                  ),
+                )
+              : SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      IndexDetailPriceHeader(indexCode: indexCode),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                        child: _buildChart(state),
+                      ),
+                      IndexDetailPeriodChips(
+                        selectedPeriod: state.period,
+                        onPeriodSelected: controller.setPeriod,
+                        chartType: state.chartType,
+                        canToggleCandle: state.candles.isNotEmpty,
+                        onChartTypeToggle: () => controller.setChartType(
+                          state.chartType == ChartType.line
+                              ? ChartType.candle
+                              : ChartType.line,
                         ),
                       ),
-                    )
-                  : SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          IndexDetailPriceHeader(indexCode: indexCode),
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-                            child: _buildChart(state),
-                          ),
-                          IndexDetailPeriodChips(
-                            selectedPeriod: state.period,
-                            onPeriodSelected: controller.setPeriod,
-                            chartType: state.chartType,
-                            canToggleCandle: state.candles.isNotEmpty,
-                            onChartTypeToggle: () => controller.setChartType(
-                              state.chartType == ChartType.line
-                                  ? ChartType.candle
-                                  : ChartType.line,
-                            ),
-                          ),
-                          if (state.investorItems.isNotEmpty)
-                            IndexDetailInvestorTrendsCard(
-                              items: state.investorItems,
-                            ),
-                          IndexDetailQuoteSection(
-                            items: state.quoteItems,
-                            quoteMode: state.quoteMode,
-                            onQuoteModeSelected: controller.setQuoteMode,
-                          ),
-                          const SizedBox(height: 32),
-                        ],
+                      if (state.investorItems.isNotEmpty)
+                        IndexDetailInvestorTrendsCard(
+                          items: state.investorItems,
+                        ),
+                      IndexDetailQuoteSection(
+                        items: state.quoteItems,
+                        quoteMode: state.quoteMode,
+                        onQuoteModeSelected: controller.setQuoteMode,
                       ),
-                    ),
+                      const SizedBox(height: 32),
+                    ],
+                  ),
+                ),
         ),
       ),
     );

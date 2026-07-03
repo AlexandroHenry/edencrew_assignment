@@ -77,7 +77,7 @@ class IndexDetailController extends FamilyNotifier<IndexDetailState, String> {
 
   // ── 국내 개별 종목 ──────────────────────────────────────────────────────────
 
-  // sise_day.naver는 1페이지당 ~10행 반환. 기간에 따라 적절한 페이지 수를 가져온다.
+  // sise_day.naver는 1페이지당 ~10행 반환. 기간에 따라 목표 페이지 수를 결정한다.
   int _stockPageCount(IndexDetailPeriod period) => switch (period) {
         IndexDetailPeriod.oneDay => 1,
         IndexDetailPeriod.oneWeek => 1,
@@ -86,26 +86,53 @@ class IndexDetailController extends FamilyNotifier<IndexDetailState, String> {
         IndexDetailPeriod.oneYear => 26,
       };
 
+  // 페이지를 1부터 순차적으로 요청한다. 동시 요청 시 실패한 Future의 에러가
+  // Future.wait zone error로 탈출해 앱을 종료시키는 문제를 방지하기 위해 완전 순차 방식을 택한다.
+  Future<List<NaverHistoricalPriceDto>> _fetchDomesticHistory(
+      String symbol, IndexDetailPeriod period) async {
+    final targetPages = _stockPageCount(period);
+    final all = <NaverHistoricalPriceDto>[];
+
+    for (var p = 1; p <= targetPages; p++) {
+      final page = await _stockClient.fetchDailyHistoryPage(
+          symbol: symbol, page: p);
+      all.addAll(page.priceInfos);
+      // lastPage에 도달하면 더 이상 요청하지 않는다
+      if (page.lastPage <= p) break;
+    }
+
+    // 날짜 기준 오름차순 정렬 → 차트 왼쪽=과거, 오른쪽=최신
+    all.sort((a, b) => a.localDate.compareTo(b.localDate));
+    return all;
+  }
+
+  List<IndexDetailCandle> _toCandleList(List<NaverHistoricalPriceDto> prices) {
+    return prices
+        .map((p) => IndexDetailCandle(
+              open: p.openPrice,
+              high: p.highPrice,
+              low: p.lowPrice,
+              close: p.closePrice,
+            ))
+        .toList();
+  }
+
   Future<void> _loadDomesticStock(
       String symbol, IndexDetailPeriod period) async {
     try {
-      final pageCount = _stockPageCount(period);
       final results = await Future.wait([
         _stockClient.fetchRealtimeQuotes([symbol]),
-        for (var p = 1; p <= pageCount; p++)
-          _stockClient.fetchDailyHistoryPage(symbol: symbol, page: p),
+        _fetchDomesticHistory(symbol, period),
       ]);
 
       final quotes = results[0] as Map<String, NaverRealtimeQuoteDto>;
-      final histories =
-          results.skip(1).cast<NaverDailyHistoryPageDto>().toList();
+      // sorted ascending (oldest → newest) — use directly for chart
+      final prices = results[1] as List<NaverHistoricalPriceDto>;
 
       final quote = quotes[symbol];
       if (quote == null) throw StateError('시세를 찾을 수 없습니다: $symbol');
 
-      // sise_day.naver는 최신일이 첫 행 → 과거→최신 순으로 뒤집어 차트에 표시
-      final rawPrices = histories.expand((h) => h.priceInfos).toList();
-      final chartPrices = rawPrices.reversed.toList();
+      final tableRows = prices.reversed.toList(); // newest-first for quote table
 
       state = IndexDetailState(
         isLoading: false,
@@ -114,19 +141,11 @@ class IndexDetailController extends FamilyNotifier<IndexDetailState, String> {
         price: quote.currentPrice,
         changeVal: quote.changeAmount,
         changePercent: quote.changeRate,
-        chartValues: chartPrices.map((p) => p.closePrice).toList(),
-        chartVolumes: chartPrices
-            .map((p) => p.accumulatedTradingVolume.toDouble())
-            .toList(),
-        candles: chartPrices
-            .map((p) => IndexDetailCandle(
-                  open: p.openPrice,
-                  high: p.highPrice,
-                  low: p.lowPrice,
-                  close: p.closePrice,
-                ))
-            .toList(),
-        quoteItems: _toStockQuoteItems(rawPrices),
+        chartValues: prices.map((p) => p.closePrice).toList(),
+        chartVolumes:
+            prices.map((p) => p.accumulatedTradingVolume.toDouble()).toList(),
+        candles: _toCandleList(prices),
+        quoteItems: _toStockQuoteItems(tableRows),
       );
     } catch (e) {
       state = state.copyWith(isLoading: false, errorMessage: e.toString());
@@ -136,29 +155,16 @@ class IndexDetailController extends FamilyNotifier<IndexDetailState, String> {
   Future<void> _loadDomesticStockChart(
       String symbol, IndexDetailPeriod period) async {
     try {
-      final pageCount = _stockPageCount(period);
-      final pages = await Future.wait([
-        for (var p = 1; p <= pageCount; p++)
-          _stockClient.fetchDailyHistoryPage(symbol: symbol, page: p),
-      ]);
-      final rawPrices = pages.expand((h) => h.priceInfos).toList();
-      final chartPrices = rawPrices.reversed.toList();
+      final prices = await _fetchDomesticHistory(symbol, period);
+      final tableRows = prices.reversed.toList();
       state = state.copyWith(
         isChartLoading: false,
         period: period,
-        chartValues: chartPrices.map((p) => p.closePrice).toList(),
-        chartVolumes: chartPrices
-            .map((p) => p.accumulatedTradingVolume.toDouble())
-            .toList(),
-        candles: chartPrices
-            .map((p) => IndexDetailCandle(
-                  open: p.openPrice,
-                  high: p.highPrice,
-                  low: p.lowPrice,
-                  close: p.closePrice,
-                ))
-            .toList(),
-        quoteItems: _toStockQuoteItems(rawPrices),
+        chartValues: prices.map((p) => p.closePrice).toList(),
+        chartVolumes:
+            prices.map((p) => p.accumulatedTradingVolume.toDouble()).toList(),
+        candles: _toCandleList(prices),
+        quoteItems: _toStockQuoteItems(tableRows),
       );
     } catch (_) {
       state = state.copyWith(isChartLoading: false);
@@ -186,16 +192,11 @@ class IndexDetailController extends FamilyNotifier<IndexDetailState, String> {
               .toList(),
         );
       } else {
-        // 일별: 이미 로드된 quoteItems 유지, 필요하면 재요청
-        final pageCount = _stockPageCount(state.period);
-        final pages = await Future.wait([
-          for (var p = 1; p <= pageCount; p++)
-            _stockClient.fetchDailyHistoryPage(symbol: symbol, page: p),
-        ]);
+        // 일별: 현재 기간 기준으로 다시 요청
+        final prices = await _fetchDomesticHistory(symbol, state.period);
         state = state.copyWith(
           isQuoteLoading: false,
-          quoteItems:
-              _toStockQuoteItems(pages.expand((h) => h.priceInfos).toList()),
+          quoteItems: _toStockQuoteItems(prices.reversed.toList()),
         );
       }
     } catch (_) {

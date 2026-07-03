@@ -1,15 +1,17 @@
+import 'dart:typed_data';
+
 import 'package:charset_converter/charset_converter.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
 import 'package:sample/features/market/data/dtos/index_basic_dto.dart';
 import 'package:sample/features/market/data/dtos/index_chart_dto.dart';
 import 'package:sample/features/market/data/dtos/index_quote_row_dto.dart';
 import 'package:sample/features/market/data/dtos/investor_trend_dto.dart';
 import 'package:sample/features/market/presentation/models/index_detail_period.dart';
+import 'package:sample/shared/utils/dio_factory.dart';
 
 class NaverIndexClient {
   NaverIndexClient({Dio? dio, bool isStock = false})
-      : _dio = dio ?? _buildDio(isStock),
+      : _dio = dio ?? createDio(tag: isStock ? 'DIO:NaverStock' : 'DIO:NaverIndex'),
         _mobileBase = isStock
             ? 'https://m.stock.naver.com/api/stock'
             : 'https://m.stock.naver.com/api/index',
@@ -24,22 +26,6 @@ class NaverIndexClient {
   static const _financeBase = 'https://finance.naver.com/sise/sise_index.naver';
 
   static const _sparklinePointCount = 30;
-
-  static Dio _buildDio(bool isStock) {
-    final dio = Dio();
-    if (kDebugMode) {
-      final tag = isStock ? 'NaverStock' : 'NaverIndex';
-      dio.interceptors.add(LogInterceptor(
-        requestHeader: false,
-        requestBody: false,
-        responseHeader: false,
-        responseBody: true,
-        error: true,
-        logPrint: (obj) => debugPrint('[DIO:$tag] $obj'),
-      ));
-    }
-    return dio;
-  }
 
   Future<IndexBasicDto> fetchBasic(String indexCode) async {
     final res = await _dio.get<Map<String, dynamic>>(
