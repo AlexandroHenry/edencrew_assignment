@@ -5,6 +5,7 @@ import 'package:sample/features/market/domain/models/ranking_detail_quote.dart';
 import 'package:sample/features/market/domain/services/ranking_detail_formatter.dart';
 import 'package:sample/features/market/presentation/models/market_ranking_detail_candle.dart';
 import 'package:sample/features/market/presentation/models/market_ranking_detail_item.dart';
+import 'package:sample/features/market/presentation/providers/market_ranking_detail_drawer_controller.dart';
 import 'package:sample/features/market/presentation/providers/market_ranking_detail_quote_controller.dart';
 import 'package:sample/features/market/presentation/utils/market_metric_utils.dart';
 import 'package:sample/features/market/presentation/widgets/market_ranking_detail_action_bar.dart';
@@ -71,20 +72,31 @@ class MarketRankingDetailPanel extends ConsumerWidget {
           ),
         ),
         MarketRankingDetailActionBar(
-          onBuy: () => TradeBottomSheet.show(
-            context,
-            stockCode: item.id,
-            stockName: item.name,
-            currentPrice: _parseFormattedPrice(resolvedItem.priceLabel),
-            tradeType: TradeType.buy,
-          ),
-          onSell: () => TradeBottomSheet.show(
-            context,
-            stockCode: item.id,
-            stockName: item.name,
-            currentPrice: _parseFormattedPrice(resolvedItem.priceLabel),
-            tradeType: TradeType.sell,
-          ),
+          onBuy: () {
+            // 드로어를 먼저 닫고 애니메이션이 끝난 뒤 바텀시트를 연다
+            final price = _parseFormattedPrice(resolvedItem.priceLabel);
+            closeMarketRankingDetailDrawer(ref);
+            Future.delayed(const Duration(milliseconds: 300), () {
+              TradeBottomSheet.show(
+                stockCode: item.id,
+                stockName: item.name,
+                currentPrice: price,
+                tradeType: TradeType.buy,
+              );
+            });
+          },
+          onSell: () {
+            final price = _parseFormattedPrice(resolvedItem.priceLabel);
+            closeMarketRankingDetailDrawer(ref);
+            Future.delayed(const Duration(milliseconds: 300), () {
+              TradeBottomSheet.show(
+                stockCode: item.id,
+                stockName: item.name,
+                currentPrice: price,
+                tradeType: TradeType.sell,
+              );
+            });
+          },
         ),
       ],
     );

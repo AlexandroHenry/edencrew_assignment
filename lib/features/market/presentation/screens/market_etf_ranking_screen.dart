@@ -84,6 +84,8 @@ class MarketEtfRankingScreen extends ConsumerWidget {
                             marketRankingDetailForId(
                               item.id,
                               name: item.name,
+                              price: item.price,
+                              changePercent: item.changePercent,
                             ),
                           );
                         },

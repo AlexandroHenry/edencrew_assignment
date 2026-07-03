@@ -36,6 +36,7 @@ class MarketRankingDetailItem {
     required this.volumeLabel,
     required this.logoColor,
     this.logoUrl,
+    this.isOverseas = false,
     required this.priceStats,
     required this.insights,
     this.candles = marketRankingDetailMiniCandleSampleData,
@@ -52,6 +53,7 @@ class MarketRankingDetailItem {
   final String volumeLabel;
   final Color logoColor;
   final String? logoUrl;
+  final bool isOverseas;
   final List<MarketRankingPriceStat> priceStats;
   final List<MarketRankingInsightItem> insights;
   final List<MarketRankingDetailMiniCandleData> candles;
@@ -68,6 +70,7 @@ class MarketRankingDetailItem {
     String? volumeLabel,
     Color? logoColor,
     String? logoUrl,
+    bool? isOverseas,
     List<MarketRankingPriceStat>? priceStats,
     List<MarketRankingInsightItem>? insights,
     List<MarketRankingDetailMiniCandleData>? candles,
@@ -84,6 +87,7 @@ class MarketRankingDetailItem {
       volumeLabel: volumeLabel ?? this.volumeLabel,
       logoColor: logoColor ?? this.logoColor,
       logoUrl: logoUrl ?? this.logoUrl,
+      isOverseas: isOverseas ?? this.isOverseas,
       priceStats: priceStats ?? this.priceStats,
       insights: insights ?? this.insights,
       candles: candles ?? this.candles,
