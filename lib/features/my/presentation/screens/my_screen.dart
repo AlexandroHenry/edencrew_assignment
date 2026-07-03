@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../theme/app_theme.dart';
 import '../../../watchlist/presentation/providers/favorite_ids_controller.dart';
 import '../../domain/models/user_profile.dart';
+import '../providers/app_theme_mode_controller.dart';
 import '../providers/my_screen_controller.dart';
 import '../widgets/my_investment_summary_card.dart';
 import '../widgets/my_profile_card.dart';
@@ -17,13 +18,13 @@ class MyScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(myScreenControllerProvider);
+    final themeMode = ref.watch(appThemeModeProvider);
     final favoriteIdsAsync = ref.watch(favoriteIdsControllerProvider);
     final watchlistCount = favoriteIdsAsync.valueOrNull?.length ?? 0;
 
     return Scaffold(
       backgroundColor: AppColors.bg.bg_121212,
       appBar: AppBar(
-        backgroundColor: AppColors.bg.bg_121212,
         title: Text('마이', style: AppTypography.heading2),
         centerTitle: false,
       ),
@@ -44,6 +45,10 @@ class MyScreen extends ConsumerWidget {
                 Text('설정', style: AppTypography.caption1),
                 const SizedBox(height: 8),
                 MySettingsSection(
+                  themeMode: themeMode,
+                  onThemeModeChanged: (mode) => ref
+                      .read(appThemeModeProvider.notifier)
+                      .setThemeMode(mode),
                   onResetTap: () => _onResetTap(context, ref),
                 ),
                 const SizedBox(height: 32),
