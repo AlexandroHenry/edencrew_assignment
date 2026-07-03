@@ -8,12 +8,19 @@ import 'package:sample/features/market/data/dtos/investor_trend_dto.dart';
 import 'package:sample/features/market/presentation/models/index_detail_period.dart';
 
 class NaverIndexClient {
-  NaverIndexClient({Dio? dio}) : _dio = dio ?? Dio();
+  NaverIndexClient({Dio? dio, bool isStock = false})
+      : _dio = dio ?? Dio(),
+        _mobileBase = isStock
+            ? 'https://m.stock.naver.com/api/stock'
+            : 'https://m.stock.naver.com/api/index',
+        _chartBase = isStock
+            ? 'https://api.stock.naver.com/chart/domestic/stock'
+            : 'https://api.stock.naver.com/chart/domestic/index';
 
   final Dio _dio;
 
-  static const _mobileBase = 'https://m.stock.naver.com/api/index';
-  static const _chartBase = 'https://api.stock.naver.com/chart/domestic/index';
+  final String _mobileBase;
+  final String _chartBase;
   static const _financeBase = 'https://finance.naver.com/sise/sise_index.naver';
 
   // 스파크라인은 카드 위 미니 차트용이라 당일 분봉 전체(최대 수백개)를

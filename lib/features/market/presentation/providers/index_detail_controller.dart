@@ -1,7 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sample/features/market/data/clients/naver_index_client.dart';
+import 'package:sample/features/market/data/clients/yahoo_index_client.dart';
 import 'package:sample/features/market/data/dtos/investor_trend_dto.dart';
+import 'package:sample/features/market/domain/services/ranking_detail_formatter.dart';
 import 'package:sample/features/market/presentation/models/index_detail_investor_trend_item.dart';
 import 'package:sample/features/market/presentation/models/index_detail_investor_trend_side.dart';
 import 'package:sample/features/market/presentation/models/index_detail_period.dart';
@@ -14,41 +16,82 @@ final indexDetailControllerProvider = NotifierProvider.family<
 
 class IndexDetailController extends FamilyNotifier<IndexDetailState, String> {
   late final NaverIndexClient _client;
+  late final YahooIndexClient _yahooClient;
+  late final bool _isDomesticStock;
+  late final bool _isOverseas;
 
   @override
   IndexDetailState build(String indexCode) {
-    _client = NaverIndexClient();
-    // 초기 로딩
-    Future.microtask(() => _load(indexCode, IndexDetailPeriod.oneDay,
-        IndexDetailQuoteMode.byTime));
+    _isDomesticStock = isDomesticStockSymbol(indexCode);
+    // 알파벳으로만 구성되고 지수 코드(KOSPI/KOSDAQ)가 아니면 해외 종목으로 판단
+    _isOverseas = !_isDomesticStock &&
+        RegExp(r'^[A-Za-z=^.]+$').hasMatch(indexCode) &&
+        indexCode != 'KOSPI' &&
+        indexCode != 'KOSDAQ';
+    _client = NaverIndexClient(isStock: _isDomesticStock);
+    _yahooClient = YahooIndexClient();
+    Future.microtask(() {
+      if (_isOverseas) {
+        _loadOverseas(indexCode);
+      } else {
+        _load(indexCode, IndexDetailPeriod.oneDay, IndexDetailQuoteMode.byTime);
+      }
+    });
     return const IndexDetailState(isLoading: true);
   }
 
   Future<void> setPeriod(IndexDetailPeriod period) async {
+    if (_isOverseas) return;
     state = state.copyWith(period: period, isChartLoading: true);
     await _loadChart(arg, period);
   }
 
   Future<void> setQuoteMode(IndexDetailQuoteMode mode) async {
+    if (_isOverseas) return;
     state = state.copyWith(quoteMode: mode, isQuoteLoading: true);
     await _loadQuotes(arg, mode);
+  }
+
+  // 해외 종목: Yahoo Finance에서 현재가 + 1개월 일봉 캔들을 가져온다.
+  Future<void> _loadOverseas(String symbol) async {
+    try {
+      final detail = await _yahooClient.fetchStockDetail(symbol);
+      final chartValues = detail.candles.map((c) => c.close).toList();
+      state = IndexDetailState(
+        isLoading: false,
+        price: detail.currentPrice,
+        changeVal: detail.changeAmount,
+        changePercent: detail.changePercent,
+        chartValues: chartValues,
+        chartVolumes: List.filled(chartValues.length, 0),
+        quoteItems: const [],
+        investorItems: const [],
+      );
+    } catch (e) {
+      state = state.copyWith(isLoading: false, errorMessage: e.toString());
+    }
   }
 
   Future<void> _load(
       String indexCode, IndexDetailPeriod period, IndexDetailQuoteMode mode) async {
     try {
-      final results = await Future.wait([
+      // 개별 종목은 투자자 동향 API가 없으므로 스킵한다.
+      final futures = <Future>[
         _client.fetchBasic(indexCode),
         _client.fetchChart(indexCode, period),
         _client.fetchQuoteRows(indexCode, mode),
-        _client.fetchInvestorTrend(indexCode)
-            .catchError((_) => const InvestorTrendDto()),
-      ]);
+        if (!_isDomesticStock)
+          _client.fetchInvestorTrend(indexCode)
+              .catchError((_) => const InvestorTrendDto()),
+      ];
+      final results = await Future.wait(futures);
 
       final basic = results[0] as dynamic;
       final chart = results[1] as dynamic;
       final quotes = results[2] as List;
-      final investor = results[3] as InvestorTrendDto;
+      final investor = _isDomesticStock
+          ? const InvestorTrendDto()
+          : results[3] as InvestorTrendDto;
 
       state = IndexDetailState(
         isLoading: false,
@@ -60,7 +103,7 @@ class IndexDetailController extends FamilyNotifier<IndexDetailState, String> {
         chartValues: (chart.prices as List).cast<double>(),
         chartVolumes: (chart.volumes as List).cast<double>(),
         quoteItems: _toQuoteItems(quotes),
-        investorItems: _toInvestorItems(investor),
+        investorItems: _isDomesticStock ? [] : _toInvestorItems(investor),
       );
     } catch (e) {
       state = state.copyWith(isLoading: false, errorMessage: e.toString());
