@@ -1,6 +1,6 @@
-import 'dart:typed_data';
 import 'package:charset_converter/charset_converter.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:sample/features/market/data/dtos/index_basic_dto.dart';
 import 'package:sample/features/market/data/dtos/index_chart_dto.dart';
 import 'package:sample/features/market/data/dtos/index_quote_row_dto.dart';
@@ -9,7 +9,7 @@ import 'package:sample/features/market/presentation/models/index_detail_period.d
 
 class NaverIndexClient {
   NaverIndexClient({Dio? dio, bool isStock = false})
-      : _dio = dio ?? Dio(),
+      : _dio = dio ?? _buildDio(isStock),
         _mobileBase = isStock
             ? 'https://m.stock.naver.com/api/stock'
             : 'https://m.stock.naver.com/api/index',
@@ -23,9 +23,23 @@ class NaverIndexClient {
   final String _chartBase;
   static const _financeBase = 'https://finance.naver.com/sise/sise_index.naver';
 
-  // 스파크라인은 카드 위 미니 차트용이라 당일 분봉 전체(최대 수백개)를
-  // 그대로 쓰면 과밀해지므로 표시용으로 균등 다운샘플링한다.
   static const _sparklinePointCount = 30;
+
+  static Dio _buildDio(bool isStock) {
+    final dio = Dio();
+    if (kDebugMode) {
+      final tag = isStock ? 'NaverStock' : 'NaverIndex';
+      dio.interceptors.add(LogInterceptor(
+        requestHeader: false,
+        requestBody: false,
+        responseHeader: false,
+        responseBody: true,
+        error: true,
+        logPrint: (obj) => debugPrint('[DIO:$tag] $obj'),
+      ));
+    }
+    return dio;
+  }
 
   Future<IndexBasicDto> fetchBasic(String indexCode) async {
     final res = await _dio.get<Map<String, dynamic>>(

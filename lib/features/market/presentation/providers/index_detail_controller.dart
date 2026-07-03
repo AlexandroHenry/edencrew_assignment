@@ -8,6 +8,9 @@ import 'package:sample/features/market/presentation/models/index_detail_investor
 import 'package:sample/features/market/presentation/models/index_detail_investor_trend_side.dart';
 import 'package:sample/features/market/presentation/models/index_detail_period.dart';
 import 'package:sample/features/market/presentation/models/index_detail_quote_item.dart';
+import 'package:sample/shared/data/clients/naver_domestic_stock_client.dart';
+import 'package:sample/shared/data/dtos/naver_stock_dtos.dart';
+import 'package:sample/shared/data/providers/naver_stock_data_client_provider.dart';
 
 final indexDetailControllerProvider = NotifierProvider.family<
     IndexDetailController, IndexDetailState, String>(
@@ -15,23 +18,29 @@ final indexDetailControllerProvider = NotifierProvider.family<
 );
 
 class IndexDetailController extends FamilyNotifier<IndexDetailState, String> {
-  late final NaverIndexClient _client;
-  late final YahooIndexClient _yahooClient;
-  late final bool _isDomesticStock;
-  late final bool _isOverseas;
+  late NaverIndexClient _indexClient;
+  late YahooIndexClient _yahooClient;
+  late NaverStockDataClient _stockClient;
+  late bool _isDomesticStock;
+  late bool _isOverseas;
 
   @override
   IndexDetailState build(String indexCode) {
     _isDomesticStock = isDomesticStockSymbol(indexCode);
-    // 알파벳으로만 구성되고 지수 코드(KOSPI/KOSDAQ)가 아니면 해외 종목으로 판단
+    // 알파벳으로만 구성되고 알려진 국내 지수 코드가 아니면 해외 종목으로 판단
     _isOverseas = !_isDomesticStock &&
         RegExp(r'^[A-Za-z=^.]+$').hasMatch(indexCode) &&
         indexCode != 'KOSPI' &&
         indexCode != 'KOSDAQ';
-    _client = NaverIndexClient(isStock: _isDomesticStock);
+
+    _indexClient = NaverIndexClient();
     _yahooClient = YahooIndexClient();
+    _stockClient = ref.watch(naverStockDataClientProvider);
+
     Future.microtask(() {
-      if (_isOverseas) {
+      if (_isDomesticStock) {
+        _loadDomesticStock(indexCode, IndexDetailPeriod.oneMonth);
+      } else if (_isOverseas) {
         _loadOverseas(indexCode);
       } else {
         _load(indexCode, IndexDetailPeriod.oneDay, IndexDetailQuoteMode.byTime);
@@ -43,22 +52,137 @@ class IndexDetailController extends FamilyNotifier<IndexDetailState, String> {
   Future<void> setPeriod(IndexDetailPeriod period) async {
     if (_isOverseas) return;
     state = state.copyWith(period: period, isChartLoading: true);
-    await _loadChart(arg, period);
+    if (_isDomesticStock) {
+      await _loadDomesticStockChart(arg, period);
+    } else {
+      await _loadChart(arg, period);
+    }
   }
 
   Future<void> setQuoteMode(IndexDetailQuoteMode mode) async {
-    if (_isOverseas) return;
+    if (_isOverseas || _isDomesticStock) return;
     state = state.copyWith(quoteMode: mode, isQuoteLoading: true);
     await _loadQuotes(arg, mode);
   }
 
-  // 해외 종목: Yahoo Finance에서 현재가 + 1개월 일봉 캔들을 가져온다.
+  // ── 국내 개별 종목 ──────────────────────────────────────────────────────────
+
+  // sise_day.naver는 1페이지당 ~10행 반환. 기간에 따라 적절한 페이지 수를 가져온다.
+  int _stockPageCount(IndexDetailPeriod period) => switch (period) {
+        IndexDetailPeriod.oneDay => 1,
+        IndexDetailPeriod.oneWeek => 1,
+        IndexDetailPeriod.oneMonth => 3,
+        IndexDetailPeriod.threeMonths => 7,
+        IndexDetailPeriod.oneYear => 26,
+      };
+
+  Future<void> _loadDomesticStock(
+      String symbol, IndexDetailPeriod period) async {
+    try {
+      final pageCount = _stockPageCount(period);
+      final results = await Future.wait([
+        _stockClient.fetchRealtimeQuotes([symbol]),
+        for (var p = 1; p <= pageCount; p++)
+          _stockClient.fetchDailyHistoryPage(symbol: symbol, page: p),
+      ]);
+
+      final quotes = results[0] as Map<String, NaverRealtimeQuoteDto>;
+      final histories =
+          results.skip(1).cast<NaverDailyHistoryPageDto>().toList();
+
+      final quote = quotes[symbol];
+      if (quote == null) throw StateError('시세를 찾을 수 없습니다: $symbol');
+
+      // sise_day.naver는 최신일이 첫 행 → 과거→최신 순으로 뒤집어 차트에 표시
+      final allPrices = histories
+          .expand((h) => h.priceInfos)
+          .toList()
+          .reversed
+          .toList();
+
+      state = IndexDetailState(
+        isLoading: false,
+        period: period,
+        quoteMode: IndexDetailQuoteMode.byDate,
+        price: quote.currentPrice,
+        changeVal: quote.changeAmount,
+        changePercent: quote.changeRate,
+        chartValues: allPrices.map((p) => p.closePrice).toList(),
+        chartVolumes: allPrices
+            .map((p) => p.accumulatedTradingVolume.toDouble())
+            .toList(),
+        quoteItems: _toStockQuoteItems(
+          histories.expand((h) => h.priceInfos).toList(),
+        ),
+        investorItems: const [],
+      );
+    } catch (e) {
+      state = state.copyWith(isLoading: false, errorMessage: e.toString());
+    }
+  }
+
+  Future<void> _loadDomesticStockChart(
+      String symbol, IndexDetailPeriod period) async {
+    try {
+      final pageCount = _stockPageCount(period);
+      final pages = await Future.wait([
+        for (var p = 1; p <= pageCount; p++)
+          _stockClient.fetchDailyHistoryPage(symbol: symbol, page: p),
+      ]);
+      final allPrices =
+          pages.expand((h) => h.priceInfos).toList().reversed.toList();
+      state = state.copyWith(
+        isChartLoading: false,
+        chartValues: allPrices.map((p) => p.closePrice).toList(),
+        chartVolumes: allPrices
+            .map((p) => p.accumulatedTradingVolume.toDouble())
+            .toList(),
+        quoteItems: _toStockQuoteItems(
+          pages.expand((h) => h.priceInfos).toList(),
+        ),
+      );
+    } catch (_) {
+      state = state.copyWith(isChartLoading: false);
+    }
+  }
+
+  // 일별 히스토리 → quote 테이블 (연속 행 비교로 등락 계산)
+  List<IndexDetailQuoteItem> _toStockQuoteItems(
+      List<NaverHistoricalPriceDto> prices) {
+    return List.generate(prices.length, (i) {
+      final p = prices[i];
+      final prevClose = i + 1 < prices.length ? prices[i + 1].closePrice : p.closePrice;
+      final change = (p.closePrice - prevClose).abs();
+      final changeRate = prevClose != 0
+          ? (change / prevClose * 100)
+          : 0.0;
+      final isUp = p.closePrice >= prevClose;
+      final date = '${p.localDate.year}.'
+          '${p.localDate.month.toString().padLeft(2, '0')}.'
+          '${p.localDate.day.toString().padLeft(2, '0')}';
+      return IndexDetailQuoteItem(
+        timeLabel: '',
+        dateLabel: date,
+        closePrice: p.closePrice.round(),
+        change: change,
+        volume: p.accumulatedTradingVolume,
+        changeRate: double.parse(changeRate.toStringAsFixed(2)),
+        isUp: isUp,
+      );
+    });
+  }
+
+  // ── 해외 종목 ────────────────────────────────────────────────────────────────
+
+  // Yahoo Finance에서 현재가 + 1개월 일봉 캔들을 가져온다.
   Future<void> _loadOverseas(String symbol) async {
     try {
       final detail = await _yahooClient.fetchStockDetail(symbol);
       final chartValues = detail.candles.map((c) => c.close).toList();
       state = IndexDetailState(
         isLoading: false,
+        period: IndexDetailPeriod.oneMonth,
+        quoteMode: IndexDetailQuoteMode.byDate,
         price: detail.currentPrice,
         changeVal: detail.changeAmount,
         changePercent: detail.changePercent,
@@ -72,26 +196,24 @@ class IndexDetailController extends FamilyNotifier<IndexDetailState, String> {
     }
   }
 
+  // ── 지수 (KOSPI / KOSDAQ / 해외 지수) ────────────────────────────────────────
+
   Future<void> _load(
       String indexCode, IndexDetailPeriod period, IndexDetailQuoteMode mode) async {
     try {
-      // 개별 종목은 투자자 동향 API가 없으므로 스킵한다.
-      final futures = <Future>[
-        _client.fetchBasic(indexCode),
-        _client.fetchChart(indexCode, period),
-        _client.fetchQuoteRows(indexCode, mode),
-        if (!_isDomesticStock)
-          _client.fetchInvestorTrend(indexCode)
-              .catchError((_) => const InvestorTrendDto()),
-      ];
-      final results = await Future.wait(futures);
+      final results = await Future.wait([
+        _indexClient.fetchBasic(indexCode),
+        _indexClient.fetchChart(indexCode, period),
+        _indexClient.fetchQuoteRows(indexCode, mode),
+        _indexClient
+            .fetchInvestorTrend(indexCode)
+            .catchError((_) => const InvestorTrendDto()),
+      ]);
 
       final basic = results[0] as dynamic;
       final chart = results[1] as dynamic;
       final quotes = results[2] as List;
-      final investor = _isDomesticStock
-          ? const InvestorTrendDto()
-          : results[3] as InvestorTrendDto;
+      final investor = results[3] as InvestorTrendDto;
 
       state = IndexDetailState(
         isLoading: false,
@@ -103,7 +225,7 @@ class IndexDetailController extends FamilyNotifier<IndexDetailState, String> {
         chartValues: (chart.prices as List).cast<double>(),
         chartVolumes: (chart.volumes as List).cast<double>(),
         quoteItems: _toQuoteItems(quotes),
-        investorItems: _isDomesticStock ? [] : _toInvestorItems(investor),
+        investorItems: _toInvestorItems(investor),
       );
     } catch (e) {
       state = state.copyWith(isLoading: false, errorMessage: e.toString());
@@ -112,7 +234,7 @@ class IndexDetailController extends FamilyNotifier<IndexDetailState, String> {
 
   Future<void> _loadChart(String indexCode, IndexDetailPeriod period) async {
     try {
-      final chart = await _client.fetchChart(indexCode, period);
+      final chart = await _indexClient.fetchChart(indexCode, period);
       state = state.copyWith(
         isChartLoading: false,
         chartValues: chart.prices,
@@ -125,7 +247,7 @@ class IndexDetailController extends FamilyNotifier<IndexDetailState, String> {
 
   Future<void> _loadQuotes(String indexCode, IndexDetailQuoteMode mode) async {
     try {
-      final rows = await _client.fetchQuoteRows(indexCode, mode);
+      final rows = await _indexClient.fetchQuoteRows(indexCode, mode);
       state = state.copyWith(
         isQuoteLoading: false,
         quoteItems: _toQuoteItems(rows),
@@ -150,7 +272,6 @@ class IndexDetailController extends FamilyNotifier<IndexDetailState, String> {
   }
 
   List<IndexDetailInvestorTrendItem> _toInvestorItems(InvestorTrendDto dto) {
-    // 절댓값 합계로 비율 계산 (0이면 0.5로 폴백)
     final abs = [
       (dto.foreignerNet ?? 0).abs(),
       (dto.institutionNet ?? 0).abs(),

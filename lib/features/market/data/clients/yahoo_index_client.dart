@@ -1,8 +1,21 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:sample/features/market/data/dtos/yahoo_index_dto.dart';
 
 class YahooIndexClient {
-  YahooIndexClient({Dio? dio}) : _dio = dio ?? Dio();
+  YahooIndexClient({Dio? dio}) : _dio = dio ?? _buildDio();
+
+  static Dio _buildDio() {
+    final dio = Dio();
+    if (kDebugMode) {
+      dio.interceptors.add(LogInterceptor(
+        requestHeader: false, requestBody: false,
+        responseHeader: false, responseBody: true, error: true,
+        logPrint: (obj) => debugPrint('[DIO:Yahoo] $obj'),
+      ));
+    }
+    return dio;
+  }
 
   final Dio _dio;
   static const _base = 'https://query2.finance.yahoo.com/v8/finance/chart';
