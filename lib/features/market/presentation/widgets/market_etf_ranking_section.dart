@@ -6,7 +6,7 @@ import 'package:sample/features/market/presentation/providers/market_etf_ranking
 import 'package:sample/features/market/presentation/screens/market_etf_ranking_screen.dart';
 import 'package:sample/features/market/presentation/widgets/market_etf_ranking_filter_chips.dart';
 import 'package:sample/features/market/presentation/widgets/market_etf_ranking_list.dart';
-import 'package:sample/features/market/presentation/widgets/market_ranking_detail_drawer.dart';
+import 'package:sample/features/market/presentation/providers/market_ranking_detail_drawer_controller.dart';
 import 'package:sample/features/market/presentation/widgets/market_ranking_more_footer.dart';
 import 'package:sample/features/market/presentation/widgets/market_ranking_section_title.dart';
 import 'package:sample/features/watchlist/presentation/providers/favorite_ids_controller.dart';
@@ -55,7 +55,7 @@ class MarketEtfRankingSection extends ConsumerWidget {
               ref.read(favoriteIdsControllerProvider.notifier).toggle(id);
             },
             onItemTap: (item) {
-              MarketRankingDetailDrawer.open(
+              openMarketRankingDetailDrawerAsync(
                 ref,
                 marketRankingDetailForId(
                   item.id,

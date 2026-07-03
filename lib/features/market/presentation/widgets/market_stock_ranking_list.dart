@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sample/features/market/presentation/models/market_stock_ranking_item.dart';
+import 'package:sample/features/market/presentation/providers/market_ranking_detail_drawer_controller.dart';
 import 'package:sample/features/market/presentation/widgets/market_ranking_list.dart';
 import 'package:sample/features/market/presentation/widgets/market_stock_ranking_row.dart';
 
-class MarketStockRankingList extends StatelessWidget {
+class MarketStockRankingList extends ConsumerWidget {
   const MarketStockRankingList({
     required this.items,
     required this.favoriteIds,
@@ -18,13 +20,16 @@ class MarketStockRankingList extends StatelessWidget {
   final ValueChanged<MarketStockRankingItem>? onItemTap;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final loadingId = ref.watch(marketRankingDetailLoadingIdProvider);
+
     return MarketRankingList(
       rows: [
         for (final item in items)
           MarketStockRankingRow(
             item: item,
             isFavorite: favoriteIds.contains(item.id),
+            isLoading: loadingId == item.id,
             onHeartTap: () => onHeartTap(item.id),
             onTap: onItemTap == null ? null : () => onItemTap!(item),
           ),

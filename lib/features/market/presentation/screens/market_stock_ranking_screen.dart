@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sample/features/market/presentation/data/market_ranking_detail_sample_data.dart';
 import 'package:sample/features/market/presentation/providers/market_ranking_detail_drawer_controller.dart';
 import 'package:sample/features/market/presentation/providers/market_stock_ranking_list_controller.dart';
-import 'package:sample/features/market/presentation/widgets/market_ranking_detail_drawer.dart';
 import 'package:sample/features/market/presentation/widgets/market_stock_ranking_list.dart';
 import 'package:sample/features/market/presentation/widgets/market_stock_ranking_screen_filters.dart';
 import 'package:sample/features/watchlist/presentation/providers/favorite_ids_controller.dart';
@@ -109,7 +108,7 @@ class _MarketStockRankingScreenState
                                       .toggle(id);
                                 },
                                 onItemTap: (item) {
-                                  MarketRankingDetailDrawer.open(
+                                  openMarketRankingDetailDrawerAsync(
                                     ref,
                                     marketRankingDetailForId(
                                       item.id,
