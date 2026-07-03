@@ -17,16 +17,14 @@ class MarketThemeSectionHeader extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
         children: [
-          Text('오늘 뜨는 한국 테마', style: AppTypography.heading2),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              referenceTime,
-              style: AppTypography.caption1,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
+          Expanded(child: Text('오늘 뜨는 한국 테마', style: AppTypography.heading2)),
+          Text(
+            referenceTime,
+            style: AppTypography.caption1,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
+          SizedBox(width: 10),
           GestureDetector(
             onTap: onRefreshTap,
             behavior: HitTestBehavior.opaque,

@@ -1,10 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:sample/features/watchlist/data/clients/naver_domestic_stock_client.dart';
-import 'package:sample/features/watchlist/data/dtos/naver_stock_dtos.dart';
 import 'package:sample/features/watchlist/data/repositories/favorite_ids_local_store.dart';
 import 'package:sample/features/watchlist/data/repositories/naver_watchlist_repository.dart';
 import 'package:sample/features/watchlist/domain/models/watchlist_models.dart';
+import 'package:sample/shared/data/clients/naver_domestic_stock_client.dart';
+import 'package:sample/shared/data/dtos/naver_stock_dtos.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
@@ -73,6 +73,27 @@ void main() {
     expect(
       results.single.logoUrl,
       'https://ssl.pstatic.net/imgstock/fn/real/logo/stock/Stock005930.svg',
+    );
+  });
+
+  test('addFavorite accepts raw 6-digit domestic symbol and stores canonical id', () async {
+    SharedPreferences.setMockInitialValues(<String, Object>{
+      favoriteIdsStorageKey: <String>['domestic:005930'],
+    });
+    final preferences = await SharedPreferences.getInstance();
+    final repository = NaverWatchlistRepository(
+      dio: Dio(),
+      favoriteIdsLocalStore: FavoriteIdsLocalStore(preferences),
+      client: _FakeNaverStockDataClient(),
+    );
+
+    await repository.addFavorite(itemId: '000660');
+
+    final favoriteIds = await repository.loadFavoriteIds();
+    expect(favoriteIds, contains('domestic:000660'));
+    expect(
+      preferences.getStringList(favoriteIdsStorageKey)?.toSet(),
+      contains('domestic:000660'),
     );
   });
 
@@ -275,4 +296,8 @@ class _FakeNaverStockDataClient implements NaverStockDataClient {
     dailyHistoryPageCallCount++;
     return _pagesBySymbol[symbol]![page]!;
   }
+
+  @override
+  Future<List<NaverIntradayPriceDto>> fetchIntradayPrices(String symbol) async =>
+      const [];
 }

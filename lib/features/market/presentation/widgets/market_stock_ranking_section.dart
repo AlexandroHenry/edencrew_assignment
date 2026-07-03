@@ -3,9 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sample/features/market/presentation/data/market_ranking_detail_sample_data.dart';
 import 'package:sample/features/market/presentation/models/market_stock_ranking_filter.dart';
 import 'package:sample/features/market/presentation/models/market_stock_ranking_region.dart';
+import 'package:sample/features/market/presentation/providers/market_ranking_detail_drawer_controller.dart';
 import 'package:sample/features/market/presentation/providers/market_stock_ranking_controller.dart';
 import 'package:sample/features/market/presentation/screens/market_stock_ranking_screen.dart';
-import 'package:sample/features/market/presentation/widgets/market_ranking_detail_drawer.dart';
 import 'package:sample/features/market/presentation/widgets/market_ranking_more_footer.dart';
 import 'package:sample/features/market/presentation/widgets/market_stock_ranking_filter_chips.dart';
 import 'package:sample/features/market/presentation/widgets/market_stock_ranking_header.dart';
@@ -55,15 +55,22 @@ class MarketStockRankingSection extends ConsumerWidget {
             ),
           ),
           data: (state) => MarketStockRankingList(
-            items: state.items,
+            items: state.items.take(10).toList(),
             favoriteIds: favoriteIds,
             onHeartTap: (id) {
               ref.read(favoriteIdsControllerProvider.notifier).toggle(id);
             },
             onItemTap: (item) {
-              MarketRankingDetailDrawer.open(
+              openMarketRankingDetailDrawerAsync(
                 ref,
-                marketRankingDetailForId(item.id, name: item.name),
+                marketRankingDetailForId(
+                  item.id,
+                  name: item.name,
+                  logoUrl: item.logoUrl,
+                  price: item.price,
+                  changePercent: item.changePercent,
+                  isOverseas: item.isOverseas,
+                ),
               );
             },
           ),

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sample/features/business_guide/presentation/screens/business_guide_screen.dart';
+import 'package:sample/features/market/presentation/providers/ai_market_controller.dart';
 import 'package:sample/features/market/presentation/screens/ai_market_screen.dart';
 import 'package:sample/features/market/presentation/widgets/ai_banner.dart';
+import 'package:sample/features/market/presentation/widgets/ai_market_summary_popup.dart';
 import 'package:sample/features/market/presentation/widgets/appbar_button.dart';
 import 'package:sample/features/market/presentation/widgets/indice_cards.dart';
 import 'package:sample/features/market/presentation/widgets/market_etf_ranking_section.dart';
@@ -11,6 +14,7 @@ import 'package:sample/features/market/presentation/widgets/market_stock_ranking
 import 'package:sample/features/market/presentation/widgets/market_theme_section.dart';
 import 'package:sample/features/market/presentation/widgets/market_trending_discussion_section.dart';
 import 'package:sample/features/market/presentation/widgets/market_types.dart';
+import 'package:sample/features/search/presentation/screens/search_screen.dart';
 import 'package:sample/theme/app_assets.dart';
 import 'package:sample/theme/app_theme.dart';
 
@@ -39,13 +43,31 @@ class MarketScreen extends ConsumerWidget {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    AppbarButton(assetPath: AppAssets.search, onTap: () {}),
+                    AppbarButton(
+                      assetPath: AppAssets.search,
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (context) => const SearchScreen(),
+                        ),
+                      ),
+                    ),
                     const SizedBox(width: 12),
-                    AppbarButton(assetPath: AppAssets.aiMarket, onTap: () {}),
+                    AppbarButton(
+                      assetPath: AppAssets.aiMarket,
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (context) => const AiMarketScreen(),
+                        ),
+                      ),
+                    ),
                     const SizedBox(width: 12),
                     AppbarButton(
                       assetPath: AppAssets.notification,
-                      onTap: () {},
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (context) => const BusinessGuideScreen(),
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -58,11 +80,14 @@ class MarketScreen extends ConsumerWidget {
                 MarketHeader(),
                 AiBanner(
                   onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute<void>(
-                        builder: (context) => const AiMarketScreen(),
-                      ),
-                    );
+                    final item = ref
+                        .read(aiMarketControllerProvider)
+                        .valueOrNull
+                        ?.items
+                        .firstOrNull;
+                    if (item != null) {
+                      AiMarketSummaryPopup.show(context, item);
+                    }
                   },
                 ),
                 MarketTypes(),
@@ -75,6 +100,7 @@ class MarketScreen extends ConsumerWidget {
                 const MarketEtfRankingSection(),
                 const SizedBox(height: 38),
                 const MarketTrendingDiscussionSection(),
+                const SizedBox(height: 40),
               ],
             ),
           ),

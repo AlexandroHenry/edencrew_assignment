@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:sample/features/market/presentation/data/market_ranking_detail_candle_sample_data.dart';
+import 'package:sample/features/market/presentation/models/market_ranking_detail_candle.dart';
 import 'package:sample/theme/app_theme.dart';
 
 class MarketRankingDetailMiniChartPainter extends CustomPainter {

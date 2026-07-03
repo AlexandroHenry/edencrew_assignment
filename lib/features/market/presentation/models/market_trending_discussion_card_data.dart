@@ -3,16 +3,20 @@ import 'package:sample/features/market/presentation/models/market_trending_discu
 
 class MarketTrendingDiscussionCardData {
   const MarketTrendingDiscussionCardData({
+    required this.stockCode,
     required this.stockName,
     required this.price,
     required this.changePercent,
     required this.topics,
     this.logoColor,
+    this.sparklineValues = const [],
   });
 
+  final String stockCode;
   final String stockName;
   final int price;
   final double changePercent;
   final Color? logoColor;
   final List<MarketTrendingDiscussionTopic> topics;
+  final List<double> sparklineValues;
 }

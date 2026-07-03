@@ -5,8 +5,9 @@ import 'package:sample/features/market/presentation/providers/market_ranking_det
 class MarketRankingDetailDrawer {
   const MarketRankingDetailDrawer._();
 
-  static void open(WidgetRef ref, MarketRankingDetailItem item) {
-    openMarketRankingDetailDrawer(ref, item);
+  // 시세 데이터를 fetch 완료한 뒤 드로어를 열어 mock 데이터가 절대 표시되지 않도록 한다.
+  static Future<void> open(WidgetRef ref, MarketRankingDetailItem baseItem) {
+    return openMarketRankingDetailDrawerAsync(ref, baseItem);
   }
 
   static void close(WidgetRef ref) {

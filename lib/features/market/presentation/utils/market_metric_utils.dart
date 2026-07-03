@@ -31,4 +31,17 @@ class MarketMetricUtils {
       (match) => '${match[1]},',
     );
   }
+
+  static String formatStockPrice(double price, {required bool isUsd}) {
+    if (isUsd) {
+      final fixed = price.toStringAsFixed(2);
+      final parts = fixed.split('.');
+      final intPart = parts[0].replaceAllMapped(
+        RegExp(r'(\d)(?=(\d{3})+(?!\d))'),
+        (match) => '${match[1]},',
+      );
+      return '$intPart.${parts[1]}';
+    }
+    return formatPrice(price.round());
+  }
 }

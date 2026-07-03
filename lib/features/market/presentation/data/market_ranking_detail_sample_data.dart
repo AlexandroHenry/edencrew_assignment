@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sample/features/market/presentation/models/market_ranking_detail_item.dart';
 import 'package:sample/features/market/presentation/models/market_ranking_insight_item.dart';
+import 'package:sample/features/market/presentation/utils/market_metric_utils.dart';
 import 'package:sample/theme/app_theme.dart';
 
 const _samsungDetail = MarketRankingDetailItem(
@@ -173,11 +174,28 @@ final Map<String, MarketRankingDetailItem> marketRankingDetailById = {
   'tqqq': _aaplDetail.copyWith(id: 'tqqq', name: 'TQQQ'),
 };
 
-MarketRankingDetailItem marketRankingDetailForId(String id, {String? name}) {
+// price/changePercent/changeAmount를 넘기면 샘플 가격 대신 실제 랭킹 API 값으로 덮어쓴다.
+// Naver 상세 API가 아직 응답하기 전에도 리스트에서 받은 실시간 가격을 즉시 보여주기 위함.
+MarketRankingDetailItem marketRankingDetailForId(
+  String id, {
+  String? name,
+  String? logoUrl,
+  double? price,
+  double? changePercent,
+  int? changeAmount,
+  bool isOverseas = false,
+}) {
   final detail = marketRankingDetailById[id] ?? _defaultKrDetail;
   final resolvedName = name ?? detail.name;
-  if (detail.id == id && detail.name == resolvedName) {
-    return detail;
-  }
-  return detail.copyWith(id: id, name: resolvedName);
+  return detail.copyWith(
+    id: id,
+    name: resolvedName,
+    logoUrl: logoUrl,
+    priceLabel: price != null
+        ? MarketMetricUtils.formatStockPrice(price, isUsd: isOverseas)
+        : null,
+    changePercent: changePercent,
+    changeAmount: changeAmount,
+    isOverseas: isOverseas,
+  );
 }

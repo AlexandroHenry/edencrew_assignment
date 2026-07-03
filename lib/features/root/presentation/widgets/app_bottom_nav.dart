@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../theme/app_assets.dart';
 import '../../../../theme/app_theme.dart';
 
-enum AppTab { watchlist, discussion, search, news, settings }
+enum AppTab { market, watchlist, discussion, search, news }
 
 class AppBottomNav extends StatelessWidget {
   const AppBottomNav({
@@ -20,6 +20,14 @@ class AppBottomNav extends StatelessWidget {
     final bottomInset = MediaQuery.paddingOf(context).bottom;
     final items = <_BottomNavItemData>[
       _BottomNavItemData(
+        tab: AppTab.market,
+        label: '마켓',
+        itemWidth: 65,
+        assetPath: AppAssets.marketIcon,
+        assetWidth: AppAssetSizes.navWatchlist.width,
+        assetHeight: AppAssetSizes.navWatchlist.height,
+      ),
+      _BottomNavItemData(
         tab: AppTab.watchlist,
         label: '관심',
         itemWidth: 65,
@@ -29,35 +37,27 @@ class AppBottomNav extends StatelessWidget {
       ),
       _BottomNavItemData(
         tab: AppTab.discussion,
-        label: '종목토론',
+        label: '피드',
         itemWidth: 65,
-        assetPath: AppAssets.navDiscussion,
+        assetPath: AppAssets.feedIcon,
         assetWidth: AppAssetSizes.navDiscussion.width,
         assetHeight: AppAssetSizes.navDiscussion.height,
       ),
       _BottomNavItemData(
         tab: AppTab.search,
-        label: '검색',
+        label: '자산',
         itemWidth: 65,
-        assetPath: AppAssets.searchIcon,
+        assetPath: AppAssets.assetIcon,
         assetWidth: AppAssetSizes.searchIcon.width,
         assetHeight: AppAssetSizes.searchIcon.height,
       ),
       _BottomNavItemData(
         tab: AppTab.news,
-        label: '뉴스',
+        label: '마이',
         itemWidth: 65,
-        assetPath: AppAssets.navNews,
+        assetPath: AppAssets.myIcon,
         assetWidth: AppAssetSizes.navNews.width,
         assetHeight: AppAssetSizes.navNews.height,
-      ),
-      _BottomNavItemData(
-        tab: AppTab.settings,
-        label: '마이',
-        itemWidth: 68,
-        assetPath: AppAssets.navSettings,
-        assetWidth: AppAssetSizes.navSettings.width,
-        assetHeight: AppAssetSizes.navSettings.height,
       ),
     ];
     const baseContentWidth = 360.0;

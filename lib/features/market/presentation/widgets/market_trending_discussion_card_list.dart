@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sample/features/market/presentation/models/market_trending_discussion_card_data.dart';
+import 'package:sample/features/market/presentation/screens/stock_discussion_list_screen.dart';
 import 'package:sample/features/market/presentation/widgets/market_trending_discussion_card.dart';
 
 class MarketTrendingDiscussionCardList extends StatelessWidget {
@@ -15,7 +16,17 @@ class MarketTrendingDiscussionCardList extends StatelessWidget {
       child: Row(
         children: [
           for (var index = 0; index < items.length; index++) ...[
-            MarketTrendingDiscussionCard(data: items[index]),
+            MarketTrendingDiscussionCard(
+              data: items[index],
+              onMoreTap: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => StockDiscussionListScreen(
+                    stockCode: items[index].stockCode,
+                    stockName: items[index].stockName,
+                  ),
+                ),
+              ),
+            ),
             if (index < items.length - 1) const SizedBox(width: 12),
           ],
         ],
