@@ -10,6 +10,7 @@ class MarketTrendingDiscussionStockHeader extends StatelessWidget {
     required this.price,
     required this.changePercent,
     this.logoColor,
+    this.sparklineValues = const [],
     super.key,
   });
 
@@ -17,6 +18,7 @@ class MarketTrendingDiscussionStockHeader extends StatelessWidget {
   final int price;
   final double changePercent;
   final Color? logoColor;
+  final List<double> sparklineValues;
 
   @override
   Widget build(BuildContext context) {
@@ -70,8 +72,10 @@ class MarketTrendingDiscussionStockHeader extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
-          const MarketSparklineChart(
-            values: MarketSparklineChart.sampleValues,
+          MarketSparklineChart(
+            values: sparklineValues.isEmpty
+                ? MarketSparklineChart.sampleValues
+                : sparklineValues,
             width: 64,
             height: 36,
           ),

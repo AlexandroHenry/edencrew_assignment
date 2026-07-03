@@ -6,9 +6,14 @@ import 'package:sample/features/market/presentation/widgets/market_trending_disc
 import 'package:sample/theme/app_theme.dart';
 
 class MarketTrendingDiscussionCard extends StatelessWidget {
-  const MarketTrendingDiscussionCard({required this.data, super.key});
+  const MarketTrendingDiscussionCard({
+    required this.data,
+    this.onMoreTap,
+    super.key,
+  });
 
   final MarketTrendingDiscussionCardData data;
+  final VoidCallback? onMoreTap;
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +33,7 @@ class MarketTrendingDiscussionCard extends StatelessWidget {
             price: data.price,
             changePercent: data.changePercent,
             logoColor: data.logoColor,
+            sparklineValues: data.sparklineValues,
           ),
           const SizedBox(height: 12),
           for (var index = 0; index < data.topics.length; index++) ...[
@@ -35,7 +41,7 @@ class MarketTrendingDiscussionCard extends StatelessWidget {
             if (index < data.topics.length - 1) const SizedBox(height: 10),
           ],
           const SizedBox(height: 12),
-          const MarketTrendingDiscussionCardFooter(),
+          MarketTrendingDiscussionCardFooter(onTap: onMoreTap),
         ],
       ),
     );
