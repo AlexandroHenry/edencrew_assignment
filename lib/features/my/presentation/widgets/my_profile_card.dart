@@ -3,9 +3,14 @@ import '../../../../theme/app_theme.dart';
 import '../../domain/models/user_profile.dart';
 
 class MyProfileCard extends StatelessWidget {
-  const MyProfileCard({super.key, required this.profile});
+  const MyProfileCard({
+    super.key,
+    required this.profile,
+    this.onEditTap,
+  });
 
   final UserProfile profile;
+  final VoidCallback? onEditTap;
 
   @override
   Widget build(BuildContext context) {
@@ -19,14 +24,25 @@ class MyProfileCard extends StatelessWidget {
         children: [
           _Avatar(name: profile.name),
           const SizedBox(width: 16),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(profile.name, style: AppTypography.heading2),
-              const SizedBox(height: 4),
-              _InvestmentTypeBadge(type: profile.investmentType),
-            ],
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(profile.name, style: AppTypography.heading2),
+                const SizedBox(height: 4),
+                _InvestmentTypeBadge(type: profile.investmentType),
+              ],
+            ),
           ),
+          if (onEditTap != null)
+            GestureDetector(
+              onTap: onEditTap,
+              child: Icon(
+                Icons.edit_outlined,
+                size: 20,
+                color: AppColors.text.text_3_9e9e9e,
+              ),
+            ),
         ],
       ),
     );
