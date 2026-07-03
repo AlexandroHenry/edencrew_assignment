@@ -12,7 +12,7 @@ class AiMarketScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final summaries = ref.watch(aiMarketControllerProvider);
+    final async = ref.watch(aiMarketControllerProvider);
 
     return Theme(
       data: buildNamuhXDarkTheme(),
@@ -41,9 +41,27 @@ class AiMarketScreen extends ConsumerWidget {
                 child: AiMarketInfoBanner(),
               ),
               Expanded(
-                child: AiMarketSummaryList(
-                  items: summaries,
-                  onItemTap: (item) => AiMarketSummaryPopup.show(context, item),
+                child: async.when(
+                  loading: () => const Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                  error: (e, st) => Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Text(
+                        '에러: $e',
+                        style: AppTypography.body2.copyWith(
+                          color: AppColors.text.text_3_9e9e9e,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+                  data: (s) => AiMarketSummaryList(
+                    items: s.items,
+                    onItemTap: (item) =>
+                        AiMarketSummaryPopup.show(context, item),
+                  ),
                 ),
               ),
             ],
