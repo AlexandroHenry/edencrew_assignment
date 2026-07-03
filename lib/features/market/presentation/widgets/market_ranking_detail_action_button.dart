@@ -6,22 +6,27 @@ class MarketRankingDetailActionButton extends StatelessWidget {
     super.key,
     required this.label,
     required this.backgroundColor,
+    this.onTap,
   });
 
   final String label;
   final Color backgroundColor;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 48,
-      alignment: Alignment.center,
-      color: backgroundColor,
-      child: Text(
-        label,
-        style: AppTypography.subtitle.copyWith(
-          color: AppColors.text.text_fafafa,
-          fontWeight: FontWeight.w500,
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        height: 48,
+        alignment: Alignment.center,
+        color: backgroundColor,
+        child: Text(
+          label,
+          style: AppTypography.subtitle.copyWith(
+            color: AppColors.text.text_fafafa,
+            fontWeight: FontWeight.w500,
+          ),
         ),
       ),
     );

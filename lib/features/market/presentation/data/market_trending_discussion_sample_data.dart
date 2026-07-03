@@ -4,6 +4,7 @@ import 'package:sample/features/market/presentation/models/market_trending_discu
 
 const marketTrendingDiscussionSampleCards = <MarketTrendingDiscussionCardData>[
   MarketTrendingDiscussionCardData(
+    stockCode: '005930',
     stockName: '삼성전자',
     price: 97600,
     changePercent: 2.73,
@@ -24,6 +25,7 @@ const marketTrendingDiscussionSampleCards = <MarketTrendingDiscussionCardData>[
     ],
   ),
   MarketTrendingDiscussionCardData(
+    stockCode: '000660',
     stockName: 'SK하이닉스',
     price: 166500,
     changePercent: 2.67,

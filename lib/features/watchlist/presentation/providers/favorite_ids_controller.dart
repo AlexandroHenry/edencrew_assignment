@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/providers/watchlist_repository_provider.dart';
+import '../../data/repositories/favorite_ids_local_store.dart';
 import '../../domain/repositories/watchlist_repository.dart';
 
 final favoriteIdsControllerProvider =
@@ -17,26 +18,29 @@ class FavoriteIdsController extends AsyncNotifier<Set<String>> {
   }
 
   Future<bool> toggle(String itemId) async {
+    final canonicalId = normalizeToCanonicalFavoriteId(itemId);
     final currentFavoriteIds = {...(state.valueOrNull ?? await future)};
-    if (currentFavoriteIds.contains(itemId)) {
-      await remove(itemId);
+    if (currentFavoriteIds.contains(canonicalId)) {
+      await remove(canonicalId);
       return false;
     }
 
-    await add(itemId);
+    await add(canonicalId);
     return true;
   }
 
   Future<void> add(String itemId) async {
-    final currentFavoriteIds = {...(state.valueOrNull ?? await future), itemId};
-    state = AsyncData(currentFavoriteIds);
-    await _repository.addFavorite(itemId: itemId);
+    final canonicalId = normalizeToCanonicalFavoriteId(itemId);
+    await _repository.addFavorite(itemId: canonicalId);
+    state = AsyncData({
+      ...(state.valueOrNull ?? await future),
+      canonicalId,
+    });
   }
 
   Future<void> remove(String itemId) async {
-    final currentFavoriteIds = {...(state.valueOrNull ?? await future)}
-      ..remove(itemId);
-    state = AsyncData(currentFavoriteIds);
-    await _repository.removeFavorite(itemId: itemId);
+    final canonicalId = normalizeToCanonicalFavoriteId(itemId);
+    await _repository.removeFavorite(itemId: canonicalId);
+    state = AsyncData({...(state.valueOrNull ?? await future)}..remove(canonicalId));
   }
 }

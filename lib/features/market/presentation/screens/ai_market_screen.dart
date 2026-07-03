@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sample/features/market/presentation/providers/ai_market_controller.dart';
+import 'package:sample/features/market/presentation/screens/ai_market_detail_screen.dart';
 import 'package:sample/features/market/presentation/widgets/ai_market_info_banner.dart';
 import 'package:sample/features/market/presentation/widgets/ai_market_summary_list.dart';
-import 'package:sample/features/market/presentation/widgets/ai_market_summary_popup.dart';
 import 'package:sample/theme/app_theme.dart';
 
 class AiMarketScreen extends ConsumerWidget {
@@ -12,7 +12,7 @@ class AiMarketScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final summaries = ref.watch(aiMarketControllerProvider);
+    final async = ref.watch(aiMarketControllerProvider);
 
     return Theme(
       data: buildNamuhXDarkTheme(),
@@ -41,9 +41,29 @@ class AiMarketScreen extends ConsumerWidget {
                 child: AiMarketInfoBanner(),
               ),
               Expanded(
-                child: AiMarketSummaryList(
-                  items: summaries,
-                  onItemTap: (item) => AiMarketSummaryPopup.show(context, item),
+                child: async.when(
+                  loading: () =>
+                      const Center(child: CircularProgressIndicator()),
+                  error: (e, st) => Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Text(
+                        '에러: $e',
+                        style: AppTypography.body2.copyWith(
+                          color: AppColors.text.text_3_9e9e9e,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+                  data: (s) => AiMarketSummaryList(
+                    items: s.items,
+                    onItemTap: (item) => Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) => AiMarketDetailScreen(item: item),
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ],

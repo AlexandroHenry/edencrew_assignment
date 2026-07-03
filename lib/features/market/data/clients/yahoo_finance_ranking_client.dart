@@ -1,23 +1,33 @@
 import 'package:dio/dio.dart';
 import 'package:sample/features/market/data/dtos/ranking_item_dto.dart';
+import 'package:sample/shared/utils/dio_factory.dart';
 
 class YahooFinanceRankingClient {
-  YahooFinanceRankingClient() : _dio = Dio();
+  YahooFinanceRankingClient() : _dio = createDio(tag: 'DIO:YahooRanking');
 
   final Dio _dio;
   static const _base =
       'https://query2.finance.yahoo.com/v1/finance/screener/predefined/saved';
 
-  Future<List<RankingItemDto>> fetchMostActives() =>
-      _fetch(scrId: 'most_actives');
+  Future<List<RankingItemDto>> fetchMostActives({int count = 20, int start = 0}) =>
+      _fetch(scrId: 'most_actives', count: count, start: start);
 
-  Future<List<RankingItemDto>> fetchTopGainers() =>
-      _fetch(scrId: 'day_gainers');
+  Future<List<RankingItemDto>> fetchTopGainers({int count = 20, int start = 0}) =>
+      _fetch(scrId: 'day_gainers', count: count, start: start);
 
-  Future<List<RankingItemDto>> _fetch({required String scrId}) async {
+  Future<List<RankingItemDto>> _fetch({
+    required String scrId,
+    int count = 20,
+    int start = 0,
+  }) async {
     final res = await _dio.get<Map<String, dynamic>>(
       _base,
-      queryParameters: {'scrIds': scrId, 'count': 5, 'formatted': true},
+      queryParameters: {
+        'scrIds': scrId,
+        'count': count,
+        'start': start,
+        'formatted': true,
+      },
       options: Options(headers: {'User-Agent': 'Mozilla/5.0'}),
     );
     final data = res.data;

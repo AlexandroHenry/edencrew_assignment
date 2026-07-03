@@ -3,6 +3,7 @@ import 'package:sample/features/market/presentation/models/market_theme_top_stoc
 
 class MarketThemeItem {
   const MarketThemeItem({
+    required this.no,
     required this.rank,
     required this.name,
     required this.changePercent,
@@ -13,6 +14,7 @@ class MarketThemeItem {
     required this.topStocks,
   });
 
+  final String no;
   final int rank;
   final String name;
   final double changePercent;

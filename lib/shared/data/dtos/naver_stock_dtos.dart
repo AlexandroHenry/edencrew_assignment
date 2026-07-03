@@ -1,6 +1,22 @@
 // ignore_for_file: unused_element
 
-import '../../domain/services/watchlist_sorting.dart';
+class NaverIntradayPriceDto {
+  const NaverIntradayPriceDto({
+    required this.time,
+    required this.closePrice,
+    required this.changeAmount,
+    required this.changeRate,
+    required this.volume,
+    required this.isUp,
+  });
+
+  final String time; // "HH:MM"
+  final double closePrice;
+  final double changeAmount;
+  final double changeRate;
+  final int volume;
+  final bool isUp;
+}
 
 class NaverAutocompleteItemDto {
   const NaverAutocompleteItemDto({
@@ -184,12 +200,11 @@ DateTime _readLocalDate(Object? value) {
     throw FormatException('Invalid Naver localDate "$text"');
   }
 
-  return normalizeAsOfDate(
-    DateTime(
-      int.parse(text.substring(0, 4)),
-      int.parse(text.substring(4, 6)),
-      int.parse(text.substring(6, 8)),
-    ),
+  // 시간 정보 없이 날짜만 비교/저장하므로 자정으로 정규화 (watchlist_sorting.normalizeAsOfDate와 동일 규칙)
+  return DateTime(
+    int.parse(text.substring(0, 4)),
+    int.parse(text.substring(4, 6)),
+    int.parse(text.substring(6, 8)),
   );
 }
 

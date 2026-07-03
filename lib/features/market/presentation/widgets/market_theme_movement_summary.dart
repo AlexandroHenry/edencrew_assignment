@@ -18,42 +18,53 @@ class MarketThemeMovementSummary extends StatelessWidget {
   Widget build(BuildContext context) {
     final total = downCount + flatCount + upCount;
     final downFlex = total == 0 ? 1 : downCount;
-    final flatFlex = total == 0 ? 1 : flatCount;
+    final flatFlex = flatCount; // 0이면 세그먼트·라벨 모두 생략
     final upFlex = total == 0 ? 1 : upCount;
 
+    // 라벨 행과 바 행이 동일한 flex를 공유해야 라벨이 해당 세그먼트 수평 중앙에 위치
     return Column(
       children: [
         Row(
           children: [
-            Expanded(
-              flex: downFlex,
-              child: Text(
-                '하락 $downCount',
-                style: AppTypography.xs.copyWith(
-                  color: AppColors.mainAndAccent.down_4780ff,
+            if (downFlex > 0)
+              Expanded(
+                flex: downFlex,
+                child: Text(
+                  '하락 $downCount',
+                  textAlign: TextAlign.center,
+                  softWrap: false,
+                  overflow: TextOverflow.visible,
+                  style: AppTypography.xs.copyWith(
+                    color: AppColors.mainAndAccent.down_4780ff,
+                  ),
                 ),
               ),
-            ),
-            Expanded(
-              flex: flatFlex,
-              child: Text(
-                '보합 $flatCount',
-                textAlign: TextAlign.center,
-                style: AppTypography.xs.copyWith(
-                  color: AppDerivedColors.openTag,
+            if (flatFlex > 0)
+              Expanded(
+                flex: flatFlex,
+                child: Text(
+                  '보합 $flatCount',
+                  textAlign: TextAlign.center,
+                  softWrap: false,
+                  overflow: TextOverflow.visible,
+                  style: AppTypography.xs.copyWith(
+                    color: AppDerivedColors.openTag,
+                  ),
                 ),
               ),
-            ),
-            Expanded(
-              flex: upFlex,
-              child: Text(
-                '상승 $upCount',
-                textAlign: TextAlign.right,
-                style: AppTypography.xs.copyWith(
-                  color: AppColors.mainAndAccent.up_f93f62,
+            if (upFlex > 0)
+              Expanded(
+                flex: upFlex,
+                child: Text(
+                  '상승 $upCount',
+                  textAlign: TextAlign.center,
+                  softWrap: false,
+                  overflow: TextOverflow.visible,
+                  style: AppTypography.xs.copyWith(
+                    color: AppColors.mainAndAccent.up_f93f62,
+                  ),
                 ),
               ),
-            ),
           ],
         ),
         const SizedBox(height: 6),
@@ -61,26 +72,31 @@ class MarketThemeMovementSummary extends StatelessWidget {
           height: 4,
           child: Row(
             children: [
-              Expanded(
-                flex: downFlex,
-                child: MarketThemeMovementBarSegment(
-                  color: AppColors.mainAndAccent.down_4780ff,
+              if (downFlex > 0) ...[
+                Expanded(
+                  flex: downFlex,
+                  child: MarketThemeMovementBarSegment(
+                    color: AppColors.mainAndAccent.down_4780ff,
+                  ),
                 ),
-              ),
-              const SizedBox(width: 2),
-              Expanded(
-                flex: flatFlex,
-                child: MarketThemeMovementBarSegment(
-                  color: AppDerivedColors.openTag,
+                if (flatFlex > 0 || upFlex > 0) const SizedBox(width: 2),
+              ],
+              if (flatFlex > 0) ...[
+                Expanded(
+                  flex: flatFlex,
+                  child: MarketThemeMovementBarSegment(
+                    color: AppDerivedColors.openTag,
+                  ),
                 ),
-              ),
-              const SizedBox(width: 2),
-              Expanded(
-                flex: upFlex,
-                child: MarketThemeMovementBarSegment(
-                  color: AppColors.mainAndAccent.up_f93f62,
+                if (upFlex > 0) const SizedBox(width: 2),
+              ],
+              if (upFlex > 0)
+                Expanded(
+                  flex: upFlex,
+                  child: MarketThemeMovementBarSegment(
+                    color: AppColors.mainAndAccent.up_f93f62,
+                  ),
                 ),
-              ),
             ],
           ),
         ),

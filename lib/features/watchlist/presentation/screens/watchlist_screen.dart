@@ -3,6 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../root/presentation/providers/current_app_tab_provider.dart';
+import '../../../root/presentation/widgets/app_bottom_nav.dart';
+
 import '../../domain/models/watchlist_models.dart';
 import '../../domain/services/watchlist_formatters.dart';
 import '../../domain/services/watchlist_sorting.dart';
@@ -157,6 +160,12 @@ class _WatchlistScreenState extends ConsumerState<WatchlistScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ref.listen(currentAppTabProvider, (previous, next) {
+      if (next == AppTab.watchlist && previous != AppTab.watchlist) {
+        unawaited(_refresh());
+      }
+    });
+
     ref.listen<AsyncValue<WatchlistSnapshot>>(watchlistControllerProvider, (
       previous,
       next,

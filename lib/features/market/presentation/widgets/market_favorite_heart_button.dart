@@ -17,15 +17,24 @@ class MarketFavoriteHeartButton extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
-      child: AppAssetSlotIcon(
-        assetPath: AppAssets.favoriteHeart,
-        slotWidth: 24,
-        slotHeight: 24,
-        assetWidth: AppAssetSizes.favoriteHeart.width,
-        assetHeight: AppAssetSizes.favoriteHeart.height,
-        color: isFavorite
-            ? AppColors.mainAndAccent.up_f93f62
-            : AppColors.darkTheme.c_424242,
+      child: SizedBox(
+        width: 24,
+        height: 24,
+        child: Center(
+          child: isFavorite
+              ? Image.asset(
+                  AppAssets.heartFilled,
+                  width: 20,
+                  height: 20,
+                  fit: BoxFit.contain,
+                )
+              : AppSvgIcon(
+                  assetPath: AppAssets.navWatchlist,
+                  width: 20,
+                  height: 20,
+                  color: AppColors.darkTheme.c_424242,
+                ),
+        ),
       ),
     );
   }

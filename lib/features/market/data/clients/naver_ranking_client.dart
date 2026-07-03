@@ -1,27 +1,63 @@
 import 'dart:typed_data';
+
 import 'package:charset_converter/charset_converter.dart';
 import 'package:dio/dio.dart';
 import 'package:sample/features/market/data/dtos/ranking_item_dto.dart';
+import 'package:sample/shared/utils/dio_factory.dart';
 
 class NaverRankingClient {
-  NaverRankingClient() : _dio = Dio();
+  NaverRankingClient() : _dio = createDio(tag: 'DIO:NaverRanking');
 
   final Dio _dio;
   static const _base = 'https://finance.naver.com/sise';
   static const _logoBase =
       'https://ssl.pstatic.net/imgstock/fn/real/logo/stock/Stock';
 
-  Future<List<RankingItemDto>> fetchMostViewed({bool kosdaq = false}) =>
-      _fetchSise('sise_quant.naver', sosok: kosdaq ? 1 : 0);
+  // KOSPI+KOSDAQ 합산해 최대 50개 반환 (한 시장당 25개 한계)
+  Future<List<RankingItemDto>> fetchMostViewed() async {
+    final results = await Future.wait([
+      _fetchSise('sise_quant.naver', sosok: 0),
+      _fetchSise('sise_quant.naver', sosok: 1),
+    ]);
+    return _mergeAndRerank([...results[0], ...results[1]]);
+  }
 
-  Future<List<RankingItemDto>> fetchHighVolume({bool kosdaq = false}) =>
-      _fetchSise('sise_quant.naver', sosok: kosdaq ? 1 : 0);
+  Future<List<RankingItemDto>> fetchHighVolume() async {
+    final results = await Future.wait([
+      _fetchSise('sise_quant.naver', sosok: 0),
+      _fetchSise('sise_quant.naver', sosok: 1),
+    ]);
+    return _mergeAndRerank([...results[0], ...results[1]]);
+  }
 
-  Future<List<RankingItemDto>> fetchTopGainers({bool kosdaq = false}) =>
-      _fetchSise('sise_rise.naver', sosok: kosdaq ? 1 : 0);
+  Future<List<RankingItemDto>> fetchTopGainers() async {
+    final results = await Future.wait([
+      _fetchSise('sise_rise.naver', sosok: 0),
+      _fetchSise('sise_rise.naver', sosok: 1),
+    ]);
+    return _mergeAndRerank([...results[0], ...results[1]]);
+  }
 
   Future<List<RankingItemDto>> fetchForeignerNetBuy() =>
       _fetchForeignerNetBuy();
+
+  List<RankingItemDto> _mergeAndRerank(List<RankingItemDto> items) {
+    // changePercent 내림차순 재정렬 후 rank 재부여
+    final sorted = [...items]
+      ..sort((a, b) => b.changePercent.compareTo(a.changePercent));
+    return List.generate(
+      sorted.length,
+      (i) => RankingItemDto(
+        rank: i + 1,
+        symbol: sorted[i].symbol,
+        name: sorted[i].name,
+        price: sorted[i].price,
+        changePercent: sorted[i].changePercent,
+        logoUrl: sorted[i].logoUrl,
+        isOverseas: false,
+      ),
+    );
+  }
 
   Future<List<RankingItemDto>> _fetchSise(
     String page, {
@@ -61,7 +97,7 @@ class NaverRankingClient {
         logoUrl: symbol.isNotEmpty ? '$_logoBase$symbol.svg' : null,
         isOverseas: false,
       ));
-      if (results.length >= 5) break;
+      if (results.length >= 20) break;
     }
     return results;
   }
@@ -100,7 +136,7 @@ class NaverRankingClient {
         logoUrl: symbol.isNotEmpty ? '$_logoBase$symbol.svg' : null,
         isOverseas: false,
       ));
-      if (results.length >= 5) break;
+      if (results.length >= 20) break;
     }
     return results;
   }

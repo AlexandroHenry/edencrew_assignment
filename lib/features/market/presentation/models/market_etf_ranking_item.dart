@@ -11,5 +11,5 @@ class MarketEtfRankingItem {
   final String name;
   final String code;
   final double changePercent;
-  final int price;
+  final double price;
 }

@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:sample/features/market/presentation/models/index_detail_period.dart';
 import 'package:sample/features/market/presentation/models/index_detail_quote_item.dart';
@@ -57,11 +59,14 @@ class IndexDetailQuoteRow extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.end,
                   spacing: 2,
                   children: [
-                    Image.asset(
-                      AppAssets.carotUp,
-                      width: 8,
-                      height: 8,
-                      color: changeColor,
+                    Transform.rotate(
+                      angle: item.isUp ? 0 : math.pi,
+                      child: Image.asset(
+                        AppAssets.carotUp,
+                        width: 8,
+                        height: 8,
+                        color: changeColor,
+                      ),
                     ),
                     Text(
                       item.change.toStringAsFixed(2),

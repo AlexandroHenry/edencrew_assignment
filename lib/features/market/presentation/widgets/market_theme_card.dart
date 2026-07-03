@@ -13,15 +13,16 @@ class MarketThemeCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 300,
-      padding: const EdgeInsets.all(16),
+      width: 308,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
       decoration: BoxDecoration(
         color: AppColors.bg.bg_2_212121,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(10),
         border: Border.all(color: AppColors.border.border_333333),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.max,
         children: [
           Text(
             '${item.rank}위',
@@ -37,28 +38,43 @@ class MarketThemeCard extends StatelessWidget {
                 child: Text(item.name, style: AppTypography.subtitle),
               ),
               Text(
-                '${item.changePercent.toStringAsFixed(2)}%',
+                '${item.changePercent >= 0 ? '+' : ''}${item.changePercent.toStringAsFixed(2)}%',
                 style: AppTypography.body2.copyWith(
-                  color: AppColors.mainAndAccent.up_f93f62,
+                  color: item.changePercent >= 0
+                      ? AppColors.mainAndAccent.up_f93f62
+                      : AppColors.mainAndAccent.down_4780ff,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
           MarketThemeLogoStack(logoColors: item.logoColors),
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
           MarketThemeMovementSummary(
             downCount: item.downCount,
             flatCount: item.flatCount,
             upCount: item.upCount,
           ),
-          const SizedBox(height: 12),
-          for (var index = 0; index < item.topStocks.length; index++) ...[
-            MarketThemeTopStockRow(stock: item.topStocks[index]),
-            if (index < item.topStocks.length - 1) const SizedBox(height: 8),
+          const SizedBox(height: 16),
+          // 항상 3개 행 유지 — 데이터 부족 시 빈 행으로 채워 카드 높이 균일
+          for (var index = 0; index < 3; index++) ...[
+            if (index < item.topStocks.length)
+              MarketThemeTopStockRow(stock: item.topStocks[index])
+            else
+              const _EmptyStockRow(),
+            if (index < 2) const SizedBox(height: 8),
           ],
         ],
       ),
     );
+  }
+}
+
+class _EmptyStockRow extends StatelessWidget {
+  const _EmptyStockRow();
+
+  @override
+  Widget build(BuildContext context) {
+    return const SizedBox(height: 18);
   }
 }

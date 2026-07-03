@@ -3,12 +3,13 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
+import 'package:sample/shared/data/clients/naver_domestic_stock_client.dart';
+import 'package:sample/shared/data/dtos/naver_stock_dtos.dart';
+
 import '../../domain/models/watchlist_models.dart';
 import '../../domain/repositories/watchlist_repository.dart';
 import '../../domain/services/watchlist_sorting.dart';
-import '../clients/naver_domestic_stock_client.dart';
 import '../clients/naver_stock_logo_url_resolver.dart';
-import '../dtos/naver_stock_dtos.dart';
 import 'favorite_ids_local_store.dart';
 
 class NaverWatchlistRepository implements WatchlistRepository {
@@ -620,15 +621,15 @@ class NaverWatchlistRepository implements WatchlistRepository {
   }
 
   String _requireCanonicalFavoriteId(String itemId) {
-    final symbol = domesticSymbolFromFavoriteId(itemId);
-    if (symbol == null) {
+    final normalized = normalizeToCanonicalFavoriteId(itemId);
+    if (domesticSymbolFromFavoriteId(normalized) == null) {
       throw ArgumentError.value(
         itemId,
         'itemId',
         'Naver repository only accepts canonical domestic favorite ids',
       );
     }
-    return canonicalDomesticFavoriteId(symbol);
+    return normalized;
   }
 
   String _dailyHistoryPageCacheKey(String symbol, int page) => '$symbol::$page';
