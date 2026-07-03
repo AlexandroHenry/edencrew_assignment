@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sample/features/business_guide/presentation/screens/business_guide_screen.dart';
-import 'package:sample/features/market/presentation/models/ai_market_summary_item.dart';
+import 'package:sample/features/market/presentation/providers/ai_market_controller.dart';
 import 'package:sample/features/market/presentation/screens/ai_market_screen.dart';
 import 'package:sample/features/market/presentation/widgets/ai_banner.dart';
 import 'package:sample/features/market/presentation/widgets/ai_market_summary_popup.dart';
@@ -80,22 +80,14 @@ class MarketScreen extends ConsumerWidget {
                 MarketHeader(),
                 AiBanner(
                   onTap: () {
-                    AiMarketSummaryPopup.show(
-                      context,
-                      AiMarketSummaryItem(
-                        id: '1',
-                        relativeTime: '1분전',
-                        title: 'AI 시황',
-                        body: 'AI 시황 설명',
-                        popupTitle: 'AI 시황 제목',
-                        popupBody: 'AI 시황 내용',
-                        detailHeadline: 'AI 시황 제목',
-                        detailParagraphs: ['AI 시황 내용'],
-                        summaryKeywords: 'AI 시황 키워드',
-                        newsSource: 'AI 시황 소스',
-                        summaryTimeRange: '1분전',
-                      ),
-                    );
+                    final item = ref
+                        .read(aiMarketControllerProvider)
+                        .valueOrNull
+                        ?.items
+                        .firstOrNull;
+                    if (item != null) {
+                      AiMarketSummaryPopup.show(context, item);
+                    }
                   },
                 ),
                 MarketTypes(),

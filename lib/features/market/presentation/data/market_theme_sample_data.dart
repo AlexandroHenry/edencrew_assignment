@@ -4,6 +4,7 @@ import 'package:sample/features/market/presentation/models/market_theme_top_stoc
 
 const marketThemeSampleItems = <MarketThemeItem>[
   MarketThemeItem(
+    no: '0',
     rank: 1,
     name: '의류제조',
     changePercent: 2.73,
@@ -24,6 +25,7 @@ const marketThemeSampleItems = <MarketThemeItem>[
     ],
   ),
   MarketThemeItem(
+    no: '0',
     rank: 2,
     name: '반도체',
     changePercent: 2.15,

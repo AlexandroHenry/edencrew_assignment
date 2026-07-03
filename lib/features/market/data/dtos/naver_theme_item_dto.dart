@@ -1,5 +1,6 @@
 class NaverThemeItemDto {
   const NaverThemeItemDto({
+    required this.no,
     required this.name,
     required this.changeRate,
     required this.upCount,
@@ -8,6 +9,7 @@ class NaverThemeItemDto {
     required this.topStocks,
   });
 
+  final String no;
   final String name;
   final double changeRate;
   final int upCount;

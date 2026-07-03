@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sample/features/market/presentation/providers/ai_market_controller.dart';
+import 'package:sample/features/market/presentation/screens/ai_market_detail_screen.dart';
 import 'package:sample/features/market/presentation/widgets/ai_market_info_banner.dart';
 import 'package:sample/features/market/presentation/widgets/ai_market_summary_list.dart';
-import 'package:sample/features/market/presentation/widgets/ai_market_summary_popup.dart';
 import 'package:sample/theme/app_theme.dart';
 
 class AiMarketScreen extends ConsumerWidget {
@@ -42,9 +42,8 @@ class AiMarketScreen extends ConsumerWidget {
               ),
               Expanded(
                 child: async.when(
-                  loading: () => const Center(
-                    child: CircularProgressIndicator(),
-                  ),
+                  loading: () =>
+                      const Center(child: CircularProgressIndicator()),
                   error: (e, st) => Center(
                     child: Padding(
                       padding: const EdgeInsets.all(24),
@@ -59,8 +58,11 @@ class AiMarketScreen extends ConsumerWidget {
                   ),
                   data: (s) => AiMarketSummaryList(
                     items: s.items,
-                    onItemTap: (item) =>
-                        AiMarketSummaryPopup.show(context, item),
+                    onItemTap: (item) => Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) => AiMarketDetailScreen(item: item),
+                      ),
+                    ),
                   ),
                 ),
               ),
