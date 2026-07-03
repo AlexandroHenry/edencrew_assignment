@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sample/features/asset/presentation/widgets/trade_bottom_sheet.dart';
 import 'package:sample/features/market/domain/models/ranking_detail_quote.dart';
 import 'package:sample/features/market/domain/services/ranking_detail_formatter.dart';
 import 'package:sample/features/market/presentation/models/market_ranking_detail_candle.dart';
@@ -69,7 +70,22 @@ class MarketRankingDetailPanel extends ConsumerWidget {
             ],
           ),
         ),
-        const MarketRankingDetailActionBar(),
+        MarketRankingDetailActionBar(
+          onBuy: () => TradeBottomSheet.show(
+            context,
+            stockCode: item.id,
+            stockName: item.name,
+            currentPrice: _parseFormattedPrice(resolvedItem.priceLabel),
+            tradeType: TradeType.buy,
+          ),
+          onSell: () => TradeBottomSheet.show(
+            context,
+            stockCode: item.id,
+            stockName: item.name,
+            currentPrice: _parseFormattedPrice(resolvedItem.priceLabel),
+            tradeType: TradeType.sell,
+          ),
+        ),
       ],
     );
   }
@@ -124,6 +140,9 @@ class MarketRankingDetailPanel extends ConsumerWidget {
           .toList(),
     );
   }
+
+  double _parseFormattedPrice(String label) =>
+      double.tryParse(label.replaceAll(',', '').replaceAll('원', '').trim()) ?? 0;
 
   MarketRankingPriceStat _priceStat({
     required MarketRankingPriceStatType type,

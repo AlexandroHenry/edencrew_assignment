@@ -3,7 +3,14 @@ import 'package:sample/features/market/presentation/widgets/market_ranking_detai
 import 'package:sample/theme/app_theme.dart';
 
 class MarketRankingDetailActionBar extends StatelessWidget {
-  const MarketRankingDetailActionBar({super.key});
+  const MarketRankingDetailActionBar({
+    super.key,
+    this.onBuy,
+    this.onSell,
+  });
+
+  final VoidCallback? onBuy;
+  final VoidCallback? onSell;
 
   @override
   Widget build(BuildContext context) {
@@ -19,12 +26,14 @@ class MarketRankingDetailActionBar extends StatelessWidget {
           child: MarketRankingDetailActionButton(
             label: '매수',
             backgroundColor: AppColors.mainAndAccent.up_f93f62,
+            onTap: onBuy,
           ),
         ),
         Expanded(
           child: MarketRankingDetailActionButton(
             label: '매도',
             backgroundColor: AppColors.mainAndAccent.down_4780ff,
+            onTap: onSell,
           ),
         ),
       ],
