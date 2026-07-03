@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:sample/features/market/presentation/data/market_ranking_detail_sample_data.dart';
-import 'package:sample/features/market/presentation/providers/market_ranking_detail_drawer_controller.dart';
 import 'package:sample/features/market/presentation/providers/market_stock_ranking_list_controller.dart';
+import 'package:sample/features/market/presentation/screens/market_chart_detail_screen.dart';
 import 'package:sample/features/market/presentation/widgets/market_stock_ranking_list.dart';
 import 'package:sample/features/market/presentation/widgets/market_stock_ranking_screen_filters.dart';
 import 'package:sample/features/watchlist/presentation/providers/favorite_ids_controller.dart';
@@ -65,10 +64,7 @@ class _MarketStockRankingScreenState
           appBar: AppBar(
             leading: IconButton(
               icon: const Icon(Icons.arrow_back_ios_new, size: 20),
-              onPressed: () {
-                closeMarketRankingDetailDrawer(ref);
-                Navigator.of(context).pop();
-              },
+              onPressed: () => Navigator.of(context).pop(),
             ),
             title: const Text('실시간 종목 순위'),
             centerTitle: true,
@@ -108,15 +104,12 @@ class _MarketStockRankingScreenState
                                       .toggle(id);
                                 },
                                 onItemTap: (item) {
-                                  openMarketRankingDetailDrawerAsync(
-                                    ref,
-                                    marketRankingDetailForId(
-                                      item.id,
-                                      name: item.name,
-                                      logoUrl: item.logoUrl,
-                                      price: item.price,
-                                      changePercent: item.changePercent,
-                                      isOverseas: item.isOverseas,
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute<void>(
+                                      builder: (_) => MarketChartDetailScreen(
+                                        indexCode: item.id,
+                                        marketName: item.name,
+                                      ),
                                     ),
                                   );
                                 },
