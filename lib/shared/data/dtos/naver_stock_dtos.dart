@@ -1,5 +1,23 @@
 // ignore_for_file: unused_element
 
+class NaverIntradayPriceDto {
+  const NaverIntradayPriceDto({
+    required this.time,
+    required this.closePrice,
+    required this.changeAmount,
+    required this.changeRate,
+    required this.volume,
+    required this.isUp,
+  });
+
+  final String time; // "HH:MM"
+  final double closePrice;
+  final double changeAmount;
+  final double changeRate;
+  final int volume;
+  final bool isUp;
+}
+
 class NaverAutocompleteItemDto {
   const NaverAutocompleteItemDto({
     required this.code,

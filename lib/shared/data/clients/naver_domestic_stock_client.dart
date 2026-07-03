@@ -1,7 +1,9 @@
 // ignore_for_file: unused_element, unused_field
 
 import 'dart:convert';
+import 'dart:typed_data';
 
+import 'package:charset_converter/charset_converter.dart';
 import 'package:dio/dio.dart';
 
 import '../dtos/naver_stock_dtos.dart';
@@ -19,6 +21,9 @@ abstract interface class NaverStockDataClient {
     required String symbol,
     required int page,
   });
+
+  // 당일 분봉 체결 내역 (sise_time.naver)
+  Future<List<NaverIntradayPriceDto>> fetchIntradayPrices(String symbol);
 }
 
 class NaverDomesticStockClient implements NaverStockDataClient {
@@ -57,7 +62,9 @@ class NaverDomesticStockClient implements NaverStockDataClient {
     }
 
     if (data is List<int>) {
-      final decoded = jsonDecode(utf8.decode(data));
+      final decoded = jsonDecode(
+        utf8.decode(data, allowMalformed: true),
+      );
       if (decoded is Map<String, dynamic>) {
         return decoded;
       }
@@ -119,12 +126,12 @@ class NaverDomesticStockClient implements NaverStockDataClient {
     if (unique.isEmpty) return {};
 
     final query = 'SERVICE_ITEM:${unique.join(',')}';
-    final response = await _dio.get<Object>(
+    final response = await _dio.get<List<int>>(
       'https://polling.finance.naver.com/api/realtime',
       queryParameters: {'query': query},
       options: Options(
         headers: _defaultHeaders,
-        responseType: ResponseType.plain,
+        responseType: ResponseType.bytes,
       ),
     );
 
@@ -178,8 +185,11 @@ class NaverDomesticStockClient implements NaverStockDataClient {
       ),
     );
 
-    // Naver 일별 시세 페이지는 EUC-KR 인코딩이므로 latin1로 디코딩 후 파싱
-    final html = latin1.decode(response.data!);
+    // Naver 일별 시세 페이지는 EUC-KR 인코딩
+    final html = await CharsetConverter.decode(
+      'EUC-KR',
+      Uint8List.fromList(response.data!),
+    );
     final priceInfos = _parseDailyRows(html, symbol);
     final lastPage = _parseLastPage(html);
 
@@ -259,6 +269,90 @@ class NaverDomesticStockClient implements NaverStockDataClient {
         .map((m) => int.tryParse(m.group(1)!) ?? 0)
         .toList();
     return allPageNums.isEmpty ? 1 : allPageNums.reduce((a, b) => a > b ? a : b);
+  }
+
+  /// 당일 분봉 체결 내역 (sise_time.naver)
+  /// 열 순서: 체결시각 | 체결가 | 전일비 | 매도 | 매수 | 거래량 | 변동량
+  @override
+  Future<List<NaverIntradayPriceDto>> fetchIntradayPrices(String symbol) async {
+    final now = DateTime.now();
+    final thistime = '${now.year}'
+        '${now.month.toString().padLeft(2, '0')}'
+        '${now.day.toString().padLeft(2, '0')}235959';
+
+    final response = await _dio.get<List<int>>(
+      'https://finance.naver.com/item/sise_time.naver',
+      queryParameters: {'code': symbol, 'thistime': thistime},
+      options: Options(
+        headers: {
+          ..._defaultHeaders,
+          'referer':
+              'https://finance.naver.com/item/sise_time.naver?code=$symbol',
+        },
+        responseType: ResponseType.bytes,
+      ),
+    );
+
+    final html = await CharsetConverter.decode(
+      'EUC-KR',
+      Uint8List.fromList(response.data!),
+    );
+    return _parseIntradayRows(html);
+  }
+
+  /// 당일 분봉 체결 내역 (sise_time.naver)
+  /// 열 순서: 체결시각 | 체결가 | 전일비 | 매도 | 매수 | 거래량 | 변동량
+  /// (등락률 컬럼은 없으므로 전일비·체결가로 계산한다)
+  static List<NaverIntradayPriceDto> _parseIntradayRows(String html) {
+    final trRegex = RegExp(r'<tr[^>]*>(.*?)</tr>', dotAll: true);
+    final tdRegex = RegExp(r'<td[^>]*>(.*?)</td>', dotAll: true);
+    final tagRegex = RegExp(r'<[^>]+>');
+    final timePattern = RegExp(r'^\d{2}:\d{2}$');
+
+    final result = <NaverIntradayPriceDto>[];
+
+    for (final trMatch in trRegex.allMatches(html)) {
+      final cells = tdRegex
+          .allMatches(trMatch.group(1)!)
+          .map((m) => m.group(1)!.replaceAll(tagRegex, '').trim())
+          .where((t) => t.isNotEmpty)
+          .toList();
+
+      if (cells.isEmpty || !timePattern.hasMatch(cells[0])) continue;
+      if (cells.length < 6) continue;
+
+      try {
+        final close = double.tryParse(cells[1].replaceAll(',', '')) ?? 0;
+        final changeCell = cells[2];
+        final isDown =
+            changeCell.contains('하락') || changeCell.contains('하한');
+        final isUp = !isDown;
+        final changeAmount = double.tryParse(
+              changeCell.replaceAll(RegExp(r'[^0-9.]'), ''),
+            ) ??
+            0;
+        final previousClose =
+            isUp ? close - changeAmount : close + changeAmount;
+        final changeRate = previousClose > 0
+            ? changeAmount / previousClose * 100
+            : 0.0;
+        final volume = int.tryParse(cells[5].replaceAll(',', '')) ?? 0;
+
+        result.add(
+          NaverIntradayPriceDto(
+            time: cells[0],
+            closePrice: close,
+            changeAmount: changeAmount,
+            changeRate: double.parse(changeRate.toStringAsFixed(2)),
+            volume: volume,
+            isUp: isUp,
+          ),
+        );
+      } catch (_) {
+        continue;
+      }
+    }
+    return result;
   }
 }
 

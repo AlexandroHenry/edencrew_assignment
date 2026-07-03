@@ -15,7 +15,7 @@ class MarketStockRankingItem {
   final String id;
   final String name;
   final double changePercent;
-  final int price;
+  final double price;
   final String? symbol;
   final String? logoUrl;
   final bool isOverseas;

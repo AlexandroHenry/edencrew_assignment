@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/providers/watchlist_repository_provider.dart';
@@ -26,7 +29,17 @@ class WatchlistController extends AsyncNotifier<WatchlistSnapshot> {
   Future<WatchlistSnapshot> build() {
     // 즐겨찾기 목록이 바뀌면 (추가/제거) watchlist를 자동 갱신
     ref.listen(favoriteIdsControllerProvider, (previous, next) {
-      if (next.hasValue) refresh();
+      if (previous?.hasValue != true || !next.hasValue) {
+        return;
+      }
+
+      final previousIds = previous!.requireValue;
+      final nextIds = next.requireValue;
+      if (setEquals(previousIds, nextIds)) {
+        return;
+      }
+
+      unawaited(refresh());
     });
     return _repository.fetchWatchlist(asOf: _selectedDate);
   }

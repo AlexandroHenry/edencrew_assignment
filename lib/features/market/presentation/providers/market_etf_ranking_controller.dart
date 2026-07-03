@@ -49,7 +49,7 @@ class MarketEtfRankingController
               name: d.name,
               code: d.code,
               changePercent: d.changeRate,
-              price: d.price,
+              price: d.price.toDouble(),
             ))
         .toList();
     return MarketEtfRankingState(filter: filter, items: items);
@@ -80,7 +80,7 @@ class MarketUsEtfRankingController
               name: d.name,
               code: d.code,
               changePercent: d.changeRate,
-              price: d.price,
+              price: d.price.toDouble(),
             ))
         .toList();
     return MarketEtfRankingState(filter: filter, items: items);

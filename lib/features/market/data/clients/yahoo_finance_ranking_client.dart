@@ -1,8 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:sample/features/market/data/dtos/ranking_item_dto.dart';
+import 'package:sample/shared/utils/dio_factory.dart';
 
 class YahooFinanceRankingClient {
-  YahooFinanceRankingClient() : _dio = Dio();
+  YahooFinanceRankingClient() : _dio = createDio(tag: 'DIO:YahooRanking');
 
   final Dio _dio;
   static const _base =

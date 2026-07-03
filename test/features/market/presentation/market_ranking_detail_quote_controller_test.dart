@@ -37,7 +37,7 @@ void main() {
       marketRankingDetailQuoteProvider('005930').future,
     );
 
-    expect(result?.symbol, '005930');
+    expect(result.symbol, '005930');
     expect(mockRepo.callCount, 1);
   });
 

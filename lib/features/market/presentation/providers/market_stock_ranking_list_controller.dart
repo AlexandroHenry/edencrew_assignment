@@ -75,7 +75,7 @@ class MarketStockRankingListController
                 id: d.symbol,
                 name: d.name,
                 changePercent: d.changePercent,
-                price: d.price.round(),
+                price: d.price,
                 symbol: d.symbol,
                 logoUrl: d.logoUrl,
                 isOverseas: d.isOverseas,

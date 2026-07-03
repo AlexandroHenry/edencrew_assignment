@@ -14,4 +14,10 @@ class MockRankingDetailRepository implements RankingDetailRepository {
     callCount += 1;
     return _fetch(symbol);
   }
+
+  @override
+  Future<RankingDetailQuote> fetchOverseasDetail(String symbol) {
+    callCount += 1;
+    return _fetch(symbol);
+  }
 }

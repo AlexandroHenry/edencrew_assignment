@@ -1,10 +1,12 @@
 import 'dart:typed_data';
+
 import 'package:charset_converter/charset_converter.dart';
 import 'package:dio/dio.dart';
 import 'package:sample/features/market/data/dtos/ranking_item_dto.dart';
+import 'package:sample/shared/utils/dio_factory.dart';
 
 class NaverRankingClient {
-  NaverRankingClient() : _dio = Dio();
+  NaverRankingClient() : _dio = createDio(tag: 'DIO:NaverRanking');
 
   final Dio _dio;
   static const _base = 'https://finance.naver.com/sise';

@@ -76,6 +76,27 @@ void main() {
     );
   });
 
+  test('addFavorite accepts raw 6-digit domestic symbol and stores canonical id', () async {
+    SharedPreferences.setMockInitialValues(<String, Object>{
+      favoriteIdsStorageKey: <String>['domestic:005930'],
+    });
+    final preferences = await SharedPreferences.getInstance();
+    final repository = NaverWatchlistRepository(
+      dio: Dio(),
+      favoriteIdsLocalStore: FavoriteIdsLocalStore(preferences),
+      client: _FakeNaverStockDataClient(),
+    );
+
+    await repository.addFavorite(itemId: '000660');
+
+    final favoriteIds = await repository.loadFavoriteIds();
+    expect(favoriteIds, contains('domestic:000660'));
+    expect(
+      preferences.getStringList(favoriteIdsStorageKey)?.toSet(),
+      contains('domestic:000660'),
+    );
+  });
+
   test('lazy loads and caches available dates from daily history pages', () async {
     SharedPreferences.setMockInitialValues(<String, Object>{
       favoriteIdsStorageKey: <String>['domestic:005930'],
@@ -275,4 +296,8 @@ class _FakeNaverStockDataClient implements NaverStockDataClient {
     dailyHistoryPageCallCount++;
     return _pagesBySymbol[symbol]![page]!;
   }
+
+  @override
+  Future<List<NaverIntradayPriceDto>> fetchIntradayPrices(String symbol) async =>
+      const [];
 }

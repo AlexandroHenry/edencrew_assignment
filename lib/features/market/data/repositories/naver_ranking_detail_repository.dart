@@ -1,12 +1,15 @@
+import 'package:sample/features/market/data/clients/yahoo_index_client.dart';
 import 'package:sample/features/market/domain/models/ranking_detail_quote.dart';
 import 'package:sample/features/market/domain/repositories/ranking_detail_repository.dart';
 import 'package:sample/shared/data/clients/naver_domestic_stock_client.dart';
 import 'package:sample/shared/data/dtos/naver_stock_dtos.dart';
 
 class NaverRankingDetailRepository implements RankingDetailRepository {
-  NaverRankingDetailRepository(this._client);
+  NaverRankingDetailRepository(this._client)
+      : _yahooClient = YahooIndexClient();
 
   final NaverStockDataClient _client;
+  final YahooIndexClient _yahooClient;
 
   static const _dailyHistoryPage = 1;
 
@@ -48,6 +51,31 @@ class NaverRankingDetailRepository implements RankingDetailRepository {
       highPrice: quote.highPrice,
       lowPrice: quote.lowPrice,
       accumulatedTradingVolume: quote.accumulatedTradingVolume,
+      candles: candles,
+    );
+  }
+
+  @override
+  Future<RankingDetailQuote> fetchOverseasDetail(String symbol) async {
+    final dto = await _yahooClient.fetchStockDetail(symbol);
+    final candles = dto.candles
+        .map((c) => RankingDetailCandle(
+              open: c.open,
+              high: c.high,
+              low: c.low,
+              close: c.close,
+            ))
+        .toList();
+    return RankingDetailQuote(
+      symbol: symbol,
+      currentPrice: dto.currentPrice,
+      previousClose: dto.previousClose,
+      changeAmount: dto.changeAmount,
+      changePercent: dto.changePercent,
+      openPrice: dto.openPrice,
+      highPrice: dto.highPrice,
+      lowPrice: dto.lowPrice,
+      accumulatedTradingVolume: dto.volume,
       candles: candles,
     );
   }

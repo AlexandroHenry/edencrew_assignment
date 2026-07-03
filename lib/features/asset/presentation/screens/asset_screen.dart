@@ -3,7 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sample/features/asset/presentation/providers/asset_screen_controller.dart';
 import 'package:sample/features/asset/presentation/widgets/asset_holding_row.dart';
+import 'package:sample/features/asset/presentation/widgets/asset_pie_chart.dart';
 import 'package:sample/features/asset/presentation/widgets/asset_summary_card.dart';
+import 'package:sample/features/asset/presentation/widgets/trade_bottom_sheet.dart';
 import 'package:sample/theme/app_theme.dart';
 
 class AssetScreen extends ConsumerWidget {
@@ -85,6 +87,39 @@ class AssetScreen extends ConsumerWidget {
                           ),
                         ),
                       ] else ...[
+                        // 자산 비율 파이차트
+                        SliverToBoxAdapter(
+                          child: Container(
+                            margin: const EdgeInsets.fromLTRB(16, 20, 16, 0),
+                            padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF1E1E1E),
+                              borderRadius: BorderRadius.circular(14),
+                              border: Border.all(
+                                color: Colors.white.withValues(alpha: 0.06),
+                              ),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  '자산 비율',
+                                  style: AppTypography.subtitle.copyWith(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                                const SizedBox(height: 12),
+                                AssetPieChart(
+                                  holdings: state.holdings,
+                                  cash: state.cash,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+
+                        // 보유 종목 헤더
                         SliverToBoxAdapter(
                           child: Padding(
                             padding: const EdgeInsets.fromLTRB(16, 24, 16, 10),
@@ -118,16 +153,32 @@ class AssetScreen extends ConsumerWidget {
                             ),
                           ),
                         ),
+
+                        // 보유 종목 리스트 (추가매수 / 매도 버튼 포함)
                         SliverList(
                           delegate: SliverChildBuilderDelegate(
                             (context, i) {
                               final holding = state.holdings[i];
+                              final currentPrice =
+                                  holding.currentPrice ?? holding.avgBuyPrice;
                               return Column(
                                 children: [
                                   AssetHoldingRow(
                                     holding: holding,
                                     rank: i + 1,
                                     onTap: () {},
+                                    onBuy: () => TradeBottomSheet.show(
+                                      stockCode: holding.stockCode,
+                                      stockName: holding.stockName,
+                                      currentPrice: currentPrice,
+                                      tradeType: TradeType.buy,
+                                    ),
+                                    onSell: () => TradeBottomSheet.show(
+                                      stockCode: holding.stockCode,
+                                      stockName: holding.stockName,
+                                      currentPrice: currentPrice,
+                                      tradeType: TradeType.sell,
+                                    ),
                                   ),
                                   if (i < state.holdings.length - 1)
                                     Divider(
