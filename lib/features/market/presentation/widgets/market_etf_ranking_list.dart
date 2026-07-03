@@ -4,6 +4,7 @@ import 'package:sample/features/market/presentation/models/market_etf_ranking_it
 import 'package:sample/features/market/presentation/providers/market_ranking_detail_drawer_controller.dart';
 import 'package:sample/features/market/presentation/widgets/market_etf_ranking_row.dart';
 import 'package:sample/features/market/presentation/widgets/market_ranking_list.dart';
+import 'package:sample/features/watchlist/data/repositories/favorite_ids_local_store.dart';
 
 class MarketEtfRankingList extends ConsumerWidget {
   const MarketEtfRankingList({
@@ -28,7 +29,7 @@ class MarketEtfRankingList extends ConsumerWidget {
         for (final item in items)
           MarketEtfRankingRow(
             item: item,
-            isFavorite: favoriteIds.contains(item.id),
+            isFavorite: favoriteIdsContains(favoriteIds, item.id),
             isLoading: loadingId == item.id,
             onHeartTap: () => onHeartTap(item.id),
             onTap: onItemTap == null ? null : () => onItemTap!(item),

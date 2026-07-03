@@ -38,6 +38,29 @@ String? domesticSymbolFromFavoriteId(String favoriteId) {
   return symbol;
 }
 
+/// 6자리 국내 종목코드 또는 `domestic:` 접두 canonical id를 통일된 favorite id로 변환한다.
+String normalizeToCanonicalFavoriteId(String itemId) {
+  final trimmed = itemId.trim();
+  if (trimmed.isEmpty) {
+    return trimmed;
+  }
+
+  final fromCanonical = domesticSymbolFromFavoriteId(trimmed);
+  if (fromCanonical != null) {
+    return canonicalDomesticFavoriteId(fromCanonical);
+  }
+
+  if (RegExp(r'^\d{6}$').hasMatch(trimmed)) {
+    return canonicalDomesticFavoriteId(trimmed);
+  }
+
+  return trimmed;
+}
+
+bool favoriteIdsContains(Set<String> favoriteIds, String itemId) {
+  return favoriteIds.contains(normalizeToCanonicalFavoriteId(itemId));
+}
+
 class FavoriteIdsLocalStore {
   const FavoriteIdsLocalStore(this._sharedPreferences);
 

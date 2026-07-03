@@ -25,8 +25,7 @@ class MarketRankingDetailPanel extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final favoriteIds =
         ref.watch(favoriteIdsControllerProvider).valueOrNull ?? const {};
-    final canonicalId = canonicalDomesticFavoriteId(item.id);
-    final isFavorite = favoriteIds.contains(canonicalId);
+    final isFavorite = favoriteIdsContains(favoriteIds, item.id);
 
     // 드로어가 열릴 때 이미 fetch 완료된 상태이므로 즉시 data 상태로 진입한다.
     // 실시간 갱신을 위해 watch를 유지하되 loading/error 시에도 item을 그대로 보여준다.
@@ -42,7 +41,7 @@ class MarketRankingDetailPanel extends ConsumerWidget {
         Expanded(
           child: quoteAsync.isLoading && item.candles.isEmpty
               ? _PanelLoadingBody(item: item, isFavorite: isFavorite, onHeartTap: () {
-                  ref.read(favoriteIdsControllerProvider.notifier).toggle(canonicalId);
+                  ref.read(favoriteIdsControllerProvider.notifier).toggle(item.id);
                 })
               : ListView(
                   padding: const EdgeInsets.fromLTRB(16, 20, 16, 0),
@@ -53,7 +52,7 @@ class MarketRankingDetailPanel extends ConsumerWidget {
                       onHeartTap: () {
                         ref
                             .read(favoriteIdsControllerProvider.notifier)
-                            .toggle(canonicalId);
+                            .toggle(item.id);
                       },
                     ),
                     const SizedBox(height: 20),

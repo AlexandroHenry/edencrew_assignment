@@ -621,15 +621,15 @@ class NaverWatchlistRepository implements WatchlistRepository {
   }
 
   String _requireCanonicalFavoriteId(String itemId) {
-    final symbol = domesticSymbolFromFavoriteId(itemId);
-    if (symbol == null) {
+    final normalized = normalizeToCanonicalFavoriteId(itemId);
+    if (domesticSymbolFromFavoriteId(normalized) == null) {
       throw ArgumentError.value(
         itemId,
         'itemId',
         'Naver repository only accepts canonical domestic favorite ids',
       );
     }
-    return canonicalDomesticFavoriteId(symbol);
+    return normalized;
   }
 
   String _dailyHistoryPageCacheKey(String symbol, int page) => '$symbol::$page';

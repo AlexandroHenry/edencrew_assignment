@@ -7,6 +7,7 @@ import 'package:sample/features/market/presentation/providers/market_theme_detai
 import 'package:sample/features/market/presentation/screens/market_chart_detail_screen.dart';
 import 'package:sample/features/market/presentation/widgets/market_ranking_row.dart';
 import 'package:sample/features/market/presentation/widgets/market_theme_movement_summary.dart';
+import 'package:sample/features/watchlist/data/repositories/favorite_ids_local_store.dart';
 import 'package:sample/features/watchlist/presentation/providers/favorite_ids_controller.dart';
 import 'package:sample/theme/app_theme.dart';
 
@@ -145,7 +146,7 @@ class _Body extends ConsumerWidget {
                       subtitle: stock.code,
                       changePercent: _parseChangePercent(stock),
                       price: _parsePrice(stock.price),
-                      isFavorite: favoriteIds.contains(stock.code),
+                      isFavorite: favoriteIdsContains(favoriteIds, stock.code),
                       onHeartTap: () => ref
                           .read(favoriteIdsControllerProvider.notifier)
                           .toggle(stock.code),

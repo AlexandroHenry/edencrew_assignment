@@ -8,6 +8,7 @@ import '../../feed/presentation/screens/feed_screen.dart';
 import '../../market/presentation/market_screen.dart';
 import '../../market/presentation/providers/market_ranking_detail_drawer_controller.dart';
 import '../../watchlist/presentation/screens/watchlist_screen.dart';
+import 'providers/current_app_tab_provider.dart';
 import 'widgets/app_bottom_nav.dart';
 
 class AppShell extends ConsumerStatefulWidget {
@@ -18,18 +19,22 @@ class AppShell extends ConsumerStatefulWidget {
 }
 
 class _AppShellState extends ConsumerState<AppShell> {
-  AppTab _currentTab = AppTab.market;
-
   void _onTabSelected(AppTab tab) {
     // 탭 전환 시 드로어가 열려있으면 닫는다
     if (ref.read(marketRankingDetailDrawerItemProvider) != null) {
       closeMarketRankingDetailDrawer(ref);
     }
-    setState(() => _currentTab = tab);
+
+    if (ref.read(currentAppTabProvider) == tab) {
+      return;
+    }
+
+    ref.read(currentAppTabProvider.notifier).state = tab;
   }
 
   @override
   Widget build(BuildContext context) {
+    final currentTab = ref.watch(currentAppTabProvider);
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
@@ -41,7 +46,7 @@ class _AppShellState extends ConsumerState<AppShell> {
       child: Scaffold(
         backgroundColor: AppColors.bg.bg_121212,
         body: IndexedStack(
-          index: _currentTab.index,
+          index: currentTab.index,
           children: const [
             MarketScreen(),
             WatchlistScreen(),
@@ -51,7 +56,7 @@ class _AppShellState extends ConsumerState<AppShell> {
           ],
         ),
         bottomNavigationBar: AppBottomNav(
-          currentTab: _currentTab,
+          currentTab: currentTab,
           onTabSelected: _onTabSelected,
         ),
       ),
