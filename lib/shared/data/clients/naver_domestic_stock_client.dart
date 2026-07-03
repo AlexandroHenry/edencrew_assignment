@@ -19,6 +19,9 @@ abstract interface class NaverStockDataClient {
     required String symbol,
     required int page,
   });
+
+  // 당일 분봉 체결 내역 (sise_time.naver)
+  Future<List<NaverIntradayPriceDto>> fetchIntradayPrices(String symbol);
 }
 
 class NaverDomesticStockClient implements NaverStockDataClient {
@@ -259,6 +262,78 @@ class NaverDomesticStockClient implements NaverStockDataClient {
         .map((m) => int.tryParse(m.group(1)!) ?? 0)
         .toList();
     return allPageNums.isEmpty ? 1 : allPageNums.reduce((a, b) => a > b ? a : b);
+  }
+
+  /// 당일 분봉 체결 내역 (sise_time.naver)
+  /// 열 순서: 체결시각 | 체결가 | 전일비 | 등락률 | 매도호가 | 매수호가 | 거래량 | 거래대금
+  @override
+  Future<List<NaverIntradayPriceDto>> fetchIntradayPrices(String symbol) async {
+    final now = DateTime.now();
+    final thistime = '${now.year}'
+        '${now.month.toString().padLeft(2, '0')}'
+        '${now.day.toString().padLeft(2, '0')}235959';
+
+    final response = await _dio.get<List<int>>(
+      'https://finance.naver.com/item/sise_time.naver',
+      queryParameters: {'code': symbol, 'thistime': thistime},
+      options: Options(
+        headers: {
+          ..._defaultHeaders,
+          'referer':
+              'https://finance.naver.com/item/sise_time.naver?code=$symbol',
+        },
+        responseType: ResponseType.bytes,
+      ),
+    );
+
+    final html = latin1.decode(response.data!);
+    return _parseIntradayRows(html);
+  }
+
+  /// 체결시각(HH:MM) 패턴인 행만 파싱한다.
+  static List<NaverIntradayPriceDto> _parseIntradayRows(String html) {
+    final trRegex = RegExp(r'<tr[^>]*>(.*?)</tr>', dotAll: true);
+    final tdRegex = RegExp(r'<td[^>]*>(.*?)</td>', dotAll: true);
+    final tagRegex = RegExp(r'<[^>]+>');
+    final timePattern = RegExp(r'^\d{2}:\d{2}$');
+
+    final result = <NaverIntradayPriceDto>[];
+
+    for (final trMatch in trRegex.allMatches(html)) {
+      final cells = tdRegex
+          .allMatches(trMatch.group(1)!)
+          .map((m) => m.group(1)!.replaceAll(tagRegex, '').trim())
+          .where((t) => t.isNotEmpty)
+          .toList();
+
+      if (cells.isEmpty || !timePattern.hasMatch(cells[0])) continue;
+      if (cells.length < 7) continue;
+
+      try {
+        final close =
+            double.tryParse(cells[1].replaceAll(',', '')) ?? 0;
+        // 전일비(cells[2])에 '-' 포함 여부로 방향 판단
+        final isUp = !cells[2].contains('-');
+        final changeAmount =
+            double.tryParse(cells[2].replaceAll(RegExp(r'[^0-9.]'), '')) ?? 0;
+        final changeRate =
+            double.tryParse(cells[3].replaceAll(RegExp(r'[^0-9.]'), '')) ?? 0;
+        final volume =
+            int.tryParse(cells[6].replaceAll(',', '')) ?? 0;
+
+        result.add(NaverIntradayPriceDto(
+          time: cells[0],
+          closePrice: close,
+          changeAmount: changeAmount,
+          changeRate: changeRate,
+          volume: volume,
+          isUp: isUp,
+        ));
+      } catch (_) {
+        continue;
+      }
+    }
+    return result;
   }
 }
 

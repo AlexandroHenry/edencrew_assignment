@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sample/features/market/presentation/models/index_detail_candle.dart';
 import 'package:sample/features/market/presentation/providers/index_detail_controller.dart';
+import 'package:sample/features/market/presentation/widgets/index_detail_candle_chart.dart';
 import 'package:sample/features/market/presentation/widgets/index_detail_chart.dart';
 import 'package:sample/features/market/presentation/widgets/index_detail_investor_trends_card.dart';
 import 'package:sample/features/market/presentation/widgets/index_detail_period_chips.dart';
@@ -9,7 +11,7 @@ import 'package:sample/features/market/presentation/widgets/index_detail_price_h
 import 'package:sample/features/market/presentation/widgets/index_detail_quote_section.dart';
 import 'package:sample/theme/app_theme.dart';
 
-// 지수·종목 공통 차트+시세 화면. indexCode는 코스피 코드(KOSPI 등) 또는 종목코드(6자리)를 받는다.
+// 지수·종목 공통 차트+시세 화면. indexCode는 코스피(KOSPI 등) 또는 종목코드(6자리)를 받는다.
 class MarketChartDetailScreen extends ConsumerWidget {
   const MarketChartDetailScreen({
     super.key,
@@ -65,18 +67,19 @@ class MarketChartDetailScreen extends ConsumerWidget {
                         children: [
                           IndexDetailPriceHeader(indexCode: indexCode),
                           Padding(
-                            padding:
-                                const EdgeInsets.fromLTRB(16, 16, 16, 0),
-                            child: state.chartValues.length >= 2
-                                ? IndexDetailChart(
-                                    values: state.chartValues,
-                                    volumes: state.chartVolumes,
-                                  )
-                                : const SizedBox(height: 220),
+                            padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                            child: _buildChart(state),
                           ),
                           IndexDetailPeriodChips(
                             selectedPeriod: state.period,
                             onPeriodSelected: controller.setPeriod,
+                            chartType: state.chartType,
+                            canToggleCandle: state.candles.isNotEmpty,
+                            onChartTypeToggle: () => controller.setChartType(
+                              state.chartType == ChartType.line
+                                  ? ChartType.candle
+                                  : ChartType.line,
+                            ),
                           ),
                           if (state.investorItems.isNotEmpty)
                             IndexDetailInvestorTrendsCard(
@@ -94,5 +97,18 @@ class MarketChartDetailScreen extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  Widget _buildChart(IndexDetailState state) {
+    if (state.chartType == ChartType.candle && state.candles.length >= 2) {
+      return IndexDetailCandleChart(candles: state.candles);
+    }
+    if (state.chartValues.length >= 2) {
+      return IndexDetailChart(
+        values: state.chartValues,
+        volumes: state.chartVolumes,
+      );
+    }
+    return const SizedBox(height: 220);
   }
 }

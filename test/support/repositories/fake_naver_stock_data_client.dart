@@ -57,4 +57,8 @@ class FakeNaverStockDataClient implements NaverStockDataClient {
           priceInfos: const [],
         );
   }
+
+  @override
+  Future<List<NaverIntradayPriceDto>> fetchIntradayPrices(String symbol) async =>
+      const [];
 }

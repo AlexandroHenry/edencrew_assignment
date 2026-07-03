@@ -4,6 +4,7 @@ import 'package:sample/features/market/data/clients/naver_index_client.dart';
 import 'package:sample/features/market/data/clients/yahoo_index_client.dart';
 import 'package:sample/features/market/data/dtos/investor_trend_dto.dart';
 import 'package:sample/features/market/domain/services/ranking_detail_formatter.dart';
+import 'package:sample/features/market/presentation/models/index_detail_candle.dart';
 import 'package:sample/features/market/presentation/models/index_detail_investor_trend_item.dart';
 import 'package:sample/features/market/presentation/models/index_detail_investor_trend_side.dart';
 import 'package:sample/features/market/presentation/models/index_detail_period.dart';
@@ -27,7 +28,6 @@ class IndexDetailController extends FamilyNotifier<IndexDetailState, String> {
   @override
   IndexDetailState build(String indexCode) {
     _isDomesticStock = isDomesticStockSymbol(indexCode);
-    // 알파벳으로만 구성되고 알려진 국내 지수 코드가 아니면 해외 종목으로 판단
     _isOverseas = !_isDomesticStock &&
         RegExp(r'^[A-Za-z=^.]+$').hasMatch(indexCode) &&
         indexCode != 'KOSPI' &&
@@ -60,9 +60,19 @@ class IndexDetailController extends FamilyNotifier<IndexDetailState, String> {
   }
 
   Future<void> setQuoteMode(IndexDetailQuoteMode mode) async {
-    if (_isOverseas || _isDomesticStock) return;
+    if (_isOverseas) return;
     state = state.copyWith(quoteMode: mode, isQuoteLoading: true);
-    await _loadQuotes(arg, mode);
+    if (_isDomesticStock) {
+      await _loadDomesticStockQuotes(arg, mode);
+    } else {
+      await _loadQuotes(arg, mode);
+    }
+  }
+
+  void setChartType(ChartType type) {
+    // 캔들은 OHLC 데이터가 있을 때만 전환 가능
+    if (type == ChartType.candle && state.candles.isEmpty) return;
+    state = state.copyWith(chartType: type);
   }
 
   // ── 국내 개별 종목 ──────────────────────────────────────────────────────────
@@ -94,11 +104,8 @@ class IndexDetailController extends FamilyNotifier<IndexDetailState, String> {
       if (quote == null) throw StateError('시세를 찾을 수 없습니다: $symbol');
 
       // sise_day.naver는 최신일이 첫 행 → 과거→최신 순으로 뒤집어 차트에 표시
-      final allPrices = histories
-          .expand((h) => h.priceInfos)
-          .toList()
-          .reversed
-          .toList();
+      final rawPrices = histories.expand((h) => h.priceInfos).toList();
+      final chartPrices = rawPrices.reversed.toList();
 
       state = IndexDetailState(
         isLoading: false,
@@ -107,14 +114,19 @@ class IndexDetailController extends FamilyNotifier<IndexDetailState, String> {
         price: quote.currentPrice,
         changeVal: quote.changeAmount,
         changePercent: quote.changeRate,
-        chartValues: allPrices.map((p) => p.closePrice).toList(),
-        chartVolumes: allPrices
+        chartValues: chartPrices.map((p) => p.closePrice).toList(),
+        chartVolumes: chartPrices
             .map((p) => p.accumulatedTradingVolume.toDouble())
             .toList(),
-        quoteItems: _toStockQuoteItems(
-          histories.expand((h) => h.priceInfos).toList(),
-        ),
-        investorItems: const [],
+        candles: chartPrices
+            .map((p) => IndexDetailCandle(
+                  open: p.openPrice,
+                  high: p.highPrice,
+                  low: p.lowPrice,
+                  close: p.closePrice,
+                ))
+            .toList(),
+        quoteItems: _toStockQuoteItems(rawPrices),
       );
     } catch (e) {
       state = state.copyWith(isLoading: false, errorMessage: e.toString());
@@ -129,20 +141,65 @@ class IndexDetailController extends FamilyNotifier<IndexDetailState, String> {
         for (var p = 1; p <= pageCount; p++)
           _stockClient.fetchDailyHistoryPage(symbol: symbol, page: p),
       ]);
-      final allPrices =
-          pages.expand((h) => h.priceInfos).toList().reversed.toList();
+      final rawPrices = pages.expand((h) => h.priceInfos).toList();
+      final chartPrices = rawPrices.reversed.toList();
       state = state.copyWith(
         isChartLoading: false,
-        chartValues: allPrices.map((p) => p.closePrice).toList(),
-        chartVolumes: allPrices
+        period: period,
+        chartValues: chartPrices.map((p) => p.closePrice).toList(),
+        chartVolumes: chartPrices
             .map((p) => p.accumulatedTradingVolume.toDouble())
             .toList(),
-        quoteItems: _toStockQuoteItems(
-          pages.expand((h) => h.priceInfos).toList(),
-        ),
+        candles: chartPrices
+            .map((p) => IndexDetailCandle(
+                  open: p.openPrice,
+                  high: p.highPrice,
+                  low: p.lowPrice,
+                  close: p.closePrice,
+                ))
+            .toList(),
+        quoteItems: _toStockQuoteItems(rawPrices),
       );
     } catch (_) {
       state = state.copyWith(isChartLoading: false);
+    }
+  }
+
+  Future<void> _loadDomesticStockQuotes(
+      String symbol, IndexDetailQuoteMode mode) async {
+    try {
+      if (mode == IndexDetailQuoteMode.byTime) {
+        // 분봉 체결 내역 (sise_time.naver)
+        final rows = await _stockClient.fetchIntradayPrices(symbol);
+        state = state.copyWith(
+          isQuoteLoading: false,
+          quoteItems: rows
+              .map((r) => IndexDetailQuoteItem(
+                    timeLabel: r.time,
+                    dateLabel: '',
+                    closePrice: r.closePrice.round(),
+                    change: r.changeAmount,
+                    volume: r.volume,
+                    changeRate: r.changeRate,
+                    isUp: r.isUp,
+                  ))
+              .toList(),
+        );
+      } else {
+        // 일별: 이미 로드된 quoteItems 유지, 필요하면 재요청
+        final pageCount = _stockPageCount(state.period);
+        final pages = await Future.wait([
+          for (var p = 1; p <= pageCount; p++)
+            _stockClient.fetchDailyHistoryPage(symbol: symbol, page: p),
+        ]);
+        state = state.copyWith(
+          isQuoteLoading: false,
+          quoteItems:
+              _toStockQuoteItems(pages.expand((h) => h.priceInfos).toList()),
+        );
+      }
+    } catch (_) {
+      state = state.copyWith(isQuoteLoading: false);
     }
   }
 
@@ -151,15 +208,14 @@ class IndexDetailController extends FamilyNotifier<IndexDetailState, String> {
       List<NaverHistoricalPriceDto> prices) {
     return List.generate(prices.length, (i) {
       final p = prices[i];
-      final prevClose = i + 1 < prices.length ? prices[i + 1].closePrice : p.closePrice;
+      final prevClose =
+          i + 1 < prices.length ? prices[i + 1].closePrice : p.closePrice;
       final change = (p.closePrice - prevClose).abs();
-      final changeRate = prevClose != 0
-          ? (change / prevClose * 100)
-          : 0.0;
+      final changeRate =
+          prevClose != 0 ? (change / prevClose * 100) : 0.0;
       final isUp = p.closePrice >= prevClose;
-      final date = '${p.localDate.year}.'
-          '${p.localDate.month.toString().padLeft(2, '0')}.'
-          '${p.localDate.day.toString().padLeft(2, '0')}';
+      final date =
+          '${p.localDate.year}.${p.localDate.month.toString().padLeft(2, '0')}.${p.localDate.day.toString().padLeft(2, '0')}';
       return IndexDetailQuoteItem(
         timeLabel: '',
         dateLabel: date,
@@ -174,11 +230,17 @@ class IndexDetailController extends FamilyNotifier<IndexDetailState, String> {
 
   // ── 해외 종목 ────────────────────────────────────────────────────────────────
 
-  // Yahoo Finance에서 현재가 + 1개월 일봉 캔들을 가져온다.
   Future<void> _loadOverseas(String symbol) async {
     try {
       final detail = await _yahooClient.fetchStockDetail(symbol);
-      final chartValues = detail.candles.map((c) => c.close).toList();
+      final candleList = detail.candles
+          .map((c) => IndexDetailCandle(
+                open: c.open,
+                high: c.high,
+                low: c.low,
+                close: c.close,
+              ))
+          .toList();
       state = IndexDetailState(
         isLoading: false,
         period: IndexDetailPeriod.oneMonth,
@@ -186,8 +248,9 @@ class IndexDetailController extends FamilyNotifier<IndexDetailState, String> {
         price: detail.currentPrice,
         changeVal: detail.changeAmount,
         changePercent: detail.changePercent,
-        chartValues: chartValues,
-        chartVolumes: List.filled(chartValues.length, 0),
+        chartValues: candleList.map((c) => c.close).toList(),
+        chartVolumes: List.filled(candleList.length, 0),
+        candles: candleList,
         quoteItems: const [],
         investorItems: const [],
       );
@@ -196,7 +259,7 @@ class IndexDetailController extends FamilyNotifier<IndexDetailState, String> {
     }
   }
 
-  // ── 지수 (KOSPI / KOSDAQ / 해외 지수) ────────────────────────────────────────
+  // ── 지수 ─────────────────────────────────────────────────────────────────────
 
   Future<void> _load(
       String indexCode, IndexDetailPeriod period, IndexDetailQuoteMode mode) async {
@@ -318,11 +381,13 @@ class IndexDetailState {
     this.errorMessage,
     this.period = IndexDetailPeriod.oneDay,
     this.quoteMode = IndexDetailQuoteMode.byTime,
+    this.chartType = ChartType.line,
     this.price = 0,
     this.changeVal = 0,
     this.changePercent = 0,
     this.chartValues = const [],
     this.chartVolumes = const [],
+    this.candles = const [],
     this.quoteItems = const [],
     this.investorItems = const [],
   });
@@ -333,11 +398,13 @@ class IndexDetailState {
   final String? errorMessage;
   final IndexDetailPeriod period;
   final IndexDetailQuoteMode quoteMode;
+  final ChartType chartType;
   final double price;
   final double changeVal;
   final double changePercent;
   final List<double> chartValues;
   final List<double> chartVolumes;
+  final List<IndexDetailCandle> candles;
   final List<IndexDetailQuoteItem> quoteItems;
   final List<IndexDetailInvestorTrendItem> investorItems;
 
@@ -350,11 +417,13 @@ class IndexDetailState {
     String? errorMessage,
     IndexDetailPeriod? period,
     IndexDetailQuoteMode? quoteMode,
+    ChartType? chartType,
     double? price,
     double? changeVal,
     double? changePercent,
     List<double>? chartValues,
     List<double>? chartVolumes,
+    List<IndexDetailCandle>? candles,
     List<IndexDetailQuoteItem>? quoteItems,
     List<IndexDetailInvestorTrendItem>? investorItems,
   }) {
@@ -365,11 +434,13 @@ class IndexDetailState {
       errorMessage: errorMessage ?? this.errorMessage,
       period: period ?? this.period,
       quoteMode: quoteMode ?? this.quoteMode,
+      chartType: chartType ?? this.chartType,
       price: price ?? this.price,
       changeVal: changeVal ?? this.changeVal,
       changePercent: changePercent ?? this.changePercent,
       chartValues: chartValues ?? this.chartValues,
       chartVolumes: chartVolumes ?? this.chartVolumes,
+      candles: candles ?? this.candles,
       quoteItems: quoteItems ?? this.quoteItems,
       investorItems: investorItems ?? this.investorItems,
     );

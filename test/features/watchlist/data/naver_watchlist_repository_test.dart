@@ -275,4 +275,8 @@ class _FakeNaverStockDataClient implements NaverStockDataClient {
     dailyHistoryPageCallCount++;
     return _pagesBySymbol[symbol]![page]!;
   }
+
+  @override
+  Future<List<NaverIntradayPriceDto>> fetchIntradayPrices(String symbol) async =>
+      const [];
 }
