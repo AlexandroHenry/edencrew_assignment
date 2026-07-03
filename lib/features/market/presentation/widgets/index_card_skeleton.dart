@@ -95,7 +95,7 @@ class _SkeletonCircle extends StatelessWidget {
     return Container(
       width: size,
       height: size,
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppDerivedColors.skeleton,
         shape: BoxShape.circle,
       ),
