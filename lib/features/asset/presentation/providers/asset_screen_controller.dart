@@ -25,14 +25,17 @@ class AssetScreenController extends Notifier<AssetScreenState> {
     state = state.copyWith(cash: cash, holdings: holdings, isLoading: false);
   }
 
-  // 매수: 현재가로 qty주 매수. 잔고 부족 시 false 반환.
+  // 매수: 원화 잔고에서 차감하고 qty주 추가.
+  // currentPriceKrw: 매수 시점 원화 환산가 (KRW 종목이면 currentPrice와 동일)
   Future<bool> buy({
     required String stockCode,
     required String stockName,
     required double currentPrice,
+    required double currentPriceKrw,
+    required String currency,
     required int quantity,
   }) async {
-    final cost = currentPrice * quantity;
+    final cost = currentPriceKrw * quantity;
     if (cost > state.cash) return false;
 
     final newCash = state.cash - cost;
@@ -41,17 +44,23 @@ class AssetScreenController extends Notifier<AssetScreenState> {
     final existing = holdings.indexWhere((h) => h.stockCode == stockCode);
     if (existing >= 0) {
       final h = holdings[existing];
-      // 가중평균 매수가 재계산
       final newQty = h.quantity + quantity;
+      // 가중평균: 통화 고유 단위와 원화 단위 각각 재계산
       final newAvg = (h.avgBuyPrice * h.quantity + currentPrice * quantity) / newQty;
-      holdings[existing] = h.copyWith(quantity: newQty, avgBuyPrice: newAvg);
+      final newAvgKrw =
+          (h.avgBuyPriceKrw * h.quantity + currentPriceKrw * quantity) / newQty;
+      holdings[existing] =
+          h.copyWith(quantity: newQty, avgBuyPrice: newAvg, avgBuyPriceKrw: newAvgKrw);
     } else {
       holdings.add(PortfolioHolding(
         stockCode: stockCode,
         stockName: stockName,
         quantity: quantity,
+        currency: currency,
         avgBuyPrice: currentPrice,
+        avgBuyPriceKrw: currentPriceKrw,
         currentPrice: currentPrice,
+        currentPriceKrw: currentPriceKrw,
       ));
     }
 
@@ -61,10 +70,11 @@ class AssetScreenController extends Notifier<AssetScreenState> {
     return true;
   }
 
-  // 매도: qty주 매도. 보유수량 부족 시 false 반환.
+  // 매도: qty주 매도 후 원화 환산 매도대금을 잔고에 추가.
   Future<bool> sell({
     required String stockCode,
     required double currentPrice,
+    required double currentPriceKrw,
     required int quantity,
   }) async {
     final holdings = List<PortfolioHolding>.from(state.holdings);
@@ -74,7 +84,8 @@ class AssetScreenController extends Notifier<AssetScreenState> {
     final h = holdings[existing];
     if (h.quantity < quantity) return false;
 
-    final proceeds = currentPrice * quantity;
+    // 매도 대금은 원화 기준으로 잔고에 환원
+    final proceeds = currentPriceKrw * quantity;
     final newCash = state.cash + proceeds;
 
     if (h.quantity == quantity) {
@@ -90,9 +101,12 @@ class AssetScreenController extends Notifier<AssetScreenState> {
   }
 
   // 현재가 업데이트 (종목 상세 화면에서 실시간 시세 반영)
-  void updateCurrentPrice(String stockCode, double price) {
+  // priceKrw: 원화 환산 현재가 (KRW 종목이면 price와 동일)
+  void updateCurrentPrice(String stockCode, double price, double priceKrw) {
     final holdings = state.holdings.map((h) {
-      return h.stockCode == stockCode ? h.copyWith(currentPrice: price) : h;
+      return h.stockCode == stockCode
+          ? h.copyWith(currentPrice: price, currentPriceKrw: priceKrw)
+          : h;
     }).toList();
     state = state.copyWith(holdings: holdings);
   }
