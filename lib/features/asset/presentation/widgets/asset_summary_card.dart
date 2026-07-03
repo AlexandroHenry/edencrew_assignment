@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:sample/features/asset/presentation/providers/asset_screen_state.dart';
 import 'package:sample/theme/app_theme.dart';
 
+// 시뮬레이션 초기 씨드머니 — 증가율 기준점
+const _seedMoney = 10000000.0;
+
 class AssetSummaryCard extends StatelessWidget {
   const AssetSummaryCard({required this.state, super.key});
 
@@ -16,6 +19,17 @@ class AssetSummaryCard extends StatelessWidget {
     final pnlColor = isUp
         ? AppColors.mainAndAccent.up_f93f62
         : isDown
+            ? AppColors.mainAndAccent.down_4780ff
+            : AppDerivedColors.flat;
+
+    // 씨드 대비 총자산 증가율
+    final seedGrowth = state.totalAssets - _seedMoney;
+    final seedGrowthPct = seedGrowth / _seedMoney * 100;
+    final isSeedUp = seedGrowth > 0;
+    final isSeedDown = seedGrowth < 0;
+    final seedColor = isSeedUp
+        ? AppColors.mainAndAccent.up_f93f62
+        : isSeedDown
             ? AppColors.mainAndAccent.down_4780ff
             : AppDerivedColors.flat;
 
@@ -66,6 +80,36 @@ class AssetSummaryCard extends StatelessWidget {
                   const SizedBox(width: 6),
                   Text(
                     '평가손익',
+                    style: AppTypography.caption2.copyWith(
+                      color: AppColors.text.text_3_9e9e9e,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              // 씨드 대비 총자산 증가율
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: seedColor.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(4),
+                      border: Border.all(color: seedColor.withValues(alpha: 0.3)),
+                    ),
+                    child: Text(
+                      seedGrowth == 0
+                          ? '±0원 (0.00%)'
+                          : '${isSeedUp ? '+' : ''}${_fmt(seedGrowth)}원 (${isSeedUp ? '+' : ''}${seedGrowthPct.toStringAsFixed(2)}%)',
+                      style: AppTypography.caption2.copyWith(
+                        color: seedColor,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    '씨드 대비 증가율',
                     style: AppTypography.caption2.copyWith(
                       color: AppColors.text.text_3_9e9e9e,
                     ),
