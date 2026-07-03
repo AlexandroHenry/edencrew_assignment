@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sample/features/asset/presentation/providers/asset_screen_controller.dart';
+import 'package:sample/features/asset/presentation/widgets/asset_allocation_card.dart';
 import 'package:sample/features/asset/presentation/widgets/asset_holding_row.dart';
-import 'package:sample/features/asset/presentation/widgets/asset_pie_chart.dart';
 import 'package:sample/features/asset/presentation/widgets/asset_summary_card.dart';
 import 'package:sample/features/asset/presentation/widgets/trade_bottom_sheet.dart';
 import 'package:sample/theme/app_theme.dart';
@@ -86,32 +86,9 @@ class AssetScreen extends ConsumerWidget {
                       ] else ...[
                         // 자산 비율 파이차트
                         SliverToBoxAdapter(
-                          child: Container(
-                            margin: const EdgeInsets.fromLTRB(16, 20, 16, 0),
-                            padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
-                            decoration: BoxDecoration(
-                              color: AppColors.bg.bg_2_212121,
-                              borderRadius: BorderRadius.circular(14),
-                              border: Border.all(
-                                color: AppColors.border.border_333333,
-                              ),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  '자산 비율',
-                                  style: AppTypography.subtitle.copyWith(
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                                const SizedBox(height: 12),
-                                AssetPieChart(
-                                  holdings: state.holdings,
-                                  cash: state.cash,
-                                ),
-                              ],
-                            ),
+                          child: AssetAllocationCard(
+                            holdings: state.holdings,
+                            cash: state.cash,
                           ),
                         ),
 
