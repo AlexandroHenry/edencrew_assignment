@@ -30,6 +30,8 @@ class SearchController extends Notifier<SearchUiState> {
   }
 
   Future<void> setQuery(String query) async {
+    // 타이핑마다 API를 호출하므로 이전 요청이 늦게 도착해 최신 결과를 덮어쓸 수 있음.
+    // 요청 시작 시점의 순번을 저장해두고, 응답 시점에 최신 순번과 다르면 폐기한다.
     _requestSequence += 1;
     final currentRequestId = _requestSequence;
     final trimmedQuery = query.trim();
@@ -46,6 +48,8 @@ class SearchController extends Notifier<SearchUiState> {
     }
 
     final existingResults = state.results;
+    // copyWithPrevious로 이전 검색 결과를 유지한 채 loading 상태로 전환 —
+    // 새 요청 중 리스트가 빈 화면으로 깜빡이지 않고 이전 결과 위에서 자연스럽게 갱신된다.
     final loadingResults = existingResults.hasValue
         ? const AsyncLoading<List<StockSearchItem>>().copyWithPrevious(
             existingResults,

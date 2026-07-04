@@ -99,15 +99,17 @@ flutter test
 
 ### 데이터 연동
 
-- `lib/features/watchlist/data/clients/naver_domestic_stock_client.dart`
+- `lib/shared/data/clients/naver_domestic_stock_client.dart`
   - 검색 API 호출
   - realtime API 호출
   - 종목 메타데이터 API 호출
   - 일별 시세 HTML 파싱
+  - (다른 feature와 공유하기 위해 `lib/features/watchlist/data/clients/`에서 `lib/shared/data/clients/`로 이동됨)
 
-- `lib/features/watchlist/data/dtos/naver_stock_dtos.dart`
+- `lib/shared/data/dtos/naver_stock_dtos.dart`
   - DTO `fromJson`
   - 숫자/날짜 파싱
+  - (위와 같은 이유로 `lib/shared/data/dtos/`로 이동됨)
 
 - `lib/features/watchlist/data/repositories/naver_watchlist_repository.dart`
   - 검색 결과 변환
@@ -276,7 +278,7 @@ flutter test
 
 대표적으로 확인하면 좋은 테스트:
 
-- `test/features/watchlist/data/naver_stock_dtos_test.dart`
+- `test/shared/data/dtos/naver_stock_dtos_test.dart`
   - DTO 파싱
 - `test/features/watchlist/data/naver_watchlist_repository_test.dart`
   - repository mapping / 날짜 로딩 / 30거래일 상세

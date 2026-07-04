@@ -199,12 +199,9 @@ class _WatchlistDateBottomSheetState extends State<WatchlistDateBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO(assignment): Rebuild the date bottom sheet body to match Figma.
-    // Suggested scope:
-    // - header
-    // - year / month / day picker area
-    // - selected state styling
-    // - cancel / confirm CTA row
+    // Figma 기준 구현: 헤더 + 연/월/일 3열 휠피커 + 취소/확인 CTA.
+    // 선택된 항목은 pill 배경(bg_4_333333) + 밝은 텍스트로 강조하고,
+    // 항목 탭 시 animateToItem으로 스크롤해 휠을 직접 돌리지 않아도 선택 가능하게 함.
     final bottomInset = MediaQuery.paddingOf(context).bottom;
     return Align(
       alignment: Alignment.bottomCenter,
