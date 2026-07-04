@@ -110,6 +110,7 @@ class _AppColorsGrays {
   const _AppColorsGrays();
 
   final Color white = const Color(0xFFFFFFFF); // Grays/White
+  final Color c_757a8b = const Color(0xFF757A8B); // Icon/Menu Inactive
 }
 
 class AppFonts {
