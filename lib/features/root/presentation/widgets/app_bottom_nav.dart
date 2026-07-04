@@ -65,7 +65,10 @@ class AppBottomNav extends StatelessWidget {
 
     return Container(
       key: const Key('app-bottom-nav'),
-      color: AppColors.bg.bg_2_212121,
+      decoration: BoxDecoration(
+        color: AppColors.bg.bg_2_212121,
+        border: Border(top: BorderSide(color: AppColors.border.border_333333)),
+      ),
       padding: EdgeInsets.only(bottom: bottomInset),
       child: SizedBox(
         key: const Key('app-bottom-nav-body'),
@@ -139,9 +142,10 @@ class _BottomNavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Figma 스펙: 선택 탭 = icon-menu-active(#FFFFFF), 비선택 탭 = icon-menu-inactive(#757A8B)
     final color = isActive
-        ? AppColors.mainAndAccent.primary_ff8a00
-        : AppColors.text.text_ffffff;
+        ? AppColors.text.text_ffffff
+        : AppColors.grays.c_757a8b;
 
     final item = Material(
       color: Colors.transparent,
