@@ -69,13 +69,11 @@ class _MarketHeaderState extends ConsumerState<MarketHeader> {
           ),
           if (current != null && price != null && changePercent != null) ...[
             const SizedBox(width: 16),
-            Expanded(
-              child: Text(
-                current.marketName,
-                textAlign: TextAlign.center,
-                overflow: TextOverflow.ellipsis,
-                style: AppTypography.subtitle,
-              ),
+            Text(
+              current.marketName,
+              textAlign: TextAlign.center,
+              overflow: TextOverflow.ellipsis,
+              style: AppTypography.subtitle,
             ),
             const SizedBox(width: 6),
             Text(
